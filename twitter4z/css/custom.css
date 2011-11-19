@@ -1,0 +1,25 @@
+/* custom styles */
+
+p {
+    color: dimgray;
+}
+
+h1 {
+    color: pink;
+}
+
+h2 {
+    color: lime;
+}
+
+h3 {
+    color: skyblue;
+}
+
+h6 {
+    color: gold;
+}
+
+li {
+    color: silver;
+}

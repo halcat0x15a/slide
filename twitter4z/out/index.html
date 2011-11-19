@@ -1,0 +1,118 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>twitter4z</title>
+        <link href="assets/css/show.css" type="text/css" rel="stylesheet" />
+        <link href="assets/css/prettify.css" type="text/css" rel="stylesheet" />
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/show.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/prettify.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/lang-apollo.js"></script><script type="text/javascript" src="assets/js/prettify/lang-css.js"></script><script type="text/javascript" src="assets/js/prettify/lang-hs.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lisp.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lua.js"></script><script type="text/javascript" src="assets/js/prettify/lang-ml.js"></script><script type="text/javascript" src="assets/js/prettify/lang-proto.js"></script><script type="text/javascript" src="assets/js/prettify/lang-scala.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vb.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vhdl.js"></script><script type="text/javascript" src="assets/js/prettify/lang-wiki.js"></script><script type="text/javascript" src="assets/js/prettify/lang-yaml.js"></script><link href="css/custom.css?1321727842666" type="text/css" rel="stylesheet" />
+      <script type="text/javascript"><!--
+        window.onload=function() { prettyPrint(); };
+      --></script>
+      </head>
+      <body>
+        <div id="slides">
+          <div id="reel">
+            <div class="content" id="slide-0">
+       <div class="container"><h1>Twitter4z</h1><p><em><a href="http://twitter.com/#!/halcat0x15a" >@halcat0x15a</a></em>
+</p></div>
+      </div><div class="content" id="slide-1">
+       <div class="container"><h1>Twitter4zとは？</h1><ul><li>Twitter APIのScala Wrapper
+</li><li><em><a href="http://code.google.com/p/scalaz/" >Scalaz</a></em>を用いた実装
+</li><li><a href="https://github.com/halcat0x15a/twitter4z" >github</a>で公開中
+</li></ul></div>
+      </div><div class="content" id="slide-2">
+       <div class="container"><h1>使い方</h1><h2><a href="http://github.com/halcat0x15a/twitter4z/blob/master/README.md" >README!</a></h2></div>
+      </div><div class="content" id="slide-3">
+       <div class="container"><h1>実装の話</h1></div>
+      </div><div class="content" id="slide-4">
+       <div class="container"><h2>Source</h2><ul><li><p><a href="http://halcat0x15a.github.com/twitter4z/core/target/scala-2.9.1/classes.sxr/twitter4z/Twitter.scala.html" >Twitter</a>
+</p><ul><li><p><a href="http://halcat0x15a.github.com/twitter4z/core/target/scala-2.9.1/classes.sxr/APIs.scala.html" >APIs</a>
+</p><ul><li><a href="http://halcat0x15a.github.com/twitter4z/core/target/scala-2.9.1/classes.sxr/Timelines.scala.html" >Timelines</a>
+</li><li><a href="http://halcat0x15a.github.com/twitter4z/core/target/scala-2.9.1/classes.sxr/Tweets.scala.html" >Tweets</a>
+</li></ul></li></ul></li></ul></div>
+      </div><div class="content" id="slide-5">
+       <div class="container"><h2>Twitter4zはresourceでできている！</h2></div>
+      </div><div class="content" id="slide-6">
+       <div class="container"><h3>twitter4z.api.resource</h3><h6>中２病を拗らせたコード</h6><pre><code class="prettyprint lang-scala">def parse[A: JSONR](conn: HttpURLConnection): TwitterResult[A] = (
+  TwitterValidation(
+    fromJSON[A](Http.tryParse(conn.getInputStream, parseJson))
+  ) &lt;**&gt; TwitterValidation(
+    RateLimit(conn)
+  )
+)(TwitterResponse.apply)
+
+def resource[A: JSONR /* 返る型 */](
+  method: Method, // HTTPメソッド
+  url: String, // Resource URL
+  tokens: OptionTokens, // 認証用トークン
+  parameters: Seq[Parameter]* // パラメータ
+) = optOAuth(
+  method(url).params(parameters.flatten.withFilter(null !=).map(_.value): _*)
+)(tokens).processValidation(parse[A]).join
+</code></pre></div>
+      </div><div class="content" id="slide-7">
+       <div class="container"><h2>JSONR[A]</h2><p><em><a href="http://github.com/lift/framework/tree/master/core/json-scalaz" >lift-json-scalaz</a></em>というJSONライブラリに存在する型クラス。
+</p><p>インスタンスを作っておけば<em>fromJSON[A]</em>で対象<em>A</em>のインスタンスが得られます。
+</p><p>これは、オブジェクトと対にして作ります。
+</p></div>
+      </div><div class="content" id="slide-8">
+       <div class="container"><h2>オブジェクト</h2><ul><li><a href="http://halcat0x15a.github.com/twitter4z/core/target/scala-2.9.1/classes.sxr/RateLimitStatus.scala.html" >RateLimitStatus</a>
+</li><li><a href="http://halcat0x15a.github.com/twitter4z/core/target/scala-2.9.1/classes.sxr/AccountSettings.scala.html" >AccountSettings</a>
+</li></ul></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><h2>パラメータ</h2><p>Twitter APIでは多くの必須パラメータ、オプションパラメータがあります。
+</p><p>使用している<a href="http://github.com/scalaj/scalaj-http" >scalaj-http</a>では(String, String)の可変長引数を取り、パラメータが付加されたリクエストを作ります。
+</p><h3><a href="http://halcat0x15a.github.com/twitter4z/core/target/scala-2.9.1/classes.sxr/XParameters.scala.html" >Parameter</a></h3></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><h2>それにしてもTwitter REST APIは・・・</h2><ul><li>パラメータ多すぎ
+</li><li>オブジェクト多すぎ
+</li><li>オブジェクトのフィールド多すぎ
+</li></ul><h6>ということで・・・・・</h6></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><h1>自動生成の話</h1></div>
+      </div><div class="content" id="slide-12">
+       <div class="container"><h2><a href="http://github.com/harrah/xsbt/wiki" >SBT</a>(simple-build-tool)</h2><p>SBTにはソースコードを生成する機能があります。
+</p><p>sourceGeneratorsというもので、ファイルのシーケンスを渡すことでそのファイルを指定したタイミングで生成します。
+</p><ul><li><a href="http://github.com/halcat0x15a/twitter4z/blob/master/project/Twitter4zBuild.scala" >Twitter4zBuild</a>
+</li><li><a href="http://github.com/halcat0x15a/twitter4z/blob/master/project/Generator.scala#L19" >Generator.generate</a>
+</li></ul></div>
+      </div><div class="content" id="slide-13">
+       <div class="container"><h2>Twitter REST APIに必要なもの</h2><ul><li>パラメータとその型
+</li><li><p>オブジェクト
+</p><ul><li>フィールドとその型
+</li></ul></li><li><p>リソース
+</p><ul><li>関数名とその戻り値
+</li><li>HTTPメソッド
+</li><li>URL
+</li><li>認証が必要かどうか
+</li><li>必須パラメータとオプションパラメータ
+</li></ul></li></ul><p>これらを外部ファイルに記述してパースします。
+</p></div>
+      </div><div class="content" id="slide-14">
+       <div class="container"><h2>resources</h2><ul><li><a href="http://github.com/halcat0x15a/twitter4z/blob/master/core/src/main/resources/parameters" >parameters</a>
+</li><li><a href="http://github.com/halcat0x15a/twitter4z/blob/master/core/src/main/resources/objects/account_settings" >account_settings</a>
+</li><li><a href="http://github.com/halcat0x15a/twitter4z/blob/master/core/src/main/resources/api/timelines" >timelines</a>
+</li></ul></div>
+      </div><div class="content" id="slide-15">
+       <div class="container"><h2>Parser</h2><p>Scalaには標準でパーサライブラリがあり、その中の<em><a href="http://www.scala-lang.org/api/current/index.html#scala.util.parsing.combinator.RegexParsers" >scala.util.parsing.combinator.RegexParser</a></em>を使いました。
+</p><p>Parser Combinatorは小さなパーサを合成していき、より大きなものをパースします。
+</p></div>
+      </div><div class="content" id="slide-16">
+       <div class="container"><h2>Generators</h2><ul><li><p><a href="http://github.com/halcat0x15a/twitter4z/blob/master/project/Generator.scala" >Generator</a>
+</p><ul><li><a href="http://github.com/halcat0x15a/twitter4z/blob/master/project/ParametersGenerator.scala" >ParametersGenerator</a>
+</li><li><a href="http://github.com/halcat0x15a/twitter4z/blob/master/project/APIGenerator.scala" >APIGenerator</a>
+</li><li><a href="http://github.com/halcat0x15a/twitter4z/blob/master/project/SpecsGenerator.scala" >SpecsGenerator</a>
+</li></ul></li></ul></div>
+      </div><div class="content" id="slide-17">
+       <div class="container"><h3>みんなも自動化できるところは自動化しようぜ！</h3></div>
+      </div><div class="content" id="slide-18">
+       <div class="container"><h1>ありがとうございました</h1></div>
+      </div>
+          </div>
+        </div>
+        <script type="text/javascript" src="js/custom.js?1321727842982"></script>
+      </body>
+    </html>
