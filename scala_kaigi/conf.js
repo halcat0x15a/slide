@@ -1,6 +1,0 @@
-{
-  "title": "scalaz",
-  "sections": [
-    "scalaz"
-  ]
-}

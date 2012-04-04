@@ -1,0 +1,1 @@
+data Nat = O | S Nat deriving Show

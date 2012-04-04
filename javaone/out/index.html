@@ -1,0 +1,95 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>javaone</title>
+        <link type="text/css" rel="stylesheet" href="assets/css/show.css" />
+        <link type="text/css" rel="stylesheet" href="assets/css/prettify.css" />
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/show.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/prettify.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/lang-apollo.js"></script><script type="text/javascript" src="assets/js/prettify/lang-css.js"></script><script type="text/javascript" src="assets/js/prettify/lang-hs.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lisp.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lua.js"></script><script type="text/javascript" src="assets/js/prettify/lang-ml.js"></script><script type="text/javascript" src="assets/js/prettify/lang-proto.js"></script><script type="text/javascript" src="assets/js/prettify/lang-scala.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vb.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vhdl.js"></script><script type="text/javascript" src="assets/js/prettify/lang-wiki.js"></script><script type="text/javascript" src="assets/js/prettify/lang-yaml.js"></script><link type="text/css" rel="stylesheet" href="css/custom.css?1333525679201" />
+      <script type="text/javascript"><!--
+        window.onload=function() { prettyPrint(); };
+      --></script>
+      </head>
+      <body>
+        <div id="slides">
+          <div id="reel">
+            <div class="content" id="slide-0">
+       <div class="container"><h1 id="Scala">Scala</h1><h2 id="%E5%9E%8B%E3%83%AC%E3%83%99%E3%83%AB%E3%83%97%E3%83%AD%E3%82%B0%E3%83%A9%E3%83%9F%E3%83%B3%E3%82%B0%EF%BC%88%E4%BB%AE%EF%BC%89">型レベルプログラミング（仮）</h2></div>
+      </div><div class="content" id="slide-1">
+       <div class="container"><h1 id="%E8%87%AA%E5%B7%B1%E7%B4%B9%E4%BB%8B">自己紹介</h1><ul><li>よしださんしろう
+</li><li>halcat0x15a
+</li><li>大学生になりました
+</li><li>Scala歴2年くらい
+</li><li>JVM言語好き関数型言語好き
+</li></ul></div>
+      </div><div class="content" id="slide-2">
+       <div class="container"><h1 id="%E4%BB%8A%E6%97%A5%E3%82%84%E3%82%8B%E3%81%93%E3%81%A8">今日やること</h1><ul><li>自然数を定義する
+</li><li>n &lt;= mを定義する
+</li><li>n &lt;= mが真の時のみコンパイルできる関数を定義する
+</li></ul></div>
+      </div><div class="content" id="slide-3">
+       <div class="container"><h1 id="%E8%87%AA%E7%84%B6%E6%95%B0">自然数</h1><pre><code class="prettyprint lang-scala">abstract class Nat
+</code></pre><pre><code class="prettyprint lang-java">abstract class Nat {}
+</code></pre></div>
+      </div><div class="content" id="slide-4">
+       <div class="container"><h1 id="0">0</h1><pre><code class="prettyprint lang-scala">abstract class _0 extends Nat
+val _0 = new _0 {}
+</code></pre><pre><code class="prettyprint lang-java">abstract class _0 extends Nat {}
+final _0 _0 = new _0() {};
+</code></pre></div>
+      </div><div class="content" id="slide-5">
+       <div class="container"><h1 id="n+%2B+1">n + 1</h1><pre><code class="prettyprint lang-scala">case class S[N &lt;: Nat](n: N) extends Nat
+</code></pre><pre><code class="prettyprint lang-java">final class S&lt;N extends Nat&gt; extends Nat {
+    public final N n;
+    public S(N n) {
+        this.n = n;
+    }
+}
+</code></pre></div>
+      </div><div class="content" id="slide-6">
+       <div class="container"><h1 id="1%2C+2">1, 2</h1><pre><code class="prettyprint lang-scala">val _1 = S(_0)
+val _2 = S(_1)
+</code></pre><pre><code class="prettyprint lang-java">final S&lt;_0&gt; _1 = new S&lt;&gt;(_0);
+final S&lt;S&lt;_0&gt;&gt; _2 = new S&lt;&gt;(_1);
+</code></pre></div>
+      </div><div class="content" id="slide-7">
+       <div class="container"><h1 id="n+%3C%3D+m">n &lt;= m</h1><pre><code class="prettyprint lang-scala">abstract class &lt;=[N &lt;: Nat, M &lt;: Nat]
+</code></pre><pre><code class="prettyprint lang-java">abstract class LE&lt;N extends Nat, M extends Nat&gt; {}
+</code></pre></div>
+      </div><div class="content" id="slide-8">
+       <div class="container"><h1 id="Check">Check</h1><pre><code class="prettyprint lang-scala">def check[N &lt;: Nat, M &lt;: Nat](n: N, m: M)(implicit ev: N &lt;= M) {}
+</code></pre><pre><code class="prettyprint lang-java">&lt;N extends Nat, M extends Nat&gt; void check(final N n, final M m, final LE&lt;N, M&gt; ev) {}
+</code></pre></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><h1 id="%3D">=</h1><pre><code class="prettyprint lang-scala">implicit def e[N &lt;: Nat]: N &lt;= N = new &lt;=[N, N] {}
+</code></pre><pre><code class="prettyprint lang-java">&lt;N extends Nat&gt; LE&lt;N, N&gt; e() {
+    return new LE&lt;N, N&gt;() {};
+}
+</code></pre></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><pre><code class="prettyprint lang-scala">check(_0, _0)(e[_0])
+check(_1, _1)(e[_1])
+check(_2, _2)(e[_2])
+</code></pre></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><h1 id="%3C">&lt;</h1><pre><code class="prettyprint lang-scala">implicit def l[N &lt;: Nat, M &lt;: Nat](implicit ev: N &lt;= M): N &lt;= S[M] = new &lt;=[N, S[M]] {}
+</code></pre><pre><code class="prettyprint lang-java">&lt;N extends Nat, M extends Nat&gt; LE&lt;N, S&lt;M&gt;&gt; l(final LE&lt;N, M&gt; ev) {
+    return new LE&lt;N, S&lt;M&gt;&gt;() {};
+}
+</code></pre></div>
+      </div><div class="content" id="slide-12">
+       <div class="container"><pre><code class="prettyprint lang-scala">check(_0, _1)(l[_0, _0](e[_0]))
+check(_0, _2)(l[_0, _1](le[_0, _0](e[_0])))
+check(_1, _2)(l[_1, _1](e[_1]))
+</code></pre></div>
+      </div><div class="content" id="slide-13">
+       <div class="container"><p>ご清聴ありがとうございました。
+</p></div>
+      </div>
+          </div>
+        </div>
+        
+      </body>
+    </html>
