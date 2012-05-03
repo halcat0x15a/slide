@@ -54,8 +54,40 @@
 </code></pre><p>これだけ
 </p></div>
       </div><div class="content" id="slide-7">
-       <div class="container"><h1 id="%E5%8B%95%E3%81%8B%E3%81%97%E3%81%AA%E3%81%8C%E3%82%89%E3%81%AE%E8%A7%A3%E8%AA%AC%E3%81%A8%E3%81%8B">動かしながらの解説とか</h1></div>
+       <div class="container"><h1 id="%E6%AF%94%E8%BC%83%E3%81%A8%E3%81%8B">比較とか</h1><h2 id="JavaScript">JavaScript</h2><pre><code class="prettyprint lang-javascript">goog.net.XhrIo.send(
+  &quot;geso&quot;,
+  function (x) {
+    goog.net.XhrIo.send(
+      x.getResponseText(),
+      function (x) {
+        console.log(x)
+      }
+    )
+  }
+)
+</code></pre></div>
       </div><div class="content" id="slide-8">
+       <div class="container"><h2 id="ClojureScript">ClojureScript</h2><pre><code class="prettyprint lang-clojure">(xhr-io/send
+  &quot;geso&quot;
+  (fn [x]
+    (xhr-io/send
+      (x.getResponseText x)
+      #(.log js/console %))))
+</code></pre></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><h2 id="JavaScript%28Monadic%29">JavaScript(Monadic)</h2><pre><code class="prettyprint lang-javascript">onedit.core.bind(onedit.core.send(&quot;geso&quot;), function (x) {
+  onedit.core.send(x.getResponseText())
+})(console.log)
+</code></pre></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><h2 id="ClojureScript%28Monadic%29">ClojureScript(Monadic)</h2><pre><code class="prettyprint lang-clojure">((syntax/do-monad
+  [x (core/send &quot;geso&quot;)
+   y (core/send (.getResponseText x))] y)
+ #(.log js/console %))
+</code></pre></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><h1 id="%E5%8B%95%E3%81%8B%E3%81%97%E3%81%AA%E3%81%8C%E3%82%89%E3%81%AE%E8%A7%A3%E8%AA%AC%E3%81%A8%E3%81%8B">動かしながらの解説とか</h1></div>
+      </div><div class="content" id="slide-12">
        <div class="container"><h1 id="%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%97%E3%81%9F">ありがとうございました</h1></div>
       </div>
           </div>

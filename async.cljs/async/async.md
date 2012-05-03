@@ -72,6 +72,60 @@
 
 !SLIDE
 
+# 比較とか
+
+## JavaScript
+
+```javascript
+goog.net.XhrIo.send(
+  "geso",
+  function (x) {
+    goog.net.XhrIo.send(
+      x.getResponseText(),
+      function (x) {
+        console.log(x)
+      }
+    )
+  }
+)
+```
+
+!SLIDE
+
+## ClojureScript
+
+```clojure
+(xhr-io/send
+  "geso"
+  (fn [x]
+    (xhr-io/send
+      (x.getResponseText x)
+      #(.log js/console %))))
+```
+
+!SLIDE
+
+## JavaScript(Monadic)
+
+```javascript
+onedit.core.bind(onedit.core.send("geso"), function (x) {
+  onedit.core.send(x.getResponseText())
+})(console.log)
+```
+
+!SLIDE
+
+## ClojureScript(Monadic)
+
+```clojure
+((syntax/do-monad
+  [x (core/send "geso")
+   y (core/send (.getResponseText x))] y)
+ #(.log js/console %))
+```
+
+!SLIDE
+
 # 動かしながらの解説とか
 
 !SLIDE
