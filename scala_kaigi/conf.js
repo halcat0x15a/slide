@@ -1,6 +1,7 @@
 {
   "title": "scalaz",
   "sections": [
-    "scalaz"
+    "scalaz",
+    "map_append"
   ]
 }

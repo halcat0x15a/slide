@@ -6,6 +6,22 @@
 
 !SLIDE
 
+# 自己紹介
+
+* よしだ さんしろう
+* 高校生
+* Scala, Clojure, Python
+* Twitter [http://twitter.com/#!/halcat0x15a](http://twitter.com/#!/halcat0x15a)
+* github [http://github.com/halcat0x15a](http://github.com/halcat0x15a)
+
+!SLIDE
+
+今日はScalazについて話します。
+
+JIT(Just In Tsukkomi)は大歓迎。
+
+!SLIDE
+
 いま話題のScalaz！
 
 !SLIDE
@@ -30,6 +46,10 @@
 
 !SLIDE
 
+まあ、コードを見ればわかるのではないか？
+
+!SLIDE
+
 # 使い方
 
 ```scala
@@ -44,7 +64,7 @@ scala>
 
 !SLIDE
 
-簡単だね！
+簡単そうだね！
 
 !SLIDE
 
@@ -170,16 +190,16 @@ trait Equal[-A] {
 
 *型クラス*はある型に対して性質を定義することができます。
 
-Equalは同値比較ができるという性質があります。
+!SLIDE
 
-そして*===*はその性質を利用した関数となります。
+Equalは同値比較をするための型クラスです。
 
 !SLIDE
 
 # 論よりコード
 
 ```scala
-scala> implicit lazy val ScalaChanEqual = new Equal[ScalaChan] {
+scala> implicit lazy val ScalaChanEqual: Equal[ScalaChan] = new Equal[ScalaChan] {
      |   def equal(a1: ScalaChan, a2: ScalaChan): Boolean = a1 == a2
      | }
 ScalaChanEqual: java.lang.Object with scalaz.Equal[ScalaChan]
@@ -199,11 +219,34 @@ scala>
 
 !SLIDE
 
+# もう一つ例
+
+```scala
+scala> implicit lazy val ScalaChanShow: Show[ScalaChan] = new Show[ScalaChan] {
+     |   def show(a: ScalaChan): List[Char] = "Scalaちゃん".toList
+     | }
+ScalaChanShow: scalaz.Show[ScalaChan] = <lazy>
+
+scala> ScalaChan().shows
+res0: String = Scalaちゃん
+
+scala> Identity(ScalaChan()).shows(ScalaChanShow)
+res1: String = Scalaちゃん
+
+scala> 
+```
+
+!SLIDE
+
+このようにScalazでは**implicit value**を定義していくことで、利用できる関数が増えていきます。
+
+!SLIDE
+
 # うれしいところ
 
 * もとのデータに変更を加えることなく拡張が可能
 * 必要最低限のものを定義するだけで高度な関数を利用可能
-	* これには複数の性質を定義することが必要
+	* これには複数の性質を定義することが必要な場合も
 
 !SLIDE
 
@@ -216,7 +259,7 @@ scala>
 # 普通に書く
 
 ```scala
-scala> def mapAppend(s: Seq[Int])(i: Int) = s.map(_ + i)
+scala> def mapAppend(s: Seq[Int])(i: Int): Seq[Int] = s.map(_ + i)
 mapAppend: (s: Seq[Int])(i: Int)Seq[Int]
 
 scala> mapAppend(List(1, 2, 3))(5)
@@ -232,14 +275,14 @@ scala>
 
 Int以外にDoubleやStringも対応させたい。
 
-結合二項演算がひつよう。
+*結合二項演算*が必要。
 
 !SLIDE
 
-# Semigroup
+# [Semigroup](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Semigroup)
 
 ```scala
-scala> def mapAppend[A: Semigroup](s: Seq[A])(a: A) = s.map(_ |+| a)
+scala> def mapAppend[A: Semigroup](s: Seq[A])(a: A): Seq[A] = s.map(_ |+| a)
 mapAppend: [A](s: Seq[A])(a: A)(implicit evidence$1: scalaz.Semigroup[A])Seq[A]
 
 scala> mapAppend(List(1, 2, 3))(5)
@@ -259,10 +302,10 @@ Seq以外にも対応したい。
 
 !SLIDE
 
-# Functor
+# [Functor](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Functor)
 
 ```scala
-scala> def mapAppend[M[_]: Functor, A: Semigroup](m: M[A])(a: A) = m.map(_ |+| a)
+scala> def mapAppend[M[_]: Functor, A: Semigroup](m: M[A])(a: A): M[A] = m.map(_ |+| a)
 mapAppend: [M[_], A](m: M[A])(a: A)(implicit evidence$1: scalaz.Functor[M], implicit evidence$2: scalaz.Semigroup[A])M[A]
 
 scala> mapAppend(List(1, 2, 3))(5)
@@ -276,188 +319,117 @@ scala>
 
 !SLIDE
 
+# 解決済みのmapAppend
+
+```scala
+def mapAppend[M[_], A](m: M[A])(a: A)(implicit f: Functor[M], s: Semigroup[A]) =
+  maImplicit(m).map(x => (mkIdentity(x) |+| a)(s))(f)
+
+mapAppend[Option, String](
+  Option("Hello")
+)(
+  "World"
+)(
+  Functor.OptionFunctor, Semigroup.StringSemigroup
+)
+```
+
+!SLIDE
+
 # Scalazの基本
 
-* 性質を定義する
-* 性質を利用する
+* **性質を定義する**
+* **性質を利用する**
 
 !SLIDE
 
-ここまでで質問とか。
+# Scalazに関する基礎知識
 
 !SLIDE
 
-# Scalazプログラミング！
+# 重要な３つの型
+
+implicit conversionによりScalazの主な関数を提供します。
+
+* [Identity](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Identity)
+	* すべての型
+* [MA](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MA)
+	* 型パラメータを１つとる型
+* [MAB](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MAB)
+	* 型パラメータを２つとる型
 
 !SLIDE
 
-なにかいいものはないかとScalaのコードを漁っていたのですが、Scalazで書きやすい題材は見つからず・・・
+# 命名規則
 
 !SLIDE
 
-いろいろなScala関係の書籍を漁ってようやくたどり着いたのが・・・
+# クラス名+W
+
+## *Wrapper Class*
+
+* [IntW](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.IntW)
+* [StringW](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.StringW)
+* [ListW](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.ListW)
+* [OptionW](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.OptionW)
+* [Tuple2W](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Tuples$Tuple2W)
+* [Function1W](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Function1W)
+* etc...
 
 !SLIDE
 
-*[Real World Haskell](http://www.oreilly.co.jp/books/9784873114231/)*
+# 型クラス名+s
 
-![Real World Haskell](scalaz/picture_large978-4-87311-423-1.jpeg)
+## *implicit conversion*, *factory method*
 
-!SLIDE
+ScalazオブジェクトにMix-inされる。
 
-具体例にJSONライブラリがあるので書いてみましょう。
-
-!SLIDE
-
-# [JSON](http://www.json.org/)データを表現する
-
-```scala
-sealed trait JValue
-
-sealed abstract class AbstractJValue[A](value: A) extends NewType[A] with JValue
-
-case class JString(value: String) extends AbstractJValue(value)
-
-case class JNumber(value: Double) extends AbstractJValue(value)
-
-case class JBoolean(value: Boolean) extends AbstractJValue(value)
-
-case object JNull extends JValue
-
-case class JObject(value: (JString, JValue)*) extends AbstractJValue(value)
-
-case class JArray(value: JValue*) extends AbstractJValue(value)
-```
+* [Equals](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Equals)
+* [Orders](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Orders)
+* [Shows](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Shows)
+* [Semigroups](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Semigroups)
+* [Zeros](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Zeros)
+* etc...
 
 !SLIDE
 
-# [NewType](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.NewType)
+# 型クラス名+Low
 
-既存の型を拡張するものです。
+## *implicit function*
 
-!SLIDE
+型クラス自身が継承する。
 
-# NewTypeの定義
-
-```scala
-trait NewType[X] {
-  val value: X
-
-  override def toString =
-    value.toString
-}
-
-object NewType {
-  implicit def UnwrapNewType[X](n: NewType[X]): X = n.value
-}
-```
+* [OrderLow](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.OrderLow)
+* [MonoidLow](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MonoidLow)
+* [ApplicativeLow](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.ApplicativeLow)
+* [MonadLow](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MonadLow)
+* [ComonadLow](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Comonad)
+* etc...
 
 !SLIDE
 
-# NewTypeの例
+# 型名+Sugar
 
-```scala
-scala> case class MyInt(value: Int) extends NewType[Int]
-defined class MyInt
+## *function sugar*
 
-scala> 2 + MyInt(1)
-res61: Int = 3
+例のunicode文字の関数が定義されたもの。
 
-scala>
-```
+* [IdentitySugar](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.IdentitySugar)
+* [MASugar](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MASugar)
+* [MAContravariantSugar](http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MAContravariantSugar)
 
 !SLIDE
 
-# JSONデータの表示
-
-*JValue*をJSON形式で表示します。
-
-普通は*toString*をオーバーライドしますが、ここでは*Show*を使って実装したいと思います。
+Scalazのドキュメントはこれらを抑えておけば読めるようにます。
 
 !SLIDE
 
-# renderJSON
+# 最後に
 
-```scala
-lazy val renderJSON: JValue => String = {
-  case JNumber(n) => n.shows
-  case JString(s) => "\"%s\"".format(s)
-  case JBoolean(b) => b.shows
-  case JNull => "null"
-  case JObject(o @ _*) => o.map(_.fold(renderJSON(_) + ": " + renderJSON(_))).mkString("{", ", ", "}")
-  case JArray(a @ _*) => a.map(renderJSON).mkString("[", ", ", "]")
-}
-```
+[一人Scalaz Advent Calendar](http://partake.in/events/4b3afdc8-e4ec-4010-b8ec-31b89210dda0)やってます。
+
+少しでもScalazの日本語の情報が増えたらなと思います。
 
 !SLIDE
 
-**o**の型は(JString, JValue)*
-
-本来Tupleにないはずの*fold*というメソッドを呼び出している。
-
-!SLIDE
-
-# *W
-
-## 拡張するための型
-
-Scalazには*"型名 + W"*という規則で名付けられた型があります。
-
-これはその型を拡張するもので、標準ライブラリにあるものが定義されています。
-
-!SLIDE
-
-# fold
-
-Tupleは*Tuple2W*から*Tuple12W*まで定義されており、そこにfoldが定義されています。
-
-foldはTupleを取り、何らかの値を返す関数を渡します。
-
-!SLIDE
-
-# foldの例
-
-```scala
-scala> (1, 2).fold(_ + _)
-res116: Int = 3
-
-scala> (1, 2, 3).fold(_ + _ + _)
-res117: Int = 6
-
-```
-
-!SLIDE
-
-# Showのインスタンスを作る
-
-```scala
-implicit def JValueShow: Show[JValue] = shows(renderJSON)
-```
-
-!SLIDE
-
-# *s
-
-## 型クラスを定義するための型
-
-型クラスを定義するには*Equal*の例であったように**new**を使ってインスタンスを作る他に、*"型クラス名 + s"*で定義された関数を使う方法があります。
-
-!SLIDE
-
-# 結果
-
-```scala
-scala> JObject(
-     |   JString("age") -> JNumber(18),
-     |   JString("language") -> JArray(JString("Scala"), JString("Clojure"), JString("Python"))
-     | ): JValue
-res105: JValue = WrappedArray((age,18.0), (language,WrappedArray(Scala, Clojure, Python)))
-
-scala> res105.shows
-res106: String = {"age": 18.0, "language": ["Scala", "Clojure", "Python"]}
-
-```
-
-!SLIDE
-
-表示ができました！
+# ご清聴ありがとうございました
