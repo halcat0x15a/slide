@@ -14,6 +14,7 @@
 * Scala, Clojure, Haskellとか
 * Scalaは2.5年くらい書いてます
 * 大学生になりました
+* 夏休みです
 
 !SLIDE
 

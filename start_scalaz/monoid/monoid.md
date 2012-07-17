@@ -1,18 +1,5 @@
 !SLIDE
 
-# Semigroup
-
-## 問題
-
-### ある値をn回結合する関数timesを定義せよ（n > 0）
-
-```scala
-times(3, 3) assert_=== 9
-times("x", 5) assert_=== "xxxxx"
-```
-
-!SLIDE
-
 # Monoid
 
 ## Semigroupに恒等元を加えたもの
@@ -34,6 +21,17 @@ object Rational {
 
 !SLIDE
 
+# 恒等元の性質
+
+## MonoidLaw
+
+```scala
+append(zero, a) == a
+append(a, zero) == a
+```
+
+!SLIDE
+
 ```scala
 mzero[String] assert_=== ""
 mzero[Option[Int]] assert_=== None
@@ -41,4 +39,23 @@ mzero[Option[Int]] assert_=== None
 import Rational._
 mzero[Rational]
 Rational(1, 2) |+| Rational(3, 4)
+```
+
+!SLIDE
+
+## 問題
+
+!SLIDE
+
+# Plus, PlusEmpty
+
+## 量化されたSemigroup, Monoid
+
+### Plusは要素の性質を無視する
+
+```scala
+List(1, 2) |+| List(3, 4) assert_=== List(1, 2, 3, 4)
+List(1, 2) <+> List(3, 4) assert_=== List(1, 2, 3, 4)
+Option(1) |+| Option(1) assert_=== Option(2)
+Option(1) <+> Option(1) assert_=== Option(1)
 ```

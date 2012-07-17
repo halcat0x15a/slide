@@ -43,3 +43,15 @@ object Point {
 import Point._
 double(Point(1, 2))
 ```
+
+!SLIDE
+
+# Law
+
+## Lowは型クラス内にtraitとして定義されてる
+
+### appendの定義はSemigroupLawを満たしていなければならない
+
+```scala
+append(f1, append(f2, f3)) == append(append(f1, f2), f3)
+```
