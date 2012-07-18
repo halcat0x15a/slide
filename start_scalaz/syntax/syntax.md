@@ -12,6 +12,12 @@ def double[A: Semigroup](a: A) = a |+| a
 
 !SLIDE
 
+# |+|
+
+## Semigroup#append
+
+!SLIDE
+
 # scalaz.syntax
 
 ## 型クラス名+Opsで定義されたメソッドが使える

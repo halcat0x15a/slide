@@ -43,10 +43,6 @@ Rational(1, 2) |+| Rational(3, 4)
 
 !SLIDE
 
-## 問題
-
-!SLIDE
-
 # Plus, PlusEmpty
 
 ## 量化されたSemigroup, Monoid
