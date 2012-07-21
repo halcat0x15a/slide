@@ -32,14 +32,18 @@ append(a, zero) == a
 
 !SLIDE
 
-```scala
-mzero[String] assert_=== ""
-mzero[Option[Int]] assert_=== None
-2.5 multiply 4 assert_=== 10.0
-import Rational._
-mzero[Rational]
-Rational(1, 2) |+| Rational(3, 4)
-```
+# 主な関数
+
+* mzero
+* |+|
+* Monoid.replicate
+* Monoid.unfold
+
+!SLIDE
+
+# Group
+
+## 逆元を持つMonoid
 
 !SLIDE
 
