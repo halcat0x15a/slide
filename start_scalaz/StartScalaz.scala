@@ -14,20 +14,22 @@ object Point {
   val y: Lens[Point, Int] = Lens.lensu[Point, Int]((p, y) => p.copy(y = y), _.y)
   implicit object PointInstance extends Show[Point] with Equal[Point] with Semigroup[Point] {
     def show(p: Point) = p.toString.toList
-    def append(p1: Point, p2: => Point) = p1 + p2
     def equal(p1: Point, p2: Point) = p1 == p2
+    def append(p1: Point, p2: => Point) = p1 + p2
   }
 }
 
 case class Rational(n: Int, d: Int) {
   def +(r: Rational) = Rational(n * r.d + r.n * d, d * r.d)
+  override def toString = s"$n/$d"
 }
 
 object Rational {
-  implicit object RationalInstance extends Equal[Rational] with Monoid[Rational] {
+  implicit object RationalInstance extends Equal[Rational] with Show[Rational] with Monoid[Rational] {
+    def show(r: Rational) = r.toString.toList
+    def equal(r1: Rational, r2: Rational) = r1 == r2
     def zero = Rational(0, 1)
     def append(r1: Rational, r2: => Rational) = r1 + r2
-    def equal(r1: Rational, r2: Rational) = r1 == r2
   }
 }
 
@@ -38,18 +40,28 @@ object StartScalaz extends App {
   import Point._
   double(Point(1, 2))
 
-  def encode(n: Int) = Monoid.unfold[List, Int, Byte](n) {
+  mzero[Int] assert_=== 0
+  mzero[Option[String]] assert_=== None
+  3 multiply 5 assert_=== 15
+  "geso" multiply 2 assert_=== "gesogeso"
+  Monoid.replicate[List, Int](0)(3, 1 +) assert_=== List(0, 1, 2)
+  Monoid.unfold[List, List[Int], Int](List(1, 2, 3)) {
+    case Nil => None
+    case x :: xs => Some(x * 2 -> xs)
+  } assert_=== List(2, 4, 6)
+
+  lazy val encode: Int => List[Int] = {
+    case 0 => Nil
+    case i => i % 2 :: encode(i / 2)
+  }
+
+  def mencode(n: Int) = Monoid.unfold[List, Int, Int](n) {
     case 0 => None
-    case i => Some((i % 2 toByte) -> i / 2)
-  } reverse
+    case i => Some(i % 2 -> i / 2)
+  }
 
-  def encode[F[_]](n: Int)(implicit F: Pointed[F], G: Monoid[F[Byte]], H: Traverse[F]) = Monoid.unfold[F, Int, Byte](n) {
-    case 0 => None
-    case i => Some((i % 2 toByte) -> i / 2)
-  } reverse
+  lazy val evens = Stream.from(0).filter(_ % 2 == 0).take _
 
-//  def innerProduct = 
-
-//  def exterior
+  def mevens(n: Int) = Monoid.replicate[List, Int](0)(n, 2 +)
 
 }

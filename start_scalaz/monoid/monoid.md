@@ -32,12 +32,38 @@ append(a, zero) == a
 
 !SLIDE
 
-# 主な関数
+# 主なメソッド、関数
 
 * mzero
-* |+|
+* multiply
 * Monoid.replicate
 * Monoid.unfold
+
+```scala
+mzero[Int] assert_=== 0
+mzero[Option[String]] assert_=== None
+3 multiply 5 assert_=== 15
+"geso" multiply 2 assert_=== "gesogeso"
+Monoid.replicate[List, Int](0)(3, 1 +) assert_=== List(0, 1, 2)
+Monoid.unfold[List, List[Int], Int](List(1, 2, 3)) {
+  case Nil => None
+  case x :: xs => Some(x * 2 -> xs)
+} assert_=== List(2, 4, 6)
+```
+
+!SLIDE
+
+# 問題
+
+* replicateを用いて偶数列からn個取得する関数evens
+* unfoldを用いて10進数から2進数へ変換する関数encode
+
+```scala
+def evens(n: Int): List[Int]
+def encode(n: Int): List[Int]
+evens(5) assert_=== List(0, 2, 4, 6, 8)
+encode(13) assert_=== List(1, 0, 1, 1)
+```
 
 !SLIDE
 
@@ -45,13 +71,21 @@ append(a, zero) == a
 
 ## 逆元を持つMonoid
 
+* inverse
+* unary_-
+* |-|
+
 !SLIDE
 
 # Plus, PlusEmpty
 
 ## 量化されたSemigroup, Monoid
 
-### Plusは要素の性質を無視する
+### Plusは要素の性質に依存しない
+
+!SLIDE
+
+## <+>
 
 ```scala
 List(1, 2) |+| List(3, 4) assert_=== List(1, 2, 3, 4)

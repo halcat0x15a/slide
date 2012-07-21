@@ -7,3 +7,5 @@ libraryDependencies ++= Seq(
 )
 
 scalacOptions += "-feature"
+
+initialCommands in console := "import scalaz._, Scalaz._"
