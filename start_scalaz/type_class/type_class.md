@@ -9,6 +9,8 @@
 ## ある値を２倍する
 
 ```scala
+import scalaz, Scalaz
+
 def double[A](a: A)(implicit s: Semigroup[A]) = s.append(a, a)
 
 double(2) assert_=== 4

@@ -2,6 +2,8 @@
 
 # Monoid
 
+!SLIDE
+
 ## Semigroupに恒等元を加えたもの
 
 ### Rationalの例
@@ -71,9 +73,13 @@ encode(13) assert_=== List(1, 0, 1, 1)
 
 ## 逆元を持つMonoid
 
-* inverse
-* unary_-
-* |-|
+```scala
+def zero[A: Group](a: A) = a |+| a.inverse
+```
+
+``scala
+def zero[A: Group](a: A) = a |-| a
+```
 
 !SLIDE
 

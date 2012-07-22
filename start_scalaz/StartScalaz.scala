@@ -40,6 +40,20 @@ object StartScalaz extends App {
   import Point._
   double(Point(1, 2))
 
+  locally {
+    def double[A: Semigroup](a: A) = Semigroup[A].append(a, a)
+  }
+
+  locally {
+    def double[A: Semigroup](a: A) = ToSemigroupOps(a) |+| a
+  }
+
+  def quote[A: Show](a: A) = a.show.mkString("'", "", "'")
+
+  locally {
+    def quote[A: Show](a: A) = Show[A].show(a).mkString("'", "", "'")
+  }
+
   mzero[Int] assert_=== 0
   mzero[Option[String]] assert_=== None
   3 multiply 5 assert_=== 15
@@ -63,5 +77,14 @@ object StartScalaz extends App {
   lazy val evens = Stream.from(0).filter(_ % 2 == 0).take _
 
   def mevens(n: Int) = Monoid.replicate[List, Int](0)(n, 2 +)
+
+  mevens(5) assert_=== List(0, 2, 4, 6, 8)
+  mencode(13) assert_=== List(1, 0, 1, 1)
+
+  locally {
+    def zero[A: Group](a: A) = a |+| a.inverse
+  }
+
+  def zero[A: Group](a: A) = a |-| a
 
 }

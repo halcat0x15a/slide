@@ -14,12 +14,26 @@ def double[A: Semigroup](a: A) = a |+| a
 
 # |+|
 
-## Semigroup#append
+## SemigroupOpsに定義されてるメソッド
+
+### Semigroupのインスタンスを持つ型に対して暗黙の型変換がされる
+
+```scala
+def double[A: Semigroup](a: A) = ToSemigroupOps(a) |+| a
+```
 
 !SLIDE
 
 # scalaz.syntax
 
-## 型クラス名+Opsで定義されたメソッドが使える
+## インスタンスが存在すればOpsで定義されたメソッドが使える
 
 ### 主要な関数のほとんどはシンタックスが定義されている
+
+```scala
+def quote[A: Show](a: A) = Show[A].show(a).mkString("'", "", "'")
+```
+
+```scala
+def quote[A: Show](a: A) = a.show.mkString("'", "", "'")
+```

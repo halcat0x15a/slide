@@ -3,7 +3,9 @@
   "sections": [
     "intro",
     "type_class",
+    "scalaz",
     "syntax",
-    "monoid"
+    "monoid",
+    "order"
   ]
 }
