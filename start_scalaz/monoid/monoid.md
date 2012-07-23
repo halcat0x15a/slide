@@ -34,7 +34,7 @@ append(a, zero) == a
 
 !SLIDE
 
-# 主なメソッド、関数
+# 主な関数
 
 * mzero
 * multiply
