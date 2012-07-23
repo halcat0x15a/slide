@@ -1,0 +1,7 @@
+!SLIDE
+
+# Monad
+
+!SLIDE
+
+# Functor

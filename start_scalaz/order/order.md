@@ -1,10 +1,12 @@
 !SLIDE
 
-# Equal
+# Order
 
 !SLIDE
 
-# 等価性
+# Equal
+
+## 等価性
 
 ```scala
 case class Point(x: Int, y: Int)

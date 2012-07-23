@@ -65,6 +65,12 @@ object StartScalaz extends App {
   def quote[A: Show](a: A) = a.show.mkString("'", "", "'")
 
   locally {
+    def quote[A](a: A)(implicit s: Show[A]) = s.show(a).mkString("'", "", "'")
+  }
+  locally {
+    def quote[A: Show](a: A) = implicitly[Show[A]].show(a).mkString("'", "", "'")
+  }
+  locally {
     def quote[A: Show](a: A) = Show[A].show(a).mkString("'", "", "'")
   }
 
