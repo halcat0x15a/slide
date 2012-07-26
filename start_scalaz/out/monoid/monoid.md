@@ -23,9 +23,9 @@ object Rational {
 
 !SLIDE
 
-# 恒等元の性質
+# MonoidLaw
 
-## MonoidLaw
+## 恒等元の性質
 
 ```scala
 append(zero, a) == a
@@ -75,9 +75,6 @@ encode(13) assert_=== List(1, 0, 1, 1)
 
 ```scala
 def zero[A: Group](a: A) = a |+| a.inverse
-```
-
-``scala
 def zero[A: Group](a: A) = a |-| a
 ```
 

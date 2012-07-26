@@ -2,8 +2,8 @@
       <head>
         <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
         <title>start_scalaz</title>
-        <link type="text/css" rel="stylesheet" href="assets/css/show.css" />
-        <link type="text/css" rel="stylesheet" href="assets/css/prettify.css" />
+        <link href="assets/css/show.css" type="text/css" rel="stylesheet" />
+        <link href="assets/css/prettify.css" type="text/css" rel="stylesheet" />
         <script type="text/javascript" src="assets/js/jquery.min.js"></script>
         <script type="text/javascript" src="assets/js/show.js"></script>
         <script type="text/javascript" src="assets/js/prettify/prettify.js"></script>
@@ -16,24 +16,24 @@
         <div id="slides">
           <div id="reel">
             <div class="content" id="slide-0">
-       <div class="container"><h1 id="Start+Scalaz%21">Start Scalaz!</h1></div>
+       <div class="container"><h1>Start Scalaz!</h1></div>
       </div><div class="content" id="slide-1">
-       <div class="container"><h1 id="%E4%BC%9A%E5%A0%B4%E6%A1%88%E5%86%85%E3%81%A8%E3%81%8B%EF%BC%9F">会場案内とか？</h1></div>
+       <div class="container"><h1>会場案内とか？</h1></div>
       </div><div class="content" id="slide-2">
-       <div class="container"><h1 id="%E7%99%BA%E8%A1%A8%E8%80%85">発表者</h1><ul><li>よしださんしろう(<a  href="https://twitter.com/halcat0x15a">halcat0x15a</a>)
+       <div class="container"><h1>発表者</h1><ul><li>よしださんしろう(<a href="https://twitter.com/halcat0x15a" >halcat0x15a</a>)
 </li><li>Scala, Clojure, Haskellとか
 </li><li>Scalaは2.5年くらい書いてます
 </li><li>大学生になりました
 </li><li>夏休みです
 </li></ul></div>
       </div><div class="content" id="slide-3">
-       <div class="container"><h1 id="%E4%BB%8A%E6%97%A5%E3%81%AE%E5%86%85%E5%AE%B9">今日の内容</h1><ul><li>Type Class
+       <div class="container"><h1>今日の内容</h1><ul><li>Type Class
 </li><li>Scalaz7
 </li></ul></div>
       </div><div class="content" id="slide-4">
-       <div class="container"><ul><li><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/">apidoc</a>
+       <div class="container"><ul><li><a href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/" >apidoc</a>
 </li><li>build.sbt
-</li></ul><pre><code class="prettyprint lang-scala">scalaVersion := &quot;2.10.0-M4&quot;
+</li></ul><pre><code class="prettyprint lang-scala">scalaVersion := &quot;2.10.0-M5&quot;
 
 resolvers += &quot;Typesafe Snapshots&quot; at &quot;http://repo.typesafe.com/typesafe/snapshots/&quot;
 
@@ -49,9 +49,9 @@ scalacOptions += &quot;-feature&quot;
 </li><li>適当に休憩をとります
 </li></ul></div>
       </div><div class="content" id="slide-6">
-       <div class="container"><h1 id="Type+Class">Type Class</h1></div>
+       <div class="container"><h1>Type Class</h1></div>
       </div><div class="content" id="slide-7">
-       <div class="container"><h1 id="Scalaz%E3%81%AE%E4%BE%8B">Scalazの例</h1><h2 id="%E3%81%82%E3%82%8B%E5%80%A4%E3%82%92%EF%BC%92%E5%80%8D%E3%81%99%E3%82%8B">ある値を２倍する</h2><pre><code class="prettyprint lang-scala">import scalaz, Scalaz
+       <div class="container"><h1>Scalazの例</h1><h2>ある値を２倍する</h2><pre><code class="prettyprint lang-scala">import scalaz, Scalaz
 
 def double[A](a: A)(implicit s: Semigroup[A]) = s.append(a, a)
 
@@ -59,7 +59,7 @@ double(2) assert_=== 4
 double(&quot;2&quot;) assert_=== &quot;22&quot;
 </code></pre></div>
       </div><div class="content" id="slide-8">
-       <div class="container"><h1 id="Semigroup">Semigroup</h1><h2 id="append%E3%81%AF%E6%8A%BD%E8%B1%A1%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89">appendは抽象メソッド</h2><h3 id="Point%E3%82%92%E4%BE%8B%E3%81%AB%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%82%92%E5%AE%9A%E7%BE%A9%E3%81%97%E3%81%A6%E3%81%BF%E3%82%8B">Pointを例にインスタンスを定義してみる</h3><pre><code class="prettyprint lang-scala">case class Point(x: Int, y: Int) {
+       <div class="container"><h1>Semigroup</h1><h2>appendは抽象メソッド、２つの値を結合する関数</h2><h3>Pointを例にインスタンスを定義してみる</h3><pre><code class="prettyprint lang-scala">case class Point(x: Int, y: Int) {
   def +(p: Point) = Point(x + p.x, y + p.y)
 }
 
@@ -70,24 +70,36 @@ object Point {
 }
 </code></pre></div>
       </div><div class="content" id="slide-9">
-       <div class="container"><h3 id="Semigroup%5BPoint%5D%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%81%8C%E6%9A%97%E9%BB%99%E7%9A%84%E3%81%AB%E6%B8%A1%E3%81%95%E3%82%8C%E3%82%8B">Semigroup[Point]のインスタンスが暗黙的に渡される</h3><pre><code class="prettyprint lang-scala">import Point._
+       <div class="container"><h3>Semigroup[Point]のインスタンスが暗黙的に渡される</h3><pre><code class="prettyprint lang-scala">import Point._
 double(Point(1, 2))
 </code></pre></div>
       </div><div class="content" id="slide-10">
-       <div class="container"><h1 id="Law">Law</h1><h2 id="Low%E3%81%AF%E5%9E%8B%E3%82%AF%E3%83%A9%E3%82%B9%E5%86%85%E3%81%ABtrait%E3%81%A8%E3%81%97%E3%81%A6%E5%AE%9A%E7%BE%A9%E3%81%95%E3%82%8C%E3%81%A6%E3%82%8B">Lowは型クラス内にtraitとして定義されてる</h2><h3 id="append%E3%81%AE%E5%AE%9A%E7%BE%A9%E3%81%AFSemigroupLaw%E3%82%92%E6%BA%80%E3%81%9F%E3%81%97%E3%81%A6%E3%81%84%E3%81%AA%E3%81%91%E3%82%8C%E3%81%B0%E3%81%AA%E3%82%89%E3%81%AA%E3%81%84">appendの定義はSemigroupLawを満たしていなければならない</h3><pre><code class="prettyprint lang-scala">append(f1, append(f2, f3)) == append(append(f1, f2), f3)
+       <div class="container"><h1>Law</h1><h2>Lawは型クラス内にtraitとして定義されてる</h2><h3>appendの定義はSemigroupLawを満たしていなければならない</h3><pre><code class="prettyprint lang-scala">append(f1, append(f2, f3)) == append(append(f1, f2), f3)
 </code></pre></div>
       </div><div class="content" id="slide-11">
-       <div class="container"><h1 id="Scalaz">Scalaz</h1></div>
+       <div class="container"><h1>Show</h1><h2>文字列へ変換する関数を定義する</h2><h3>複数のインスタンスはmix-inや、別のimplicit parameterを定義することで実現する</h3><pre><code class="prettyprint lang-scala">object Point {
+  implicit object PointInstance extends Show[Point] with Semigroup[Point] {
+    def show(p: Point) = p.toString.toList
+    def append(p1: Point, p2: =&gt; Point) = p1 + p2
+  }
+}
+</code></pre></div>
       </div><div class="content" id="slide-12">
-       <div class="container"><h1 id="%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8">パッケージ</h1><ul><li><p>scalaz
+       <div class="container"><h1>Context Bound</h1><h2>型クラスを利用するとき、明示的にimplicit parameterを書かないことが多い</h2><h3>次の関数は同じ動作をする</h3><pre><code class="prettyprint lang-scala">def quote[A](a: A)(implicit s: Show[A]) = s.show(a).mkString(&quot;'&quot;, &quot;&quot;, &quot;'&quot;)
+def quote[A: Show](a: A) = implicitly[Show[A]].show(a).mkString(&quot;'&quot;, &quot;&quot;, &quot;'&quot;)
+</code></pre></div>
+      </div><div class="content" id="slide-13">
+       <div class="container"><h1>Scalaz</h1></div>
+      </div><div class="content" id="slide-14">
+       <div class="container"><h1>パッケージ</h1><ul><li><p>scalaz
 </p><ul><li>型クラスとデータ型
 </li></ul></li><li><p>scalaz.std
 </p><ul><li>標準ライブラリに対する型クラスのインスタンス
 </li></ul></li><li><p>scalaz.syntax
 </p><ul><li>シンタックス
 </li></ul></li></ul></div>
-      </div><div class="content" id="slide-13">
-       <div class="container"><h1 id="%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87">命名規則</h1><ul><li><p>Instances
+      </div><div class="content" id="slide-15">
+       <div class="container"><h1>命名規則</h1><ul><li><p>Instances
 </p><ul><li>データ型に対する型クラスのインスタンス
 </li></ul></li><li><p>Functions
 </p><ul><li>データ型に関係した関数
@@ -96,29 +108,29 @@ double(Point(1, 2))
 </li></ul></li><li><p>Syntax
 </p><ul><li>暗黙の型変換、型クラスに関係した関数
 </li></ul></li></ul></div>
-      </div><div class="content" id="slide-14">
-       <div class="container"><h1 id="%E5%9E%8B%E3%82%AF%E3%83%A9%E3%82%B9%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%91%E3%83%8B%E3%82%AA%E3%83%B3%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88">型クラスのコンパニオンオブジェクト</h1><ul><li>型クラスに関係した関数
+      </div><div class="content" id="slide-16">
+       <div class="container"><h1>型クラスのコンパニオンオブジェクト</h1><ul><li>型クラスに関係した関数
 </li><li>applyはインスタンスを得る
 </li></ul><pre><code class="prettyprint lang-scala">def double[A: Semigroup](a: A) = Semigroup[A].append(a, a)
 </code></pre></div>
-      </div><div class="content" id="slide-15">
-       <div class="container"><h1 id="%E3%83%87%E3%83%BC%E3%82%BF%E5%9E%8B%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%91%E3%83%8B%E3%82%AA%E3%83%B3%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88">データ型のコンパニオンオブジェクト</h1><h2 id="Instances%E3%81%A8Functions%E3%82%92%E7%B6%99%E6%89%BF%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B">InstancesとFunctionsを継承している</h2></div>
-      </div><div class="content" id="slide-16">
-       <div class="container"><h1 id="Syntax">Syntax</h1></div>
       </div><div class="content" id="slide-17">
-       <div class="container"><h2 id="%E5%85%88%E3%81%AE%E4%BE%8B%E3%81%AF%E6%AC%A1%E3%81%AE%E6%A7%98%E3%81%AB%E6%9B%B8%E3%81%91%E3%82%8B">先の例は次の様に書ける</h2><pre><code class="prettyprint lang-scala">def double[A: Semigroup](a: A) = a |+| a
-</code></pre></div>
+       <div class="container"><h1>データ型のコンパニオンオブジェクト</h1><h2>InstancesとFunctionsを継承している</h2></div>
       </div><div class="content" id="slide-18">
-       <div class="container"><h1 id="%7C%2B%7C">|+|</h1><h2 id="SemigroupOps%E3%81%AB%E5%AE%9A%E7%BE%A9%E3%81%95%E3%82%8C%E3%81%A6%E3%82%8B%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89">SemigroupOpsに定義されてるメソッド</h2><h3 id="Semigroup%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%82%92%E6%8C%81%E3%81%A4%E5%9E%8B%E3%81%AB%E5%AF%BE%E3%81%97%E3%81%A6%E6%9A%97%E9%BB%99%E3%81%AE%E5%9E%8B%E5%A4%89%E6%8F%9B%E3%81%8C%E3%81%95%E3%82%8C%E3%82%8B">Semigroupのインスタンスを持つ型に対して暗黙の型変換がされる</h3><pre><code class="prettyprint lang-scala">def double[A: Semigroup](a: A) = ToSemigroupOps(a) |+| a
-</code></pre></div>
+       <div class="container"><h1>Syntax</h1></div>
       </div><div class="content" id="slide-19">
-       <div class="container"><h1 id="scalaz.syntax">scalaz.syntax</h1><h2 id="%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%81%8C%E5%AD%98%E5%9C%A8%E3%81%99%E3%82%8C%E3%81%B0Ops%E3%81%A7%E5%AE%9A%E7%BE%A9%E3%81%95%E3%82%8C%E3%81%9F%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%81%8C%E4%BD%BF%E3%81%88%E3%82%8B">インスタンスが存在すればOpsで定義されたメソッドが使える</h2><h3 id="%E4%B8%BB%E8%A6%81%E3%81%AA%E9%96%A2%E6%95%B0%E3%81%AE%E3%81%BB%E3%81%A8%E3%82%93%E3%81%A9%E3%81%AF%E3%82%B7%E3%83%B3%E3%82%BF%E3%83%83%E3%82%AF%E3%82%B9%E3%81%8C%E5%AE%9A%E7%BE%A9%E3%81%95%E3%82%8C%E3%81%A6%E3%81%84%E3%82%8B">主要な関数のほとんどはシンタックスが定義されている</h3><pre><code class="prettyprint lang-scala">def quote[A: Show](a: A) = Show[A].show(a).mkString(&quot;'&quot;, &quot;&quot;, &quot;'&quot;)
-</code></pre><pre><code class="prettyprint lang-scala">def quote[A: Show](a: A) = a.show.mkString(&quot;'&quot;, &quot;&quot;, &quot;'&quot;)
+       <div class="container"><h2>先の例は次の様に書ける</h2><pre><code class="prettyprint lang-scala">def double[A: Semigroup](a: A) = a |+| a
 </code></pre></div>
       </div><div class="content" id="slide-20">
-       <div class="container"><h1 id="Monoid">Monoid</h1></div>
+       <div class="container"><h1>|+|</h1><h2>SemigroupOpsに定義されてるメソッド</h2><h3>Semigroupのインスタンスを持つ型に対して暗黙の型変換がされる</h3><pre><code class="prettyprint lang-scala">def double[A: Semigroup](a: A) = ToSemigroupOps(a) |+| a
+</code></pre></div>
       </div><div class="content" id="slide-21">
-       <div class="container"><h2 id="Semigroup%E3%81%AB%E6%81%92%E7%AD%89%E5%85%83%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E3%82%82%E3%81%AE">Semigroupに恒等元を加えたもの</h2><h3 id="Rational%E3%81%AE%E4%BE%8B">Rationalの例</h3><pre><code class="prettyprint lang-scala">case class Rational(n: Int, d: Int) {
+       <div class="container"><h1>scalaz.syntax</h1><h2>インスタンスが存在すればOpsで定義されたメソッドが使える</h2><h3>主要な関数のほとんどはシンタックスが定義されている</h3><pre><code class="prettyprint lang-scala">def quote[A: Show](a: A) = Show[A].show(a).mkString(&quot;'&quot;, &quot;&quot;, &quot;'&quot;)
+def quote[A: Show](a: A) = a.show.mkString(&quot;'&quot;, &quot;&quot;, &quot;'&quot;)
+</code></pre></div>
+      </div><div class="content" id="slide-22">
+       <div class="container"><h1>Monoid</h1></div>
+      </div><div class="content" id="slide-23">
+       <div class="container"><h2>Semigroupに恒等元を加えたもの</h2><h3>Rationalの例</h3><pre><code class="prettyprint lang-scala">case class Rational(n: Int, d: Int) {
   def +(r: Rational) = Rational(n * r.d + r.n * d, d * r.d)
 }
 
@@ -129,12 +141,12 @@ object Rational {
   }
 }
 </code></pre></div>
-      </div><div class="content" id="slide-22">
-       <div class="container"><h1 id="%E6%81%92%E7%AD%89%E5%85%83%E3%81%AE%E6%80%A7%E8%B3%AA">恒等元の性質</h1><h2 id="MonoidLaw">MonoidLaw</h2><pre><code class="prettyprint lang-scala">append(zero, a) == a
+      </div><div class="content" id="slide-24">
+       <div class="container"><h1>MonoidLaw</h1><h2>恒等元の性質</h2><pre><code class="prettyprint lang-scala">append(zero, a) == a
 append(a, zero) == a
 </code></pre></div>
-      </div><div class="content" id="slide-23">
-       <div class="container"><h1 id="%E4%B8%BB%E3%81%AA%E9%96%A2%E6%95%B0">主な関数</h1><ul><li>mzero
+      </div><div class="content" id="slide-25">
+       <div class="container"><h1>主な関数</h1><ul><li>mzero
 </li><li>multiply
 </li><li>Monoid.replicate
 </li><li>Monoid.unfold
@@ -148,32 +160,30 @@ Monoid.unfold[List, List[Int], Int](List(1, 2, 3)) {
   case x :: xs =&gt; Some(x * 2 -&gt; xs)
 } assert_=== List(2, 4, 6)
 </code></pre></div>
-      </div><div class="content" id="slide-24">
-       <div class="container"><h1 id="%E5%95%8F%E9%A1%8C">問題</h1><ul><li>replicateを用いて偶数列からn個取得する関数evens
+      </div><div class="content" id="slide-26">
+       <div class="container"><h1>問題</h1><ul><li>replicateを用いて偶数列からn個取得する関数evens
 </li><li>unfoldを用いて10進数から2進数へ変換する関数encode
 </li></ul><pre><code class="prettyprint lang-scala">def evens(n: Int): List[Int]
 def encode(n: Int): List[Int]
 evens(5) assert_=== List(0, 2, 4, 6, 8)
 encode(13) assert_=== List(1, 0, 1, 1)
 </code></pre></div>
-      </div><div class="content" id="slide-25">
-       <div class="container"><h1 id="Group">Group</h1><h2 id="%E9%80%86%E5%85%83%E3%82%92%E6%8C%81%E3%81%A4Monoid">逆元を持つMonoid</h2><pre><code class="prettyprint lang-scala">def zero[A: Group](a: A) = a |+| a.inverse
-</code></pre><p><code>scala
-def zero[A: Group](a: A) = a |-| a
-</code>`
-</p></div>
-      </div><div class="content" id="slide-26">
-       <div class="container"><h1 id="Plus%2C+PlusEmpty">Plus, PlusEmpty</h1><h2 id="%E9%87%8F%E5%8C%96%E3%81%95%E3%82%8C%E3%81%9FSemigroup%2C+Monoid">量化されたSemigroup, Monoid</h2><h3 id="Plus%E3%81%AF%E8%A6%81%E7%B4%A0%E3%81%AE%E6%80%A7%E8%B3%AA%E3%81%AB%E4%BE%9D%E5%AD%98%E3%81%97%E3%81%AA%E3%81%84">Plusは要素の性質に依存しない</h3></div>
       </div><div class="content" id="slide-27">
-       <div class="container"><h2 id="%3C%2B%3E">&lt;+&gt;</h2><pre><code class="prettyprint lang-scala">List(1, 2) |+| List(3, 4) assert_=== List(1, 2, 3, 4)
+       <div class="container"><h1>Group</h1><h2>逆元を持つMonoid</h2><pre><code class="prettyprint lang-scala">def zero[A: Group](a: A) = a |+| a.inverse
+def zero[A: Group](a: A) = a |-| a
+</code></pre></div>
+      </div><div class="content" id="slide-28">
+       <div class="container"><h1>Plus, PlusEmpty</h1><h2>量化されたSemigroup, Monoid</h2><h3>Plusは要素の性質に依存しない</h3></div>
+      </div><div class="content" id="slide-29">
+       <div class="container"><h2>&lt;+&gt;</h2><pre><code class="prettyprint lang-scala">List(1, 2) |+| List(3, 4) assert_=== List(1, 2, 3, 4)
 List(1, 2) &lt;+&gt; List(3, 4) assert_=== List(1, 2, 3, 4)
 Option(1) |+| Option(1) assert_=== Option(2)
 Option(1) &lt;+&gt; Option(1) assert_=== Option(1)
 </code></pre></div>
-      </div><div class="content" id="slide-28">
-       <div class="container"><h1 id="Equal">Equal</h1></div>
-      </div><div class="content" id="slide-29">
-       <div class="container"><h1 id="%E7%AD%89%E4%BE%A1%E6%80%A7">等価性</h1><pre><code class="prettyprint lang-scala">case class Point(x: Int, y: Int)
+      </div><div class="content" id="slide-30">
+       <div class="container"><h1>Order</h1></div>
+      </div><div class="content" id="slide-31">
+       <div class="container"><h1>Equal</h1><h2>等価性</h2><pre><code class="prettyprint lang-scala">case class Point(x: Int, y: Int)
 
 object Point {
   implicit object PointInstance extends Equal[Point] {
@@ -185,8 +195,8 @@ import Point._
 assert(Point(2, 3) === Point(2, 3))
 assert(Point(2, 3) =/= Point(3, 5))
 </code></pre></div>
-      </div><div class="content" id="slide-30">
-       <div class="container"><h1 id="%E5%9E%8B%E5%AE%89%E5%85%A8%E3%81%AA%E6%BC%94%E7%AE%97">型安全な演算</h1><h2 id="Scalaz%E3%81%AE%E9%96%A2%E6%95%B0%E3%81%AF%E3%82%B8%E3%82%A7%E3%83%8D%E3%83%AA%E3%82%AF%E3%82%B9%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B">Scalazの関数はジェネリクスを利用している</h2><pre><code class="prettyprint lang-scala">1 == &quot;geso&quot;
+      </div><div class="content" id="slide-32">
+       <div class="container"><h1>型安全な演算</h1><h2>Scalazの関数はジェネリクスを利用している</h2><pre><code class="prettyprint lang-scala">1 == &quot;geso&quot;
 // compile error
 // 1 === &quot;geso&quot;
 
@@ -194,8 +204,8 @@ assert(Point(2, 3) =/= Point(3, 5))
 // compile error
 // 1 |+| 1.5
 </code></pre></div>
-      </div><div class="content" id="slide-31">
-       <div class="container"><h1 id="Order">Order</h1><h2 id="%E9%A0%86%E5%BA%8F">順序</h2><pre><code class="prettyprint lang-scala">case class Rational(n: Int, d: Int)
+      </div><div class="content" id="slide-33">
+       <div class="container"><h1>Order</h1><h2>順序</h2><pre><code class="prettyprint lang-scala">case class Rational(n: Int, d: Int)
 
 object Rational {
   implicit object RationalInstance extends Order[Rational] {
@@ -212,14 +222,14 @@ assert(Rational(1, 2) === Rational(1, 2))
 assert(Rational(1, 2) &lt; Rational(3, 4))
 assert(Rational(5, 2) &gt;= Rational(5, 3))
 </code></pre></div>
-      </div><div class="content" id="slide-32">
-       <div class="container"><h1 id="Ordering">Ordering</h1><h2 id="Java%E3%81%AEcompare%E3%81%8C%E8%BF%94%E3%81%99-1%E3%80%810%E3%80%811%E3%81%AB%E5%AF%BE%E5%BF%9C%E3%81%97%E3%81%BE%E3%81%99%E3%80%82">Javaのcompareが返す-1、0、1に対応します。</h2><h3 id="Ordering%E3%81%AF%E3%83%A2%E3%83%8E%E3%82%A4%E3%83%89%E3%81%A7%E3%81%82%E3%82%8B%E3%81%9F%E3%82%81%E3%80%81%E8%A4%87%E6%95%B0%E3%81%AE%E6%AF%94%E8%BC%83%E7%B5%90%E6%9E%9C%E3%82%92%E7%B5%90%E5%90%88%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8%E3%81%8C%E3%81%A7%E3%81%8D%E3%81%BE%E3%81%99%E3%80%82">Orderingはモノイドであるため、複数の比較結果を結合することができます。</h3><pre><code class="prettyprint lang-scala">mzero[Ordering] assert_=== Ordering.EQ
+      </div><div class="content" id="slide-34">
+       <div class="container"><h1>Ordering</h1><h2>Javaのcompareが返す-1、0、1に対応します。</h2><h3>Orderingはモノイドであるため、複数の比較結果を結合することができます。</h3><pre><code class="prettyprint lang-scala">mzero[Ordering] assert_=== Ordering.EQ
 (Ordering.EQ: Ordering) |+| Ordering.LT assert_=== Ordering.LT
 (Ordering.GT: Ordering) |+| Ordering.LT assert_=== Ordering.GT
 (Ordering.GT: Ordering) |+| Ordering.EQ assert_=== Ordering.GT
 </code></pre></div>
-      </div><div class="content" id="slide-33">
-       <div class="container"><h2 id="Ordering%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%9Fsort">Orderingを利用したsort</h2><pre><code class="prettyprint lang-scala">case class Person(name: String, age: Int, height: Int)
+      </div><div class="content" id="slide-35">
+       <div class="container"><h2>Orderingを利用したsort</h2><pre><code class="prettyprint lang-scala">case class Person(name: String, age: Int, height: Int)
 
 object Person {
   implicit object PersonInstance extends Show[Person] with Order[Person] {
@@ -235,14 +245,78 @@ val len = Person(&quot;len&quot;, 14, 156)
 import Person._
 List(miku, rin, len) sorted PersonInstance.toScalaOrdering assert_=== List(rin, len, miku)
 </code></pre></div>
-      </div><div class="content" id="slide-34">
-       <div class="container"><h1 id="Enum">Enum</h1><h2 id="Order%E3%81%ABsuccessor%E3%81%A8predecessor%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E3%82%82%E3%81%AE">Orderにsuccessorとpredecessorを加えたもの</h2><pre><code class="prettyprint lang-scala">2.succ assert_=== 3
+      </div><div class="content" id="slide-36">
+       <div class="container"><h1>問題</h1><ul><li>java.util.Dateに対するOrderのインスタンス
+</li><li><p>以下のクラスに対するOrderのインスタンス
+</p><ul><li>gradeとbirthdayを用いる
+</li><li>ただしgrade重きを置く
+</li></ul></li></ul><pre><code class="prettyprint lang-scala">case class Student(name: String, grade: Int, birthday: Date)
+
+val format = new java.text.SimpleDateFormat(&quot;MM dd&quot;)
+val akari = Student(&quot;akari&quot;, 1, format.parse(&quot;07 24&quot;))
+val kyoko = Student(&quot;kyoko&quot;, 2, format.parse(&quot;03 28&quot;))
+val yui = Student(&quot;yui&quot;, 2, format.parse(&quot;04 22&quot;))
+val chinatsu = Student(&quot;chinatsu&quot;, 1, format.parse(&quot;11 06&quot;))
+List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, kyoko, yui)
+</code></pre></div>
+      </div><div class="content" id="slide-37">
+       <div class="container"><h1>Enum</h1><h2>Orderにsuccessorとpredecessorを加えたもの</h2><pre><code class="prettyprint lang-scala">2.succ assert_=== 3
 'b'.pred assert_=== 'a'
 'a' -+- 2 assert_=== 'c'
 1 --- 3 assert_=== -2
 1 |-&gt; 3 assert_=== List(1, 2, 3)
 'a' |--&gt; (2, 'f') assert_=== List('a', 'c', 'e')
 </code></pre></div>
+      </div><div class="content" id="slide-38">
+       <div class="container"><h1>Monad</h1></div>
+      </div><div class="content" id="slide-39">
+       <div class="container"><h1>Higher Kinds</h1><h2>型をパラメータとしてとる型</h2><pre><code class="prettyprint lang-scala">import scala.language.higherKinds
+def triple[F[_]: Plus, A](fa: F[A]) = fa &lt;+&gt; fa &lt;+&gt; fa
+triple(Option(1)) assert_=== Option(1)
+triple(List(1)) assert_=== List(1, 1, 1)
+</code></pre></div>
+      </div><div class="content" id="slide-40">
+       <div class="container"><h1>Functor</h1><h2>map</h2><h3>関数をコンテナに包まれた値に適用する</h3><pre><code class="prettyprint lang-scala">def appendAll[F[_]: Functor, A: Semigroup](fa: F[A], a: A) = fa.map(_ |+| a)
+appendAll(List(1, 2, 3), 1) assert_=== List(2, 3, 4)
+appendAll(1.some, 4) assert_=== Some(5)
+</code></pre></div>
+      </div><div class="content" id="slide-41">
+       <div class="container"><h1>FunctorLaw</h1><h2>mapの性質</h2><pre><code class="prettyprint lang-scala">map(fa)(x =&gt; x) == fa
+map(map(fa)(f))(g) == map(fa)(g compose f)
+</code></pre></div>
+      </div><div class="content" id="slide-42">
+       <div class="container"><h1>Pointed</h1><h2>コンテナを構築する</h2><pre><code class="prettyprint lang-scala">Pointed[List].point(1) assert_=== List(1)
+Pointed[Option].point(1) assert_=== Some(1)
+</code></pre></div>
+      </div><div class="content" id="slide-43">
+       <div class="container"><h1>型の部分適用</h1><pre><code class="prettyprint lang-scala">assert(Functor[({ type F[A] = Either[String, A] })#F].map(Right(1))(_.succ) === Right(2))
+assert(Pointed[({ type F[A] = Either[String, A] })#F].point(1) === Right(1))
+</code></pre></div>
+      </div><div class="content" id="slide-44">
+       <div class="container"><h1>Apply</h1><h2>コンテナに包まれた関数をコンテナに包まれた値に適用する</h2><pre><code class="prettyprint lang-scala">Option(0) &lt;*&gt; Option(Enum[Int].succ _) assert_=== Option(1)
+List(1, 2, 3) &lt;*&gt; List(Enum[Int].pred _) assert_=== List(0, 1, 2)
+</code></pre></div>
+      </div><div class="content" id="slide-45">
+       <div class="container"><h1>Applicative</h1><h2>ApplyとPointedを組み合わせたもの</h2><h3>mapはap(&lt;*&gt;)とpointによって実装される</h3><pre><code class="prettyprint lang-scala">def inverseAll[F[_]: Applicative, A: Group](fa: F[A]) = fa &lt;*&gt; Pointed[F].point(Group[A].inverse _)
+inverseAll(Option(1)) assert_=== Option(-1)
+inverseAll(List(1, 2, 3)) assert_=== List(-1, -2, -3)
+</code></pre></div>
+      </div><div class="content" id="slide-46">
+       <div class="container"><h1>ApplicativeLaw</h1><pre><code class="prettyprint lang-scala">ap(fa)(point((a: A) =&gt; a)) == fa
+ap(ap(fa)(fab))(fbc) == ap(fa)(ap(fab)(ap(fbc)(point((bc: B =&gt; C) =&gt; (ab: A =&gt; B) =&gt; bc compose ab))))
+ap(point(a))(point(ab)) == point(ab(a))
+ap(point(a))(f) == ap(f)(point((f: A =&gt; B) =&gt; f(a)))
+</code></pre></div>
+      </div><div class="content" id="slide-47">
+       <div class="container"><h1>Applicative Style</h1><pre><code class="prettyprint lang-scala">def append3[F[_]: Applicative, A: Semigroup](a: F[A], b: F[A], c: F[A]) = (a |@| b |@| c)(_ |+| _ |+| _)
+append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
+append3(Option(1), None, Option(3)) assert_=== None
+append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
+</code></pre></div>
+      </div><div class="content" id="slide-48">
+       <div class="container"><h1>Bind</h1></div>
+      </div><div class="content" id="slide-49">
+       <div class="container"><h1>Monad</h1></div>
       </div>
           </div>
         </div>
