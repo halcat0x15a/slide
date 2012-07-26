@@ -75,9 +75,6 @@ encode(13) assert_=== List(1, 0, 1, 1)
 
 ```scala
 def zero[A: Group](a: A) = a |+| a.inverse
-```
-
-``scala
 def zero[A: Group](a: A) = a |-| a
 ```
 

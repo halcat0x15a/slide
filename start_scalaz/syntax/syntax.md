@@ -32,8 +32,5 @@ def double[A: Semigroup](a: A) = ToSemigroupOps(a) |+| a
 
 ```scala
 def quote[A: Show](a: A) = Show[A].show(a).mkString("'", "", "'")
-```
-
-```scala
 def quote[A: Show](a: A) = a.show.mkString("'", "", "'")
 ```
