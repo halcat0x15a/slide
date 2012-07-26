@@ -23,9 +23,9 @@ object Rational {
 
 !SLIDE
 
-# 恒等元の性質
+# MonoidLaw
 
-## MonoidLaw
+## 恒等元の性質
 
 ```scala
 append(zero, a) == a

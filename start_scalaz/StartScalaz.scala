@@ -47,6 +47,7 @@ object Person {
   }
 }
 
+
 object StartScalaz extends App {
   def double[A: Semigroup](a: A) = a |+| a
   double(2) assert_=== 4
@@ -134,4 +135,27 @@ object StartScalaz extends App {
   1 --- 3 assert_=== -2
   1 |-> 3 assert_=== List(1, 2, 3)
   'a' |--> (2, 'f') assert_=== List('a', 'c', 'e')
+
+  locally {
+    import java.util.Date
+    object DateOrder extends Order[Date] {
+      def order(x: Date, y: Date) = x -> y match {
+	case (x, y) if x == y => EQ
+	case (x, y) if x before y => LT
+	case (x, y) if x after y => GT
+      }
+    }
+    lazy val dateOrder = Order.order[Date]((x, y) => Ordering.fromInt(x compareTo y))
+    case class Person(name: String, age: Int, birthday: Date)
+  }
+
+  def addAll[A: Semigroup, F[_]: Functor](fa: F[A], a: A) = fa.map(_ |+| a)
+  addAll(List(1, 2, 3), 1) assert_=== List(2, 3, 4)
+  addAll(1.some, 4) assert_=== Some(5)
+
+  locally {
+    def addAll[F[Int] <: Seq[Int]](fi: F[Int], i: Int) = fi.map(1 +)
+    addAll[List](List(1, 2, 3), 1)
+    addAll[Vector](Vector(4, 5, 6), 2)
+  }
 }

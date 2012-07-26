@@ -102,6 +102,19 @@ List(miku, rin, len) sorted PersonInstance.toScalaOrdering assert_=== List(rin, 
 
 !SLIDE
 
+# 問題
+
+* java.util.Dateに対するOrderのインスタンス
+* 以下のクラスに対するOrderのインスタンス
+    * ageとbirthdayを用いる
+    * ただしage重きを置く
+
+```scala
+case class Person(name: String, age: Int, birthday: Date)
+```
+
+!SLIDE
+
 # Enum
 
 ## Orderにsuccessorとpredecessorを加えたもの

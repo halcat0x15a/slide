@@ -1,4 +1,4 @@
-scalaVersion := "2.10.0-M4"
+scalaVersion := "2.10.0-M5"
 
 resolvers += "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
 
