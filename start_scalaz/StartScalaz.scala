@@ -146,16 +146,42 @@ object StartScalaz extends App {
       }
     }
     lazy val dateOrder = Order.order[Date]((x, y) => Ordering.fromInt(x compareTo y))
-    case class Person(name: String, age: Int, birthday: Date)
+    case class Student(name: String, grade: Int, birthday: Date)
+    implicit object StudentOrder extends Show[Student] with Order[Student] {
+      def show(s: Student) = s.toString.toList
+      def order(x: Student, y: Student) = x.grade ?|? y.grade |+| x.birthday ?|? y.birthday
+    }
+    val format = new java.text.SimpleDateFormat("MM dd")
+    val akari = Student("akari", 1, format.parse("07 24"))
+    val kyoko = Student("kyoko", 2, format.parse("03 28"))
+    val yui = Student("yui", 2, format.parse("04 22"))
+    val chinatsu = Student("chinatsu", 1, format.parse("11 06"))
+    List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, kyoko, yui)
   }
 
-  def addAll[A: Semigroup, F[_]: Functor](fa: F[A], a: A) = fa.map(_ |+| a)
-  addAll(List(1, 2, 3), 1) assert_=== List(2, 3, 4)
-  addAll(1.some, 4) assert_=== Some(5)
+  def triple[F[_]: Plus, A](fa: F[A]) = fa <+> fa <+> fa
+  triple(Option(1)) assert_=== Option(1)
+  triple(List(1)) assert_=== List(1, 1, 1)
 
-  locally {
-    def addAll[F[Int] <: Seq[Int]](fi: F[Int], i: Int) = fi.map(1 +)
-    addAll[List](List(1, 2, 3), 1)
-    addAll[Vector](Vector(4, 5, 6), 2)
-  }
+  def appendAll[A: Semigroup, F[_]: Functor](fa: F[A], a: A) = fa.map(_ |+| a)
+  appendAll(List(1, 2, 3), 1) assert_=== List(2, 3, 4)
+  appendAll(1.some, 4) assert_=== Some(5)
+
+  Pointed[List].point(1) assert_=== List(1)
+  Pointed[Option].point(1) assert_=== Some(1)
+
+  assert(Functor[({ type F[A] = Either[String, A] })#F].map(Right(1))(_.succ) === Right(2))
+  assert(Pointed[({ type F[A] = Either[String, A] })#F].point(1) === Right(1))
+
+  Option(0) <*> Option(Enum[Int].succ _) assert_=== Option(1)
+  List(1, 2, 3) <*> List(Enum[Int].pred _) assert_=== List(0, 1, 2)
+
+  def inverseAll[F[_]: Applicative, A: Group](fa: F[A]) = fa <*> Pointed[F].point(Group[A].inverse _)
+  inverseAll(Option(1)) assert_=== Option(-1)
+  inverseAll(List(1, 2, 3)) assert_=== List(-1, -2, -3)
+
+  def append3[F[_]: Applicative, A: Semigroup](a: F[A], b: F[A], c: F[A]) = (a |@| b |@| c)(_ |+| _ |+| _)
+  append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
+  append3(Option(1), None, Option(3)) assert_=== None
+  append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 }
