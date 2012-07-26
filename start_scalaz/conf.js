@@ -6,6 +6,7 @@
     "scalaz",
     "syntax",
     "monoid",
-    "order"
+    "order",
+    "monad"
   ]
 }

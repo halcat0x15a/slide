@@ -1,12 +1,10 @@
 !SLIDE
 
-# Order
+# Equal
 
 !SLIDE
 
-# Equal
-
-## 等価性
+# 等価性
 
 ```scala
 case class Point(x: Int, y: Int)
@@ -98,19 +96,6 @@ val rin = Person("rin", 14, 152)
 val len = Person("len", 14, 156)
 import Person._
 List(miku, rin, len) sorted PersonInstance.toScalaOrdering assert_=== List(rin, len, miku)
-```
-
-!SLIDE
-
-# 問題
-
-* java.util.Dateに対するOrderのインスタンス
-* 以下のクラスに対するOrderのインスタンス
-    * ageとbirthdayを用いる
-    * ただしage重きを置く
-
-```scala
-case class Person(name: String, age: Int, birthday: Date)
 ```
 
 !SLIDE
