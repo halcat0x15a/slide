@@ -21,7 +21,7 @@ triple(List(1)) assert_=== List(1, 1, 1)
 
 ## map
 
-### 関数をコンテナに包まれた値に適用する
+### 関数をコンテナに適用する
 
 ```scala
 def appendAll[F[_]: Functor, A: Semigroup](fa: F[A], a: A) = fa.map(_ |+| a)
@@ -64,7 +64,7 @@ assert(Pointed[({ type F[A] = Either[String, A] })#F].point(1) === Right(1))
 
 # Apply
 
-## コンテナに包まれた関数をコンテナに包まれた値に適用する
+## 持ち上げられた関数をコンテナに適用し、新しいコンテナを構築する
 
 ```scala
 Option(0) <*> Option(Enum[Int].succ _) assert_=== Option(1)
@@ -100,6 +100,8 @@ ap(point(a))(f) == ap(f)(point((f: A => B) => f(a)))
 
 # Applicative Style
 
+## ApplicativeBuilderを用いて計算を構築する
+
 ```scala
 def append3[F[_]: Applicative, A: Semigroup](a: F[A], b: F[A], c: F[A]) = (a |@| b |@| c)(_ |+| _ |+| _)
 append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
@@ -110,6 +112,10 @@ append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 !SLIDE
 
 # Bind
+
+## 関数をコンテナに適用し、新しいコンテナを構築する
+
+### apはbindとmapによって実装される
 
 !SLIDE
 
