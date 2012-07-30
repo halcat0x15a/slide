@@ -140,9 +140,9 @@ object StartScalaz extends App {
     import java.util.Date
     object DateOrder extends Order[Date] {
       def order(x: Date, y: Date) = x -> y match {
-	case (x, y) if x == y => EQ
-	case (x, y) if x before y => LT
-	case (x, y) if x after y => GT
+	case (x, y) if x == y => Ordering.EQ
+	case (x, y) if x before y => Ordering.LT
+	case (x, y) if x after y => Ordering.GT
       }
     }
     lazy val dateOrder = Order.order[Date]((x, y) => Ordering.fromInt(x compareTo y))
@@ -180,8 +180,24 @@ object StartScalaz extends App {
   inverseAll(Option(1)) assert_=== Option(-1)
   inverseAll(List(1, 2, 3)) assert_=== List(-1, -2, -3)
 
-  def append3[F[_]: Applicative, A: Semigroup](a: F[A], b: F[A], c: F[A]) = (a |@| b |@| c)(_ |+| _ |+| _)
+  def append3[F[_]: Apply, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) = (fa |@| fb |@| fc)(_ |+| _ |+| _)
   append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
   append3(Option(1), None, Option(3)) assert_=== None
   append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
+
+  locally {
+    def append3[F[_]: Bind, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
+      for {
+	a <- fa
+	b <- fb
+	c <- fc
+      } yield a |+| b |+| c
+    append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
+    append3(Option(1), None, Option(3)) assert_=== None
+    append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
+  }
+
+  (for (a <- List(1, 2)) yield 1 + a) assert_=== List(1, 2).map(1 +)
+
+  def triple[FA](fa: FA)(implicit F: Unapply[Plus, FA]) = F.TC.plus(F.TC.plus(F(fa), F(fa)), F(fa))
 }
