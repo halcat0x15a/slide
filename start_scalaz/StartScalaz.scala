@@ -21,19 +21,23 @@ object Point {
 
 case class Rational(n: Int, d: Int) {
   def +(r: Rational) = Rational(n * r.d + r.n * d, d * r.d)
+  def unary_- = copy(n = -n)
   override def toString = s"$n/$d"
 }
 
 object Rational {
-  implicit object RationalInstance extends Order[Rational] with Show[Rational] with Monoid[Rational] {
+  implicit object RationalInstance extends Enum[Rational] with Show[Rational] with Group[Rational] {
     def show(r: Rational) = r.toString.toList
     def zero = Rational(0, 1)
     def append(r1: Rational, r2: => Rational) = r1 + r2
+    def inverse(r: Rational) = -r
     def order(r1: Rational, r2: Rational) = r1.n * r2.d -> r2.n * r1.d match {
       case (m, n) if m == n => Ordering.EQ
       case (m, n) if m < n => Ordering.LT
       case (m, n) if m > n => Ordering.GT
     }
+    def succ(r: Rational) = r.copy(n = r.n + r.d)
+    def pred(r: Rational) = r.copy(n = r.n - r.d)
   }
 }
 
@@ -46,7 +50,6 @@ object Person {
       p1.age ?|? p2.age |+| p1.height ?|? p2.height
   }
 }
-
 
 object StartScalaz extends App {
   def double[A: Semigroup](a: A) = a |+| a
@@ -77,8 +80,12 @@ object StartScalaz extends App {
 
   mzero[Int] assert_=== 0
   mzero[Option[String]] assert_=== None
+  mzero[Rational] assert_=== Rational(0, 1)
+
   3 multiply 5 assert_=== 15
   "geso" multiply 2 assert_=== "gesogeso"
+  Rational(1, 2) multiply 3 assert_=== Rational(12, 8)
+
   Monoid.replicate[List, Int](0)(3, 1 +) assert_=== List(0, 1, 2)
   Monoid.unfold[List, List[Int], Int](List(1, 2, 3)) {
     case Nil => None
@@ -102,11 +109,19 @@ object StartScalaz extends App {
   mevens(5) assert_=== List(0, 2, 4, 6, 8)
   mencode(13) assert_=== List(1, 0, 1, 1)
 
-  locally {
-    def zero[A: Group](a: A) = a |+| a.inverse
-  }
+  1 |-| 1 assert_=== 0
+  1.2 |-| 2.1 assert_=== -0.9000000000000001
 
-  def zero[A: Group](a: A) = a |-| a
+  List(1, 2) |+| List(3, 4) assert_=== List(1, 2, 3, 4)
+  List(1, 2) <+> List(3, 4) assert_=== List(1, 2, 3, 4)
+  Option(1) |+| Option(1) assert_=== Option(2)
+  Option(1) <+> Option(1) assert_=== Option(1)
+
+  implicit object VectorPlus extends PlusEmpty[Vector] {
+    def empty[A] = Vector.empty[A]
+    def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
+  }
+  assert(Vector(1, 2) <+> Vector(3, 4) == Vector(1, 2, 3, 4))
 
   import Point._
   assert(Point(2, 3) === Point(2, 3))
@@ -130,9 +145,13 @@ object StartScalaz extends App {
   List(miku, rin, len) sorted PersonInstance.toScalaOrdering assert_=== List(rin, len, miku)
 
   2.succ assert_=== 3
+  Rational(1, 2).succ assert_=== Rational(3, 2)
   'b'.pred assert_=== 'a'
+  Rational(1, 2).pred assert_=== Rational(-1, 2)
+
   'a' -+- 2 assert_=== 'c'
   1 --- 3 assert_=== -2
+
   1 |-> 3 assert_=== List(1, 2, 3)
   'a' |--> (2, 'f') assert_=== List('a', 'c', 'e')
 
