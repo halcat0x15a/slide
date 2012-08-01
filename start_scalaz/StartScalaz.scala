@@ -54,11 +54,12 @@ object Person {
 object vector {
   implicit def vectorShow[A] = Show.showA[Vector[A]]
   implicit def vectorEqual[A] = Equal.equalA[Vector[A]]
-  implicit object VectorInstance extends PlusEmpty[Vector] with Applicative[Vector] {
+  implicit object VectorInstance extends PlusEmpty[Vector] with Applicative[Vector] with Bind[Vector] {
     def empty[A] = Vector.empty[A]
     def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
     def point[A](a: => A) = Vector(a)
-    def ap[A, B](fa: => Vector[A])(f: => Vector[A => B]) = fa flatMap (a => f map (_(a)))
+    override def ap[A, B](fa: => Vector[A])(f: => Vector[A => B]) = fa flatMap (a => f map (_(a)))
+    def bind[A, B](v: Vector[A])(f: A => Vector[B]) = v flatMap f
   }
 }
 

@@ -153,6 +153,13 @@ append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 ### 関数をコンテナに適用し、新しいコンテナを構築する
 
 ```scala
+object vector {
+  implicit object VectorInstance extends Bind[Vector] {
+    def map[A, B](v: Vector[A])(f: A => B) = v map f
+    def bind[A, B](v: Vector[A])(f: A => Vector[B]) = v flatMap f
+  }
+}
+
 def append3[F[_]: Bind, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
   for {
     a <- fa
