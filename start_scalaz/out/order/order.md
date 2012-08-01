@@ -9,8 +9,6 @@
 ## 等価性
 
 ```scala
-case class Point(x: Int, y: Int)
-
 object Point {
   implicit object PointInstance extends Equal[Point] {
     def equal(p1: Point, p2: Point) = p1 == p2
@@ -45,8 +43,6 @@ assert(Point(2, 3) =/= Point(3, 5))
 ## 順序
 
 ```scala
-case class Rational(n: Int, d: Int)
-
 object Rational {
   implicit object RationalInstance extends Order[Rational] {
     def order(r1: Rational, r2: Rational) = r1.n * r2.d -> r2.n * r1.d match {
@@ -67,9 +63,9 @@ assert(Rational(5, 2) >= Rational(5, 3))
 
 # Ordering
 
-## Javaのcompareが返す-1、0、1に対応します。
+## Javaのcompareが返す-1、0、1に対応する
 
-### Orderingはモノイドであるため、複数の比較結果を結合することができます。
+### Orderingはモノイドであるため、複数の比較結果を結合することができる
 
 ```scala
 mzero[Ordering] assert_=== Ordering.EQ
@@ -127,10 +123,42 @@ List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_==
 ## Orderにsuccessorとpredecessorを加えたもの
 
 ```scala
-2.succ assert_=== 3
+object Rational {
+  implicit object RationalInstance extends Enum[Rational] {
+    def order(r1: Rational, r2: Rational) = r1.n * r2.d -> r2.n * r1.d match {
+      case (m, n) if m == n => Ordering.EQ
+      case (m, n) if m < n => Ordering.LT
+      case (m, n) if m > n => Ordering.GT
+    }
+    def succ(r: Rational) = r.copy(n = r.n + r.d)
+    def pred(r: Rational) = r.copy(n = r.n - r.d)
+  }
+}
+
+1.succ assert_=== 2
+Rational(1, 2).succ assert_=== Rational(3, 2)
 'b'.pred assert_=== 'a'
+Rational(1, 2).pred assert_=== Rational(-1, 2)
+```
+
+!SLIDE
+
+# -+-, ---
+
+## 任意の回数succ, predした値
+
+```scala
 'a' -+- 2 assert_=== 'c'
 1 --- 3 assert_=== -2
+```
+
+!SLIDE
+
+# |->, |-->
+
+## 任意の値までsuccしたものを集める
+
+```scala
 1 |-> 3 assert_=== List(1, 2, 3)
 'a' |--> (2, 'f') assert_=== List('a', 'c', 'e')
 ```

@@ -9,8 +9,6 @@
 ## ある値を２倍する
 
 ```scala
-import scalaz, Scalaz
-
 def double[A](a: A)(implicit s: Semigroup[A]) = s.append(a, a)
 
 double(2) assert_=== 4
@@ -23,7 +21,7 @@ double("2") assert_=== "22"
 
 ## appendは抽象メソッド、２つの値を結合する関数
 
-### Pointを例にインスタンスを定義してみる
+### Pointを例にインスタンスを定義する
 
 ```scala
 case class Point(x: Int, y: Int) {
@@ -54,9 +52,7 @@ double(Point(1, 2))
 
 ### appendの定義はSemigroupLawを満たしていなければならない
 
-```scala
-append(f1, append(f2, f3)) == append(append(f1, f2), f3)
-```
+* append(f1, append(f2, f3)) == append(append(f1, f2), f3)
 
 !SLIDE
 
@@ -64,7 +60,7 @@ append(f1, append(f2, f3)) == append(append(f1, f2), f3)
 
 ## 文字列へ変換する関数を定義する
 
-### 複数のインスタンスはmix-inや、別のimplicit parameterを定義することで実現する
+### 複数のインスタンスはmix-inや、別のimplicit valueを定義することで実現する
 
 ```scala
 object Point {
