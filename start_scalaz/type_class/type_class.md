@@ -52,9 +52,7 @@ double(Point(1, 2))
 
 ### appendの定義はSemigroupLawを満たしていなければならない
 
-```scala
-append(f1, append(f2, f3)) == append(append(f1, f2), f3)
-```
+* append(f1, append(f2, f3)) == append(append(f1, f2), f3)
 
 !SLIDE
 

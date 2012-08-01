@@ -51,6 +51,17 @@ object Person {
   }
 }
 
+object vector {
+  implicit def vectorShow[A] = Show.showA[Vector[A]]
+  implicit def vectorEqual[A] = Equal.equalA[Vector[A]]
+  implicit object VectorInstance extends PlusEmpty[Vector] with Applicative[Vector] {
+    def empty[A] = Vector.empty[A]
+    def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
+    def point[A](a: => A) = Vector(a)
+    def ap[A, B](fa: => Vector[A])(f: => Vector[A => B]) = fa flatMap (a => f map (_(a)))
+  }
+}
+
 object StartScalaz extends App {
   def double[A: Semigroup](a: A) = a |+| a
   double(2) assert_=== 4
@@ -81,6 +92,9 @@ object StartScalaz extends App {
   mzero[Int] assert_=== 0
   mzero[Option[String]] assert_=== None
   mzero[Rational] assert_=== Rational(0, 1)
+
+  mzero[Int] |+| 1 assert_=== 1
+  "geso" |+| mzero[String] assert_=== "geso"
 
   3 multiply 5 assert_=== 15
   "geso" multiply 2 assert_=== "gesogeso"
@@ -117,11 +131,8 @@ object StartScalaz extends App {
   Option(1) |+| Option(1) assert_=== Option(2)
   Option(1) <+> Option(1) assert_=== Option(1)
 
-  implicit object VectorPlus extends PlusEmpty[Vector] {
-    def empty[A] = Vector.empty[A]
-    def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
-  }
-  assert(Vector(1, 2) <+> Vector(3, 4) == Vector(1, 2, 3, 4))
+  import vector._
+  Vector(1, 2) <+> Vector(3, 4) assert_=== Vector(1, 2, 3, 4)
 
   import Point._
   assert(Point(2, 3) === Point(2, 3))
@@ -182,18 +193,24 @@ object StartScalaz extends App {
   triple(Option(1)) assert_=== Option(1)
   triple(List(1)) assert_=== List(1, 1, 1)
 
-  def appendAll[A: Semigroup, F[_]: Functor](fa: F[A], a: A) = fa.map(_ |+| a)
-  appendAll(List(1, 2, 3), 1) assert_=== List(2, 3, 4)
-  appendAll(1.some, 4) assert_=== Some(5)
+  def fdouble[F[_]: Functor, A: Semigroup](fa: F[A]) = fa.map(a => a |+| a)
+  fdouble(List(1, 2, 3)) assert_=== List(2, 4, 6)
+  fdouble("geso".some) assert_=== Some("gesogeso")
+  import vector._
+  fdouble(Vector(1.2, 2.1)) assert_=== Vector(2.4, 4.2)
 
   Pointed[List].point(1) assert_=== List(1)
   Pointed[Option].point(1) assert_=== Some(1)
+  import vector._
+  Pointed[Vector].point(1) assert_=== Vector(1)
 
   assert(Functor[({ type F[A] = Either[String, A] })#F].map(Right(1))(_.succ) === Right(2))
   assert(Pointed[({ type F[A] = Either[String, A] })#F].point(1) === Right(1))
 
   Option(0) <*> Option(Enum[Int].succ _) assert_=== Option(1)
-  List(1, 2, 3) <*> List(Enum[Int].pred _) assert_=== List(0, 1, 2)
+  List(1, 2, 3) <*> PlusEmpty[List].empty[Int => Int] assert_=== Nil
+  import vector._
+  Vector(1, 2) <*> Vector(Enum[Int].succ _, Enum[Int].pred _) assert_=== Vector(2, 0, 3, 1)
 
   def inverseAll[F[_]: Applicative, A: Group](fa: F[A]) = fa <*> Pointed[F].point(Group[A].inverse _)
   inverseAll(Option(1)) assert_=== Option(-1)

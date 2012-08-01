@@ -19,6 +19,10 @@ object Rational {
     def append(r1: Rational, r2: => Rational) = r1 + r2
   }
 }
+
+mzero[Int] assert_=== 0
+mzero[Option[String]] assert_=== None
+mzero[Rational] assert_=== Rational(0, 1)
 ```
 
 !SLIDE
@@ -27,21 +31,12 @@ object Rational {
 
 ## 恒等元の性質
 
-```scala
-append(zero, a) == a
-append(a, zero) == a
-```
-
-!SLIDE
-
-# mzero
-
-## 恒等元の取得
+* append(zero, a) == a
+* append(a, zero) == a
 
 ```scala
-mzero[Int] assert_=== 0
-mzero[Option[String]] assert_=== None
-mzero[Rational] assert_=== Rational(0, 1)
+mzero[Int] |+| 1 assert_=== 1
+"geso" |+| mzero[String] assert_=== "geso"
 ```
 
 !SLIDE
@@ -138,9 +133,12 @@ List(1, 2) <+> List(3, 4) assert_=== List(1, 2, 3, 4)
 Option(1) |+| Option(1) assert_=== Option(2)
 Option(1) <+> Option(1) assert_=== Option(1)
 
-implicit object VectorPlus extends PlusEmpty[Vector] {
-  def empty[A] = Vector.empty[A]
-  def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
+object vector {
+  implicit object VectorInstance extends PlusEmpty[Vector] {
+    def empty[A] = Vector.empty[A]
+    def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
+  }
 }
+import vector._
 assert(Vector(1, 2) <+> Vector(3, 4) == Vector(1, 2, 3, 4))
 ```
