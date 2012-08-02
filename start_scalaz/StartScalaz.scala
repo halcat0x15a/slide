@@ -54,11 +54,10 @@ object Person {
 object vector {
   implicit def vectorShow[A] = Show.showA[Vector[A]]
   implicit def vectorEqual[A] = Equal.equalA[Vector[A]]
-  implicit object VectorInstance extends PlusEmpty[Vector] with Applicative[Vector] with Bind[Vector] {
+  implicit object VectorInstance extends PlusEmpty[Vector] with Monad[Vector] {
     def empty[A] = Vector.empty[A]
     def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
     def point[A](a: => A) = Vector(a)
-    override def ap[A, B](fa: => Vector[A])(f: => Vector[A => B]) = fa flatMap (a => f map (_(a)))
     def bind[A, B](v: Vector[A])(f: A => Vector[B]) = v flatMap f
   }
 }
@@ -211,11 +210,7 @@ object StartScalaz extends App {
   Option(0) <*> Option(Enum[Int].succ _) assert_=== Option(1)
   List(1, 2, 3) <*> PlusEmpty[List].empty[Int => Int] assert_=== Nil
   import vector._
-  Vector(1, 2) <*> Vector(Enum[Int].succ _, Enum[Int].pred _) assert_=== Vector(2, 0, 3, 1)
-
-  def inverseAll[F[_]: Applicative, A: Group](fa: F[A]) = fa <*> Pointed[F].point(Group[A].inverse _)
-  inverseAll(Option(1)) assert_=== Option(-1)
-  inverseAll(List(1, 2, 3)) assert_=== List(-1, -2, -3)
+  Vector(1, 2) <*> Vector(Enum[Int].succ _, Enum[Int].pred _) assert_=== Vector(2, 3, 0, 1)
 
   def append3[F[_]: Apply, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) = (fa |@| fb |@| fc)(_ |+| _ |+| _)
   append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
@@ -231,10 +226,24 @@ object StartScalaz extends App {
       } yield a |+| b |+| c
     append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
     append3(Option(1), None, Option(3)) assert_=== None
-    append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
+    import vector._
+    append3(Vector(1), Vector(1, 2), Vector(1, 2, 3)) assert_=== Vector(3, 4, 5, 4, 5, 6)
   }
 
-  (for (a <- List(1, 2)) yield 1 + a) assert_=== List(1, 2).map(1 +)
+  (for (a <- List(1, 2)) yield a + 1) assert_=== List(1, 2).map(a => a + 1)
+  (for (a <- Option(1); b <- Option(2)) yield a + b) assert_=== Option(1).flatMap(a => Option(2).map(b => a + b))
+  (for (a <- List(1, 2) if a % 2 == 0) yield a) assert_=== List(1, 2).filter(a => a % 2 == 0)
+
+  locally {
+    import scala.util.control.Exception._
+    val a = 1
+    val fa = Option(a)
+    lazy val f: Int => Option[String] = _.toString |> Option.apply
+    lazy val g: String => Option[Int] = allCatch opt _.toInt
+    (fa >>= (_.point[Option])) assert_=== fa
+    (a.point[Option] >>= f) assert_=== f(a)
+    (fa >>= f >>= g) assert_=== (fa >>= (a => f(a) >>= g))
+  }
 
   def triple[FA](fa: FA)(implicit F: Unapply[Plus, FA]) = F.TC.plus(F.TC.plus(F(fa), F(fa)), F(fa))
 }
