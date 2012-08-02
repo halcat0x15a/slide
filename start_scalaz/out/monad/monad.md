@@ -47,8 +47,11 @@ fdouble(Vector(1.2, 2.1)) assert_=== Vector(2.4, 4.2
 * map(map(fa)(f))(g) == map(fa)(g compose f)
 
 ```scala
-Option(100).map(x => x) assert_=== Option(100)
-List(1, 2, 3) map (
+val fa = List(1, 2)
+lazy val f: Int => Int = _ + 2
+lazy val g: Int => Int = _ * 2
+fa map (x => x) assert_=== fa
+fa map f map g assert_=== (fa map g <<< f)
 ```
 
 !SLIDE
@@ -123,11 +126,19 @@ object vector {
 
 # ApplicativeLaw
 
+* ap(fa)(point((a: A) => a)) == fa
+* ap(ap(fa)(fab))(fbc) == ap(fa)(ap(fab)(ap(fbc)(point((bc: B => C) => (ab: A => B) => bc compose ab))))
+* ap(point(a))(point(ab)) == point(ab(a))
+* ap(point(a))(fab) == ap(fab)(point((f: A => B) => f(a)))
+
 ```scala
-ap(fa)(point((a: A) => a)) == fa
-ap(ap(fa)(fab))(fbc) == ap(fa)(ap(fab)(ap(fbc)(point((bc: B => C) => (ab: A => B) => bc compose ab))))
-ap(point(a))(point(ab)) == point(ab(a))
-ap(point(a))(f) == ap(f)(point((f: A => B) => f(a)))
+val a = 0
+val fa = Option(a)
+lazy val fab: Option[Int => String] = Option(_.toString)
+lazy val fbc: Option[String => Int] = Option(_.size)
+fa <*> ((a: Int) => a).point[Option] assert_=== fa
+fa <*> fab <*> fbc assert_=== fa <*> (fab <*> (fbc <*> (((bc: String => Int) => (ab: Int => String) => bc compose ab).point[Option])))
+a.point[Option] <*> fab assert_=== fab <*> ((f: Int => String) => f(a)).point[Option]
 ```
 
 !SLIDE
@@ -153,6 +164,13 @@ append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 ### 関数をコンテナに適用し、新しいコンテナを構築する
 
 ```scala
+object vector {
+  implicit object VectorInstance extends Bind[Vector] {
+    def map[A, B](v: Vector[A])(f: A => B) = v map f
+    def bind[A, B](v: Vector[A])(f: A => Vector[B]) = v flatMap f
+  }
+}
+
 def append3[F[_]: Bind, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
   for {
     a <- fa
@@ -161,14 +179,21 @@ def append3[F[_]: Bind, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
   } yield a |+| b |+| c
 append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
 append3(Option(1), None, Option(3)) assert_=== None
-append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
+import vector._
+append3(Vector(1), Vector(1, 2), Vector(1, 2, 3)) assert_=== Vector(3, 4, 5, 4, 5, 6)
 ```
 
 !SLIDE
 
 # for式
 
+## map, flatMap, filterに変換される
 
+```scala
+(for (a <- List(1, 2)) yield a + 1) assert_=== List(1, 2).map(a => a + 1)
+(for (a <- Option(1); b <- Option(2)) yield a + b) assert_=== Option(1).flatMap(a => Option(2).map(b => a + b))
+(for (a <- List(1, 2) if a % 2 == 0) yield a) assert_=== List(1, 2).filter(a => a % 2 == 0)
+```
 
 !SLIDE
 
@@ -176,6 +201,34 @@ append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 
 ## ApplicativeとBindを組み合わせたもの
 
+```scala
+object vector {
+  implicit object VectorInstance extends Monad[Vector] {
+    def point[A](a: => A) = Vector(a)
+    def bind[A, B](v: Vector[A])(f: A => Vector[B]) = v flatMap f
+  }
+}
+```
+
 !SLIDE
 
 # MonadLaw
+
+* bind(fa)(point(_: A)) == fa
+* bind(point(a))(f) == f(a)
+* bind(bind(fa)(f))(g) == bind(fa)((a: A) => bind(f(a))(g))
+
+```scala
+import scala.util.control.Exception._
+val a = 1
+val fa = Option(a)
+lazy val f: Int => Option[String] = _.toString |> Option.apply
+lazy val g: String => Option[Int] = allCatch opt _.toInt
+(fa >>= (_.point[Option])) assert_=== fa
+(a.point[Option] >>= f) assert_=== f(a)
+(fa >>= f >>= g) assert_=== (fa >>= (a => f(a) >>= g))
+```
+
+!SLIDE
+
+# MonadPlus

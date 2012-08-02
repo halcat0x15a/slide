@@ -273,12 +273,12 @@ List(miku, rin, len) sorted PersonInstance.toScalaOrdering assert_=== List(rin, 
 </li><li>ただしgrade重きを置く
 </li></ul></li></ul><pre><code class="prettyprint lang-scala">case class Student(name: String, grade: Int, birthday: Date)
 
-val format = new java.text.SimpleDateFormat(&quot;MM dd&quot;)
-val akari = Student(&quot;akari&quot;, 1, format.parse(&quot;07 24&quot;))
-val kyoko = Student(&quot;kyoko&quot;, 2, format.parse(&quot;03 28&quot;))
-val yui = Student(&quot;yui&quot;, 2, format.parse(&quot;04 22&quot;))
-val chinatsu = Student(&quot;chinatsu&quot;, 1, format.parse(&quot;11 06&quot;))
-List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, kyoko, yui)
+val format = new java.text.SimpleDateFormat(&quot;yyyy MM dd&quot;)
+val akari = Student(&quot;akari&quot;, 1, format.parse(&quot;1995 07 24&quot;))
+val kyoko = Student(&quot;kyoko&quot;, 2, format.parse(&quot;1995 03 28&quot;))
+val yui = Student(&quot;yui&quot;, 2, format.parse(&quot;1994 04 22&quot;))
+val chinatsu = Student(&quot;chinatsu&quot;, 1, format.parse(&quot;1995 11 06&quot;))
+List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, yui, kyoko)
 </code></pre></div>
       </div><div class="content" id="slide-39">
        <div class="container"><h1 id="Enum">Enum</h1><h2 id="Order%E3%81%ABsuccessor%E3%81%A8predecessor%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E3%82%82%E3%81%AE">Orderにsuccessorとpredecessorを加えたもの</h2><pre><code class="prettyprint lang-scala">object Rational {
@@ -330,8 +330,11 @@ fdouble(Vector(1.2, 2.1)) assert_=== Vector(2.4, 4.2
       </div><div class="content" id="slide-45">
        <div class="container"><h1 id="FunctorLaw">FunctorLaw</h1><h2 id="map%E3%81%AE%E6%80%A7%E8%B3%AA">mapの性質</h2><ul><li>map(fa)(x =&gt; x) == fa
 </li><li>map(map(fa)(f))(g) == map(fa)(g compose f)
-</li></ul><pre><code class="prettyprint lang-scala">Option(100).map(x =&gt; x) assert_=== Option(100)
-List(1, 2, 3) map (
+</li></ul><pre><code class="prettyprint lang-scala">val fa = List(1, 2)
+lazy val f: Int =&gt; Int = _ + 2
+lazy val g: Int =&gt; Int = _ * 2
+fa map (x =&gt; x) assert_=== fa
+fa map f map g assert_=== (fa map g &lt;&lt;&lt; f)
 </code></pre></div>
       </div><div class="content" id="slide-46">
        <div class="container"><h1 id="Pointed">Pointed</h1><h2 id="point">point</h2><h3 id="%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">コンテナを構築する</h3><pre><code class="prettyprint lang-scala">object vector {
@@ -372,10 +375,17 @@ Vector(1, 2) &lt;*&gt; Vector(Enum[Int].succ _, Enum[Int].pred _) assert_=== Vec
 }
 </code></pre></div>
       </div><div class="content" id="slide-50">
-       <div class="container"><h1 id="ApplicativeLaw">ApplicativeLaw</h1><pre><code class="prettyprint lang-scala">ap(fa)(point((a: A) =&gt; a)) == fa
-ap(ap(fa)(fab))(fbc) == ap(fa)(ap(fab)(ap(fbc)(point((bc: B =&gt; C) =&gt; (ab: A =&gt; B) =&gt; bc compose ab))))
-ap(point(a))(point(ab)) == point(ab(a))
-ap(point(a))(f) == ap(f)(point((f: A =&gt; B) =&gt; f(a)))
+       <div class="container"><h1 id="ApplicativeLaw">ApplicativeLaw</h1><ul><li>ap(fa)(point((a: A) =&gt; a)) == fa
+</li><li>ap(ap(fa)(fab))(fbc) == ap(fa)(ap(fab)(ap(fbc)(point((bc: B =&gt; C) =&gt; (ab: A =&gt; B) =&gt; bc compose ab))))
+</li><li>ap(point(a))(point(ab)) == point(ab(a))
+</li><li>ap(point(a))(fab) == ap(fab)(point((f: A =&gt; B) =&gt; f(a)))
+</li></ul><pre><code class="prettyprint lang-scala">val a = 0
+val fa = Option(a)
+lazy val fab: Option[Int =&gt; String] = Option(_.toString)
+lazy val fbc: Option[String =&gt; Int] = Option(_.size)
+fa &lt;*&gt; ((a: Int) =&gt; a).point[Option] assert_=== fa
+fa &lt;*&gt; fab &lt;*&gt; fbc assert_=== fa &lt;*&gt; (fab &lt;*&gt; (fbc &lt;*&gt; (((bc: String =&gt; Int) =&gt; (ab: Int =&gt; String) =&gt; bc compose ab).point[Option])))
+a.point[Option] &lt;*&gt; fab assert_=== fab &lt;*&gt; ((f: Int =&gt; String) =&gt; f(a)).point[Option]
 </code></pre></div>
       </div><div class="content" id="slide-51">
        <div class="container"><h1 id="Applicative+Style">Applicative Style</h1><h2 id="ApplicativeBuilder%E3%82%92%E7%94%A8%E3%81%84%E3%81%A6%E8%A8%88%E7%AE%97%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">ApplicativeBuilderを用いて計算を構築する</h2><pre><code class="prettyprint lang-scala">def append3[F[_]: Apply, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
@@ -385,7 +395,14 @@ append3(Option(1), None, Option(3)) assert_=== None
 append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 </code></pre></div>
       </div><div class="content" id="slide-52">
-       <div class="container"><h1 id="Bind">Bind</h1><h2 id="bind">bind</h2><h3 id="%E9%96%A2%E6%95%B0%E3%82%92%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AB%E9%81%A9%E7%94%A8%E3%81%97%E3%80%81%E6%96%B0%E3%81%97%E3%81%84%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">関数をコンテナに適用し、新しいコンテナを構築する</h3><pre><code class="prettyprint lang-scala">def append3[F[_]: Bind, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
+       <div class="container"><h1 id="Bind">Bind</h1><h2 id="bind">bind</h2><h3 id="%E9%96%A2%E6%95%B0%E3%82%92%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AB%E9%81%A9%E7%94%A8%E3%81%97%E3%80%81%E6%96%B0%E3%81%97%E3%81%84%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">関数をコンテナに適用し、新しいコンテナを構築する</h3><pre><code class="prettyprint lang-scala">object vector {
+  implicit object VectorInstance extends Bind[Vector] {
+    def map[A, B](v: Vector[A])(f: A =&gt; B) = v map f
+    def bind[A, B](v: Vector[A])(f: A =&gt; Vector[B]) = v flatMap f
+  }
+}
+
+def append3[F[_]: Bind, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
   for {
     a &lt;- fa
     b &lt;- fb
@@ -393,14 +410,37 @@ append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
   } yield a |+| b |+| c
 append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
 append3(Option(1), None, Option(3)) assert_=== None
-append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
+import vector._
+append3(Vector(1), Vector(1, 2), Vector(1, 2, 3)) assert_=== Vector(3, 4, 5, 4, 5, 6)
 </code></pre></div>
       </div><div class="content" id="slide-53">
-       <div class="container"><h1 id="for%E5%BC%8F">for式</h1></div>
+       <div class="container"><h1 id="for%E5%BC%8F">for式</h1><h2 id="map%2C+flatMap%2C+filter%E3%81%AB%E5%A4%89%E6%8F%9B%E3%81%95%E3%82%8C%E3%82%8B">map, flatMap, filterに変換される</h2><pre><code class="prettyprint lang-scala">(for (a &lt;- List(1, 2)) yield a + 1) assert_=== List(1, 2).map(a =&gt; a + 1)
+(for (a &lt;- Option(1); b &lt;- Option(2)) yield a + b) assert_=== Option(1).flatMap(a =&gt; Option(2).map(b =&gt; a + b))
+(for (a &lt;- List(1, 2) if a % 2 == 0) yield a) assert_=== List(1, 2).filter(a =&gt; a % 2 == 0)
+</code></pre></div>
       </div><div class="content" id="slide-54">
-       <div class="container"><h1 id="Monad">Monad</h1><h2 id="Applicative%E3%81%A8Bind%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">ApplicativeとBindを組み合わせたもの</h2></div>
+       <div class="container"><h1 id="Monad">Monad</h1><h2 id="Applicative%E3%81%A8Bind%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">ApplicativeとBindを組み合わせたもの</h2><pre><code class="prettyprint lang-scala">object vector {
+  implicit object VectorInstance extends Monad[Vector] {
+    def point[A](a: =&gt; A) = Vector(a)
+    def bind[A, B](v: Vector[A])(f: A =&gt; Vector[B]) = v flatMap f
+  }
+}
+</code></pre></div>
       </div><div class="content" id="slide-55">
-       <div class="container"><h1 id="MonadLaw">MonadLaw</h1></div>
+       <div class="container"><h1 id="MonadLaw">MonadLaw</h1><ul><li>bind(fa)(point(_: A)) == fa
+</li><li>bind(point(a))(f) == f(a)
+</li><li>bind(bind(fa)(f))(g) == bind(fa)((a: A) =&gt; bind(f(a))(g))
+</li></ul><pre><code class="prettyprint lang-scala">import scala.util.control.Exception._
+val a = 1
+val fa = Option(a)
+lazy val f: Int =&gt; Option[String] = _.toString |&gt; Option.apply
+lazy val g: String =&gt; Option[Int] = allCatch opt _.toInt
+(fa &gt;&gt;= (_.point[Option])) assert_=== fa
+(a.point[Option] &gt;&gt;= f) assert_=== f(a)
+(fa &gt;&gt;= f &gt;&gt;= g) assert_=== (fa &gt;&gt;= (a =&gt; f(a) &gt;&gt;= g))
+</code></pre></div>
+      </div><div class="content" id="slide-56">
+       <div class="container"><h1 id="MonadPlus">MonadPlus</h1></div>
       </div>
           </div>
         </div>
