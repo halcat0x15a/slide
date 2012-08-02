@@ -181,12 +181,12 @@ object StartScalaz extends App {
       def show(s: Student) = s.toString.toList
       def order(x: Student, y: Student) = x.grade ?|? y.grade |+| x.birthday ?|? y.birthday
     }
-    val format = new java.text.SimpleDateFormat("MM dd")
-    val akari = Student("akari", 1, format.parse("07 24"))
-    val kyoko = Student("kyoko", 2, format.parse("03 28"))
-    val yui = Student("yui", 2, format.parse("04 22"))
-    val chinatsu = Student("chinatsu", 1, format.parse("11 06"))
-    List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, kyoko, yui)
+    val format = new java.text.SimpleDateFormat("yyyy MM dd")
+    val akari = Student("akari", 1, format.parse("1995 07 24"))
+    val kyoko = Student("kyoko", 2, format.parse("1997 03 28"))
+    val yui = Student("yui", 2, format.parse("1996 04 22"))
+    val chinatsu = Student("chinatsu", 1, format.parse("1995 11 06"))
+    List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, yui, kyoko)
   }
 
   def triple[F[_]: Plus, A](fa: F[A]) = fa <+> fa <+> fa
@@ -198,6 +198,14 @@ object StartScalaz extends App {
   fdouble("geso".some) assert_=== Some("gesogeso")
   import vector._
   fdouble(Vector(1.2, 2.1)) assert_=== Vector(2.4, 4.2)
+
+  locally {
+    val fa = List(1, 2)
+    lazy val f: Int => Int = _ + 2
+    lazy val g: Int => Int = _ * 2
+    fa map (x => x) assert_=== fa
+    fa map f map g assert_=== (fa map g <<< f)
+  }
 
   Pointed[List].point(1) assert_=== List(1)
   Pointed[Option].point(1) assert_=== Some(1)
@@ -211,6 +219,16 @@ object StartScalaz extends App {
   List(1, 2, 3) <*> PlusEmpty[List].empty[Int => Int] assert_=== Nil
   import vector._
   Vector(1, 2) <*> Vector(Enum[Int].succ _, Enum[Int].pred _) assert_=== Vector(2, 3, 0, 1)
+
+  locally {
+    val a = 0
+    val fa = Option(a)
+    lazy val fab: Option[Int => String] = Option(_.toString)
+    lazy val fbc: Option[String => Int] = Option(_.size)
+    fa <*> ((a: Int) => a).point[Option] assert_=== fa
+    fa <*> fab <*> fbc assert_=== fa <*> (fab <*> (fbc <*> (((bc: String => Int) => (ab: Int => String) => bc compose ab).point[Option])))
+    a.point[Option] <*> fab assert_=== fab <*> ((f: Int => String) => f(a)).point[Option]
+  }
 
   def append3[F[_]: Apply, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) = (fa |@| fb |@| fc)(_ |+| _ |+| _)
   append3(Option(1), Option(2), Option(3)) assert_=== Option(6)

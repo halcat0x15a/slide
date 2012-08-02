@@ -47,8 +47,11 @@ fdouble(Vector(1.2, 2.1)) assert_=== Vector(2.4, 4.2
 * map(map(fa)(f))(g) == map(fa)(g compose f)
 
 ```scala
-Option(100).map(x => x) assert_=== Option(100)
-List(1, 2, 3) map (
+val fa = List(1, 2)
+lazy val f: Int => Int = _ + 2
+lazy val g: Int => Int = _ * 2
+fa map (x => x) assert_=== fa
+fa map f map g assert_=== (fa map g <<< f)
 ```
 
 !SLIDE
@@ -123,11 +126,19 @@ object vector {
 
 # ApplicativeLaw
 
+* ap(fa)(point((a: A) => a)) == fa
+* ap(ap(fa)(fab))(fbc) == ap(fa)(ap(fab)(ap(fbc)(point((bc: B => C) => (ab: A => B) => bc compose ab))))
+* ap(point(a))(point(ab)) == point(ab(a))
+* ap(point(a))(fab) == ap(fab)(point((f: A => B) => f(a)))
+
 ```scala
-ap(fa)(point((a: A) => a)) == fa
-ap(ap(fa)(fab))(fbc) == ap(fa)(ap(fab)(ap(fbc)(point((bc: B => C) => (ab: A => B) => bc compose ab))))
-ap(point(a))(point(ab)) == point(ab(a))
-ap(point(a))(f) == ap(f)(point((f: A => B) => f(a)))
+val a = 0
+val fa = Option(a)
+lazy val fab: Option[Int => String] = Option(_.toString)
+lazy val fbc: Option[String => Int] = Option(_.size)
+fa <*> ((a: Int) => a).point[Option] assert_=== fa
+fa <*> fab <*> fbc assert_=== fa <*> (fab <*> (fbc <*> (((bc: String => Int) => (ab: Int => String) => bc compose ab).point[Option])))
+a.point[Option] <*> fab assert_=== fab <*> ((f: Int => String) => f(a)).point[Option]
 ```
 
 !SLIDE

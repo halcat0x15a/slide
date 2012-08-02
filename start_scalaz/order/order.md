@@ -108,12 +108,12 @@ List(miku, rin, len) sorted PersonInstance.toScalaOrdering assert_=== List(rin, 
 ```scala
 case class Student(name: String, grade: Int, birthday: Date)
 
-val format = new java.text.SimpleDateFormat("MM dd")
-val akari = Student("akari", 1, format.parse("07 24"))
-val kyoko = Student("kyoko", 2, format.parse("03 28"))
-val yui = Student("yui", 2, format.parse("04 22"))
-val chinatsu = Student("chinatsu", 1, format.parse("11 06"))
-List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, kyoko, yui)
+val format = new java.text.SimpleDateFormat("yyyy MM dd")
+val akari = Student("akari", 1, format.parse("1995 07 24"))
+val kyoko = Student("kyoko", 2, format.parse("1995 03 28"))
+val yui = Student("yui", 2, format.parse("1994 04 22"))
+val chinatsu = Student("chinatsu", 1, format.parse("1995 11 06"))
+List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, yui, kyoko)
 ```
 
 !SLIDE
