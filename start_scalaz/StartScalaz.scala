@@ -54,7 +54,7 @@ object Person {
 object vector {
   implicit def vectorShow[A] = Show.showA[Vector[A]]
   implicit def vectorEqual[A] = Equal.equalA[Vector[A]]
-  implicit object VectorInstance extends PlusEmpty[Vector] with Monad[Vector] {
+  implicit object VectorInstance extends MonadPlus[Vector] {
     def empty[A] = Vector.empty[A]
     def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
     def point[A](a: => A) = Vector(a)
@@ -68,6 +68,13 @@ object StartScalaz extends App {
   double("2") assert_=== "22"
   import Point._
   double(Point(1, 2))
+
+  locally {
+    val f1 = "foo"
+    val f2 = "bar"
+    val f3 = "baz"
+    f1 |+| (f2 |+| f3) assert_=== f1 |+| f2 |+| f3
+  }
 
   locally {
     def double[A: Semigroup](a: A) = Semigroup[A].append(a, a)
@@ -93,8 +100,11 @@ object StartScalaz extends App {
   mzero[Option[String]] assert_=== None
   mzero[Rational] assert_=== Rational(0, 1)
 
-  mzero[Int] |+| 1 assert_=== 1
-  "geso" |+| mzero[String] assert_=== "geso"
+  locally {
+    val a = 1
+    mzero[Int] |+| a assert_=== a
+    a |+| mzero[Int] assert_=== a
+  }
 
   3 multiply 5 assert_=== 15
   "geso" multiply 2 assert_=== "gesogeso"
@@ -262,6 +272,12 @@ object StartScalaz extends App {
     (a.point[Option] >>= f) assert_=== f(a)
     (fa >>= f >>= g) assert_=== (fa >>= (a => f(a) >>= g))
   }
+
+  def odds[F[_]: MonadPlus](f: F[Int]) = f filter (_ % 2 === 0)
+  odds(List(1, 2, 3)) assert_=== List(2)
+  odds(Option(1)) assert_=== None
+  import vector._
+  odds(Vector(1, 2, 3)) assert_=== Vector(2)
 
   def triple[FA](fa: FA)(implicit F: Unapply[Plus, FA]) = F.TC.plus(F.TC.plus(F(fa), F(fa)), F(fa))
 }

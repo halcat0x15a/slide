@@ -34,7 +34,7 @@ def fdouble[F[_]: Functor, A: Semigroup](fa: F[A]) = fa.map(a => a |+| a)
 fdouble(List(1, 2, 3)) assert_=== List(2, 4, 6)
 fdouble("geso".some) assert_=== Some("gesogeso")
 import vector._
-fdouble(Vector(1.2, 2.1)) assert_=== Vector(2.4, 4.2
+fdouble(Vector(1.2, 2.1)) assert_=== Vector(2.4, 4.2)
 ```
 
 !SLIDE
@@ -97,14 +97,14 @@ assert(Pointed[({ type F[A] = Either[String, A] })#F].point(1) === Right(1))
 object vector {
   implicit object VectorInstance extends Apply[Vector] {
     def map[A, B](v: Vector[A])(f: A => B) = v map f
-    def ap[A, B](fa: => Vector[A])(f: => Vector[A => B]) = fa flatMap (a => f map (_(a)))
+    def ap[A, B](va: => Vector[A])(vab: => Vector[A => B]) = vab flatMap (va map _)
   }
 }
 
 Option(0) <*> Option(Enum[Int].succ _) assert_=== Option(1)
 List(1, 2, 3) <*> PlusEmpty[List].empty[Int => Int] assert_=== Nil
 import vector._
-Vector(1, 2) <*> Vector(Enum[Int].succ _, Enum[Int].pred _) assert_=== Vector(2, 0, 3, 1)
+Vector(1, 2) <*> Vector(Enum[Int].succ _, Enum[Int].pred _) assert_===  Vector(2, 3, 0, 1)
 ```
 
 !SLIDE
@@ -117,7 +117,7 @@ Vector(1, 2) <*> Vector(Enum[Int].succ _, Enum[Int].pred _) assert_=== Vector(2,
 object vector {
   implicit object VectorInstance extends Applicative[Vector] {
     def point[A](a: => A) = Vector(a)
-    def ap[A, B](fa: => Vector[A])(f: => Vector[A => B]) = fa flatMap (a => f map (_(a)))
+    def ap[A, B](va: => Vector[A])(vab: => Vector[A => B]) = vab flatMap (va map _)
   }
 }
 ```
@@ -154,6 +154,10 @@ append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
 append3(Option(1), None, Option(3)) assert_=== None
 append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 ```
+
+!SLIDE
+
+# 問題
 
 !SLIDE
 
@@ -232,3 +236,24 @@ lazy val g: String => Option[Int] = allCatch opt _.toInt
 !SLIDE
 
 # MonadPlus
+
+## MonadとPlusEmptyを組み合わせたもの
+
+### filterが定義される
+
+```scala
+object vector {
+  implicit object VectorInstance extends MonadPlus[Vector] {
+    def empty[A] = Vector.empty[A]
+    def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
+    def point[A](a: => A) = Vector(a)
+    def bind[A, B](v: Vector[A])(f: A => Vector[B]) = v flatMap f
+  }
+}
+
+def odds[F[_]: MonadPlus](f: F[Int]) = f filter (_ % 2 === 0)
+odds(List(1, 2, 3)) assert_==== List(2)
+odds(Option(1)) assert_=== None
+import vector._
+odds(Vector(1, 2, 3)) assert_=== Vector(2)
+```

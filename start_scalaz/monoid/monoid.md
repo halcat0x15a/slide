@@ -35,8 +35,9 @@ mzero[Rational] assert_=== Rational(0, 1)
 * append(a, zero) == a
 
 ```scala
-mzero[Int] |+| 1 assert_=== 1
-"geso" |+| mzero[String] assert_=== "geso"
+val a = 1
+mzero[Int] |+| a assert_=== a
+a |+| mzero[String] assert_=== a
 ```
 
 !SLIDE
