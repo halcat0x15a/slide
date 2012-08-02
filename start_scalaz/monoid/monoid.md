@@ -105,7 +105,6 @@ object Rational {
 }
 
 1.inverse assert_=== -1
-import Rational._
 Rational(1, 2).inverse assert_=== Rational(-1, 2)
 ```
 

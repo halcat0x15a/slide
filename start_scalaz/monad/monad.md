@@ -159,6 +159,16 @@ append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 
 # 問題
 
+* Map[String, String]から"id"と"pass"をキーとして値を取り出しUserを構築する
+
+```scala
+case class User(id: String, pass: String)
+def user(m: Map[String, String]): Option[User]
+
+user(Map("id" -> "halcat0x15a", "pass" -> "gesogeso")) assert_=== Some(User("halcat0x15a", "gesogeso"))
+user(Map.empty) assert_=== None
+```
+
 !SLIDE
 
 # Bind
@@ -235,9 +245,15 @@ lazy val g: String => Option[Int] = allCatch opt _.toInt
 
 !SLIDE
 
+# ApplicativePlus
+
+## ApplicativeとPlusEmptyを組み合わせたもの
+
+!SLIDE
+
 # MonadPlus
 
-## MonadとPlusEmptyを組み合わせたもの
+## MonadとApplicativePlusを組み合わせたもの
 
 ### filterが定義される
 
