@@ -32,6 +32,7 @@
 
 * 型クラスに関係した関数
 * applyはインスタンスを得る
+* インスタンスを定義するための関数
 
 ```scala
 def double[A: Semigroup](a: A) = Semigroup[A].append(a, a)

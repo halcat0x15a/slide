@@ -15,7 +15,6 @@ object Point {
   }
 }
 
-import Point._
 assert(Point(2, 3) === Point(2, 3))
 assert(Point(2, 3) =/= Point(3, 5))
 ```
@@ -53,7 +52,6 @@ object Rational {
   }
 }
 
-import Rational._
 assert(Rational(1, 2) === Rational(1, 2))
 assert(Rational(1, 2) < Rational(3, 4))
 assert(Rational(5, 2) >= Rational(5, 3))
@@ -92,8 +90,7 @@ object Person {
 val miku = Person("miku", 16, 158)
 val rin = Person("rin", 14, 152)
 val len = Person("len", 14, 156)
-import Person._
-List(miku, rin, len) sorted PersonInstance.toScalaOrdering assert_=== List(rin, len, miku)
+List(miku, rin, len) sorted Order[Person].toScalaOrdering assert_=== List(rin, len, miku)
 ```
 
 !SLIDE
