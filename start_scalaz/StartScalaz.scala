@@ -57,8 +57,8 @@ sealed trait Title
 case class Book(title: String @@ Title, author: String @@ Author)
 
 object vector {
-  implicit def vectorShow[A] = Show.showA[Vector[A]]
-  implicit def vectorEqual[A] = Equal.equalA[Vector[A]]
+  implicit def VectorShow[A] = Show.showA[Vector[A]]
+  implicit def VectorEqual[A] = Equal.equalA[Vector[A]]
   implicit object VectorInstance extends MonadPlus[Vector] {
     def empty[A] = Vector.empty[A]
     def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
@@ -67,12 +67,26 @@ object vector {
   }
 }
 
+case class User(id: String, pass: String)
+
+object User {
+  implicit object UserInstance extends Show[User] with Equal[User] {
+    def show(u: User) = u.toString.toList
+    def equal(u1: User, u2: User) = u1 == u2
+  }
+}
+
 object StartScalaz extends App {
   def double[A: Semigroup](a: A) = a |+| a
   double(2) assert_=== 4
   double("2") assert_=== "22"
-  import Point._
-  double(Point(1, 2))
+  assert(double(Point(1, 2)) == Point(2, 4))
+
+  import vector._
+  assert(implicitly[Show[Vector[Int]]].shows(Vector(1)) == "Vector(1)")
+  assert(implicitly[Show[Vector[String]]].shows(Vector("geso")) == "Vector(geso)")
+  assert(implicitly[Show[Rational]].shows(Rational(1, 2)) == "1/2")
+  assert(implicitly[Semigroup[Rational]].append(Rational(1, 2), Rational(1, 2)) == Rational(4, 4))
 
   locally {
     val f1 = "foo"
@@ -149,11 +163,9 @@ object StartScalaz extends App {
   import vector._
   Vector(1, 2) <+> Vector(3, 4) assert_=== Vector(1, 2, 3, 4)
 
-  import Point._
   assert(Point(2, 3) === Point(2, 3))
   assert(Point(2, 3) =/= Point(3, 5))
 
-  import Rational._
   assert(Rational(1, 2) === Rational(1, 2))
   assert(Rational(1, 2) < Rational(3, 4))
   assert(Rational(5, 2) >= Rational(5, 3))
@@ -167,8 +179,7 @@ object StartScalaz extends App {
   val miku = Person("miku", 16, 158)
   val rin = Person("rin", 14, 152)
   val len = Person("len", 14, 156)
-  import Person._
-  List(miku, rin, len) sorted PersonInstance.toScalaOrdering assert_=== List(rin, len, miku)
+  List(miku, rin, len) sorted Order[Person].toScalaOrdering assert_=== List(rin, len, miku)
 
   2.succ assert_=== 3
   Rational(1, 2).succ assert_=== Rational(3, 2)
@@ -272,6 +283,11 @@ object StartScalaz extends App {
   append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
   append3(Option(1), None, Option(3)) assert_=== None
   append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
+
+  def user(m: Map[String, String]) = (m.get("id") |@| m.get("pass"))(User.apply)
+
+  user(Map("id" -> "halcat0x15a", "pass" -> "gesogeso")) assert_=== Some(User("halcat0x15a", "gesogeso"))
+  user(Map.empty) assert_=== None
 
   locally {
     def append3[F[_]: Bind, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =

@@ -40,9 +40,14 @@ object Point {
 ### Semigroup[Point]のインスタンスが暗黙的に渡される
 
 ```scala
-import Point._
-double(Point(1, 2))
+assert(double(Point(1, 2)) == Point(2, 4))
 ```
+
+!SLIDE
+
+# implicit parameter
+
+## スコープ内のimplicit valueだけでなく、コンパニオンオブジェクトに定義されたimplicit valueも探索される
 
 !SLIDE
 
@@ -60,7 +65,7 @@ double(Point(1, 2))
 
 ## 文字列へ変換する関数を定義する
 
-### 複数のインスタンスはmix-inや、別のimplicit valueを定義することで実現する
+### インスタンスを複数定義する時はmix-inや、複数のimplicit valueを定義する
 
 ```scala
 object Point {
@@ -69,6 +74,30 @@ object Point {
     def append(p1: Point, p2: => Point) = p1 + p2
   }
 }
+```
+
+!SLIDE
+
+# 演習
+
+* Vectorに対するShowのインスタンス
+* 以下のクラスに対するShowとSemigroupのインスタンス
+
+```scala
+case class Rational(n: Int, d: Int) {
+  def +(r: Rational) = Rational(n * r.d + r.n * d, d * r.d)
+  override def toString = s"$n/$d"
+}
+
+object vector {
+  def VectorShow[A]: Show[Vector[A]]
+}
+
+import vector._
+assert(implicitly[Show[Vector[Int]]].shows(Vector(1)) == "Vector(1)")
+assert(implicitly[Show[Vector[String]]].shows(Vector("geso")) == "Vector(geso)")
+assert(implicitly[Show[Rational]].shows(Rational(1, 2)) == "1/2")
+assert(implicitly[Semigroup[Rational]].append(Rational(1, 2), Rational(1, 2)) == Rational(4, 4))
 ```
 
 !SLIDE
