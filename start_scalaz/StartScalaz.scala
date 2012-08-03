@@ -51,6 +51,11 @@ object Person {
   }
 }
 
+sealed trait Author
+sealed trait Title
+
+case class Book(title: String @@ Title, author: String @@ Author)
+
 object vector {
   implicit def vectorShow[A] = Show.showA[Vector[A]]
   implicit def vectorEqual[A] = Equal.equalA[Vector[A]]
@@ -199,6 +204,29 @@ object StartScalaz extends App {
     List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, yui, kyoko)
   }
 
+  val book = Book(Tag("Programming in Scala"), Tag("Martin Odersky"))
+  /* book.copy(title = book.author) */ // compile error
+  book.title.size assert_=== 20
+
+  import scalaz.Tags._
+  3 |+| 3 assert_=== 6
+  (Multiplication(3) |+| Multiplication(3): Int) assert_=== 9
+  (Conjunction(true) |+| Conjunction(false): Boolean) assert_=== false
+  (Disjunction(true) |+| Disjunction(false): Boolean) assert_=== true
+  import scalaz.Dual._
+  (Dual("hello") |+| Dual("world"): String) assert_=== "worldhello"
+
+  import UnionTypes._
+  def size[A](a: A)(implicit ev: A Contains t[Int]#t[String]#t[List[_]]) = a match {
+    case i: Int => i
+    case s: String => s.length
+    case l: List[_] => l.size
+  }
+  size(1) assert_=== 1
+  size("geso") assert_=== 4
+  size(List(1, 2, 3)) assert_=== 3
+  /* size(1L) */ // compile error
+
   def triple[F[_]: Plus, A](fa: F[A]) = fa <+> fa <+> fa
   triple(Option(1)) assert_=== Option(1)
   triple(List(1)) assert_=== List(1, 1, 1)
@@ -273,11 +301,11 @@ object StartScalaz extends App {
     (fa >>= f >>= g) assert_=== (fa >>= (a => f(a) >>= g))
   }
 
-  def odds[F[_]: MonadPlus](f: F[Int]) = f filter (_ % 2 === 0)
-  odds(List(1, 2, 3)) assert_=== List(2)
-  odds(Option(1)) assert_=== None
+  def evens[F[_]: MonadPlus](f: F[Int]) = f filter (_ % 2 === 0)
+  evens(List(1, 2, 3)) assert_=== List(2)
+  evens(Option(1)) assert_=== None
   import vector._
-  odds(Vector(1, 2, 3)) assert_=== Vector(2)
+  evens(Vector(1, 2, 3)) assert_=== Vector(2)
 
   def triple[FA](fa: FA)(implicit F: Unapply[Plus, FA]) = F.TC.plus(F.TC.plus(F(fa), F(fa)), F(fa))
 }

@@ -7,6 +7,7 @@
     "syntax",
     "monoid",
     "order",
+    "tag",
     "monad"
   ]
 }

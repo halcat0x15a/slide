@@ -251,9 +251,9 @@ object vector {
   }
 }
 
-def odds[F[_]: MonadPlus](f: F[Int]) = f filter (_ % 2 === 0)
-odds(List(1, 2, 3)) assert_==== List(2)
-odds(Option(1)) assert_=== None
+def evens[F[_]: MonadPlus](f: F[Int]) = f filter (_ % 2 === 0)
+evens(List(1, 2, 3)) assert_=== List(2)
+evens(Option(1)) assert_=== None
 import vector._
-odds(Vector(1, 2, 3)) assert_=== Vector(2)
+evens(Vector(1, 2, 3)) assert_=== Vector(2)
 ```
