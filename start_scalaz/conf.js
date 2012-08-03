@@ -6,6 +6,7 @@
     "scalaz",
     "syntax",
     "monoid",
+    "id",
     "order",
     "tag",
     "monad"

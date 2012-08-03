@@ -97,6 +97,8 @@ object StartScalaz extends App {
 
   locally {
     def double[A: Semigroup](a: A) = Semigroup[A].append(a, a)
+    implicit lazy val PointShow = Show.showA[Point]
+    implicit lazy val PointEqual = Equal.equalA[Point]
   }
 
   locally {
@@ -162,6 +164,17 @@ object StartScalaz extends App {
 
   import vector._
   Vector(1, 2) <+> Vector(3, 4) assert_=== Vector(1, 2, 3, 4)
+
+  ("geso": Id[String]) assert_=== "geso"
+
+  1.some assert_=== Some(1)
+  none[Int] assert_=== None
+  assert(1.right[String] === Right(1))
+  assert("geso".left[Int] === Left("geso"))
+
+  1 |> (1 +) assert_=== 2
+  "geso" |> (_.size) assert_=== 4
+  0 |> Show[Int].shows assert_=== "0"
 
   assert(Point(2, 3) === Point(2, 3))
   assert(Point(2, 3) =/= Point(3, 5))
