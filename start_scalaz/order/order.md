@@ -27,12 +27,10 @@ assert(Point(2, 3) =/= Point(3, 5))
 
 ```scala
 1 == "geso"
-// compile error
-// 1 === "geso"
+/* 1 === "geso" */ // compile error
 
 1 + 1.5
-// compile error
-// 1 |+| 1.5
+/* 1 |+| 1.5 */ // compile error
 ```
 
 !SLIDE
@@ -110,7 +108,7 @@ val akari = Student("akari", 1, format.parse("1995 07 24"))
 val kyoko = Student("kyoko", 2, format.parse("1995 03 28"))
 val yui = Student("yui", 2, format.parse("1994 04 22"))
 val chinatsu = Student("chinatsu", 1, format.parse("1995 11 06"))
-List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, yui, kyoko)
+List(akari, kyoko, yui, chinatsu) sorted Order[Student].toScalaOrdering assert_=== List(akari, chinatsu, yui, kyoko)
 ```
 
 !SLIDE

@@ -111,4 +111,7 @@ assert(implicitly[Semigroup[Rational]].append(Rational(1, 2), Rational(1, 2)) ==
 ```scala
 def quote[A](a: A)(implicit s: Show[A]) = s.show(a).mkString("'", "", "'")
 def quote[A: Show](a: A) = implicitly[Show[A]].show(a).mkString("'", "", "'")
+
+quote("geso") assert_=== "'geso'"
+quote(List(1, 2, 3)) assert_=== "'[1,2,3]'"
 ```

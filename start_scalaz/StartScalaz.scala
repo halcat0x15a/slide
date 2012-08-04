@@ -107,6 +107,9 @@ object StartScalaz extends App {
 
   def quote[A: Show](a: A) = a.show.mkString("'", "", "'")
 
+  quote("geso") assert_=== "'geso'"
+  quote(List(1, 2, 3)) assert_=== "'[1,2,3]'"
+
   locally {
     def quote[A](a: A)(implicit s: Show[A]) = s.show(a).mkString("'", "", "'")
   }
@@ -251,9 +254,12 @@ object StartScalaz extends App {
   size(List(1, 2, 3)) assert_=== 3
   /* size(1L) */ // compile error
 
-  def triple[F[_]: Plus, A](fa: F[A]) = fa <+> fa <+> fa
-  triple(Option(1)) assert_=== Option(1)
-  triple(List(1)) assert_=== List(1, 1, 1)
+  locally {
+    def triple[F[_]: Plus, A](fa: F[A]) = fa <+> fa <+> fa
+    triple(Option(1)) assert_=== Option(1)
+    triple(List(1)) assert_=== List(1, 1, 1)
+    /* triple(1.success[String]) assert_=== Success(1) */
+  }
 
   def fdouble[F[_]: Functor, A: Semigroup](fa: F[A]) = fa.map(a => a |+| a)
   fdouble(List(1, 2, 3)) assert_=== List(2, 4, 6)
@@ -285,10 +291,12 @@ object StartScalaz extends App {
   locally {
     val a = 0
     val fa = Option(a)
-    lazy val fab: Option[Int => String] = Option(_.toString)
+    lazy val ab: Int => String = _.toString
+    lazy val fab: Option[Int => String] = Option(ab)
     lazy val fbc: Option[String => Int] = Option(_.size)
     fa <*> ((a: Int) => a).point[Option] assert_=== fa
     fa <*> fab <*> fbc assert_=== fa <*> (fab <*> (fbc <*> (((bc: String => Int) => (ab: Int => String) => bc compose ab).point[Option])))
+    a.point[Option] <*> ab.point[Option] assert_=== ab(a).point[Option]
     a.point[Option] <*> fab assert_=== fab <*> ((f: Int => String) => f(a)).point[Option]
   }
 
@@ -337,4 +345,6 @@ object StartScalaz extends App {
   evens(Vector(1, 2, 3)) assert_=== Vector(2)
 
   def triple[FA](fa: FA)(implicit F: Unapply[Plus, FA]) = F.TC.plus(F.TC.plus(F(fa), F(fa)), F(fa))
+  triple(List(1)) assert_=== List(1, 1, 1)
+  triple(1.success[String]) assert_=== Success(1)
 }

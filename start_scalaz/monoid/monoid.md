@@ -37,7 +37,7 @@ mzero[Rational] assert_=== Rational(0, 1)
 ```scala
 val a = 1
 mzero[Int] |+| a assert_=== a
-a |+| mzero[String] assert_=== a
+a |+| mzero[Int] assert_=== a
 ```
 
 !SLIDE
