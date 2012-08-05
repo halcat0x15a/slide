@@ -13,6 +13,7 @@
 * よしださんしろう([halcat0x15a](https://twitter.com/halcat0x15a))
 * Scala, Clojure, Haskellとか
 * Scalaは2.5年くらい書いてます
+* Scalazは1年くらい
 * 大学生になりました
 * 夏休みです
 

@@ -4,7 +4,7 @@
 
 !SLIDE
 
-# Equal
+# [Equal](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Equal)
 
 ## 等価性
 
@@ -27,17 +27,15 @@ assert(Point(2, 3) =/= Point(3, 5))
 
 ```scala
 1 == "geso"
-// compile error
-// 1 === "geso"
+/* 1 === "geso" */ // compile error
 
 1 + 1.5
-// compile error
-// 1 |+| 1.5
+/* 1 |+| 1.5 */ // compile error
 ```
 
 !SLIDE
 
-# Order
+# [Order](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Order)
 
 ## 順序
 
@@ -59,7 +57,7 @@ assert(Rational(5, 2) >= Rational(5, 3))
 
 !SLIDE
 
-# Ordering
+# [Ordering](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Ordering)
 
 ## Javaのcompareが返す-1、0、1に対応する
 
@@ -95,7 +93,7 @@ List(miku, rin, len) sorted Order[Person].toScalaOrdering assert_=== List(rin, l
 
 !SLIDE
 
-# 問題
+# 演習
 
 * java.util.Dateに対するOrderのインスタンス
 * 以下のクラスに対するOrderのインスタンス
@@ -110,12 +108,12 @@ val akari = Student("akari", 1, format.parse("1995 07 24"))
 val kyoko = Student("kyoko", 2, format.parse("1995 03 28"))
 val yui = Student("yui", 2, format.parse("1994 04 22"))
 val chinatsu = Student("chinatsu", 1, format.parse("1995 11 06"))
-List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, yui, kyoko)
+List(akari, kyoko, yui, chinatsu) sorted Order[Student].toScalaOrdering assert_=== List(akari, chinatsu, yui, kyoko)
 ```
 
 !SLIDE
 
-# Enum
+# [Enum](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Enum)
 
 ## Orderにsuccessorとpredecessorを加えたもの
 
@@ -136,26 +134,4 @@ object Rational {
 Rational(1, 2).succ assert_=== Rational(3, 2)
 'b'.pred assert_=== 'a'
 Rational(1, 2).pred assert_=== Rational(-1, 2)
-```
-
-!SLIDE
-
-# -+-, ---
-
-## 任意の回数succ, predした値
-
-```scala
-'a' -+- 2 assert_=== 'c'
-1 --- 3 assert_=== -2
-```
-
-!SLIDE
-
-# |->, |-->
-
-## 任意の値までsuccしたものを集める
-
-```scala
-1 |-> 3 assert_=== List(1, 2, 3)
-'a' |--> (2, 'f') assert_=== List('a', 'c', 'e')
 ```

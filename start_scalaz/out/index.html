@@ -23,6 +23,7 @@
        <div class="container"><h1 id="%E7%99%BA%E8%A1%A8%E8%80%85">発表者</h1><ul><li>よしださんしろう(<a  href="https://twitter.com/halcat0x15a">halcat0x15a</a>)
 </li><li>Scala, Clojure, Haskellとか
 </li><li>Scalaは2.5年くらい書いてます
+</li><li>Scalazは1年くらい
 </li><li>大学生になりました
 </li><li>夏休みです
 </li></ul></div>
@@ -59,7 +60,7 @@ double(2) assert_=== 4
 double(&quot;2&quot;) assert_=== &quot;22&quot;
 </code></pre></div>
       </div><div class="content" id="slide-8">
-       <div class="container"><h1 id="Semigroup">Semigroup</h1><h2 id="append%E3%81%AF%E6%8A%BD%E8%B1%A1%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%80%81%EF%BC%92%E3%81%A4%E3%81%AE%E5%80%A4%E3%82%92%E7%B5%90%E5%90%88%E3%81%99%E3%82%8B%E9%96%A2%E6%95%B0">appendは抽象メソッド、２つの値を結合する関数</h2><h3 id="Point%E3%82%92%E4%BE%8B%E3%81%AB%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%82%92%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B">Pointを例にインスタンスを定義する</h3><pre><code class="prettyprint lang-scala">case class Point(x: Int, y: Int) {
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Semigroup">Semigroup</a></h1><h2 id="append%E3%81%AF%E6%8A%BD%E8%B1%A1%E3%83%A1%E3%82%BD%E3%83%83%E3%83%89%E3%80%81%EF%BC%92%E3%81%A4%E3%81%AE%E5%80%A4%E3%82%92%E7%B5%90%E5%90%88%E3%81%99%E3%82%8B%E9%96%A2%E6%95%B0">appendは抽象メソッド、２つの値を結合する関数</h2><h3 id="Point%E3%82%92%E4%BE%8B%E3%81%AB%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%82%92%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B">Pointを例にインスタンスを定義する</h3><pre><code class="prettyprint lang-scala">case class Point(x: Int, y: Int) {
   def +(p: Point) = Point(x + p.x, y + p.y)
 }
 
@@ -78,7 +79,7 @@ object Point {
        <div class="container"><h1 id="Law">Law</h1><h2 id="Law%E3%81%AF%E5%9E%8B%E3%82%AF%E3%83%A9%E3%82%B9%E5%86%85%E3%81%ABtrait%E3%81%A8%E3%81%97%E3%81%A6%E5%AE%9A%E7%BE%A9%E3%81%95%E3%82%8C%E3%81%A6%E3%82%8B">Lawは型クラス内にtraitとして定義されてる</h2><h3 id="append%E3%81%AE%E5%AE%9A%E7%BE%A9%E3%81%AFSemigroupLaw%E3%82%92%E6%BA%80%E3%81%9F%E3%81%97%E3%81%A6%E3%81%84%E3%81%AA%E3%81%91%E3%82%8C%E3%81%B0%E3%81%AA%E3%82%89%E3%81%AA%E3%81%84">appendの定義はSemigroupLawを満たしていなければならない</h3><ul><li>append(f1, append(f2, f3)) == append(append(f1, f2), f3)
 </li></ul></div>
       </div><div class="content" id="slide-12">
-       <div class="container"><h1 id="Show">Show</h1><h2 id="%E6%96%87%E5%AD%97%E5%88%97%E3%81%B8%E5%A4%89%E6%8F%9B%E3%81%99%E3%82%8B%E9%96%A2%E6%95%B0%E3%82%92%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B">文字列へ変換する関数を定義する</h2><h3 id="%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%82%92%E8%A4%87%E6%95%B0%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B%E6%99%82%E3%81%AFmix-in%E3%82%84%E3%80%81%E8%A4%87%E6%95%B0%E3%81%AEimplicit+value%E3%82%92%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B">インスタンスを複数定義する時はmix-inや、複数のimplicit valueを定義する</h3><pre><code class="prettyprint lang-scala">object Point {
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Show">Show</a></h1><h2 id="%E6%96%87%E5%AD%97%E5%88%97%E3%81%B8%E5%A4%89%E6%8F%9B%E3%81%99%E3%82%8B%E9%96%A2%E6%95%B0%E3%82%92%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B">文字列へ変換する関数を定義する</h2><h3 id="%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%82%92%E8%A4%87%E6%95%B0%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B%E6%99%82%E3%81%AFmix-in%E3%82%84%E3%80%81%E8%A4%87%E6%95%B0%E3%81%AEimplicit+value%E3%82%92%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B">インスタンスを複数定義する時はmix-inや、複数のimplicit valueを定義する</h3><pre><code class="prettyprint lang-scala">object Point {
   implicit object PointInstance extends Show[Point] with Semigroup[Point] {
     def show(p: Point) = p.toString.toList
     def append(p1: Point, p2: =&gt; Point) = p1 + p2
@@ -106,6 +107,9 @@ assert(implicitly[Semigroup[Rational]].append(Rational(1, 2), Rational(1, 2)) ==
       </div><div class="content" id="slide-14">
        <div class="container"><h1 id="Context+Bound">Context Bound</h1><h2 id="%E5%9E%8B%E3%82%AF%E3%83%A9%E3%82%B9%E3%82%92%E5%88%A9%E7%94%A8%E3%81%99%E3%82%8B%E3%81%A8%E3%81%8D%E3%80%81%E6%98%8E%E7%A4%BA%E7%9A%84%E3%81%ABimplicit+parameter%E3%82%92%E6%9B%B8%E3%81%8B%E3%81%AA%E3%81%84%E3%81%93%E3%81%A8%E3%81%8C%E5%A4%9A%E3%81%84">型クラスを利用するとき、明示的にimplicit parameterを書かないことが多い</h2><h3 id="%E6%AC%A1%E3%81%AE%E9%96%A2%E6%95%B0%E3%81%AF%E5%90%8C%E3%81%98%E5%8B%95%E4%BD%9C%E3%82%92%E3%81%99%E3%82%8B">次の関数は同じ動作をする</h3><pre><code class="prettyprint lang-scala">def quote[A](a: A)(implicit s: Show[A]) = s.show(a).mkString(&quot;'&quot;, &quot;&quot;, &quot;'&quot;)
 def quote[A: Show](a: A) = implicitly[Show[A]].show(a).mkString(&quot;'&quot;, &quot;&quot;, &quot;'&quot;)
+
+quote(&quot;geso&quot;) assert_=== &quot;'geso'&quot;
+quote(List(1, 2, 3)) assert_=== &quot;'[1,2,3]'&quot;
 </code></pre></div>
       </div><div class="content" id="slide-15">
        <div class="container"><h1 id="Scalaz">Scalaz</h1></div>
@@ -132,6 +136,9 @@ def quote[A: Show](a: A) = implicitly[Show[A]].show(a).mkString(&quot;'&quot;, &
 </li><li>applyはインスタンスを得る
 </li><li>インスタンスを定義するための関数
 </li></ul><pre><code class="prettyprint lang-scala">def double[A: Semigroup](a: A) = Semigroup[A].append(a, a)
+
+implicit lazy val PointShow = Show.showA[Point]
+implicit lazy val PointEqual = Equal.equalA[Point]
 </code></pre></div>
       </div><div class="content" id="slide-19">
        <div class="container"><h1 id="%E3%83%87%E3%83%BC%E3%82%BF%E5%9E%8B%E3%81%AE%E3%82%B3%E3%83%B3%E3%83%91%E3%83%8B%E3%82%AA%E3%83%B3%E3%82%AA%E3%83%96%E3%82%B8%E3%82%A7%E3%82%AF%E3%83%88">データ型のコンパニオンオブジェクト</h1><h2 id="Instances%E3%81%A8Functions%E3%82%92%E7%B6%99%E6%89%BF%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B">InstancesとFunctionsを継承している</h2></div>
@@ -148,7 +155,7 @@ def quote[A: Show](a: A) = implicitly[Show[A]].show(a).mkString(&quot;'&quot;, &
 def quote[A: Show](a: A) = a.show.mkString(&quot;'&quot;, &quot;&quot;, &quot;'&quot;)
 </code></pre></div>
       </div><div class="content" id="slide-24">
-       <div class="container"><h1 id="Monoid">Monoid</h1></div>
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Monoid">Monoid</a></h1></div>
       </div><div class="content" id="slide-25">
        <div class="container"><h2 id="Semigroup%E3%81%AB%E6%81%92%E7%AD%89%E5%85%83%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E3%82%82%E3%81%AE">Semigroupに恒等元を加えたもの</h2><h3 id="Rational%E3%81%AE%E4%BE%8B">Rationalの例</h3><pre><code class="prettyprint lang-scala">case class Rational(n: Int, d: Int) {
   def +(r: Rational) = Rational(n * r.d + r.n * d, d * r.d)
@@ -166,27 +173,22 @@ mzero[Option[String]] assert_=== None
 mzero[Rational] assert_=== Rational(0, 1)
 </code></pre></div>
       </div><div class="content" id="slide-26">
-       <div class="container"><h1 id="MonoidLaw">MonoidLaw</h1><h2 id="%E6%81%92%E7%AD%89%E5%85%83%E3%81%AE%E6%80%A7%E8%B3%AA">恒等元の性質</h2><ul><li>append(zero, a) == a
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Monoid$MonoidLaw">MonoidLaw</a></h1><h2 id="%E6%81%92%E7%AD%89%E5%85%83%E3%81%AE%E6%80%A7%E8%B3%AA">恒等元の性質</h2><ul><li>append(zero, a) == a
 </li><li>append(a, zero) == a
 </li></ul><pre><code class="prettyprint lang-scala">val a = 1
 mzero[Int] |+| a assert_=== a
-a |+| mzero[String] assert_=== a
+a |+| mzero[Int] assert_=== a
 </code></pre></div>
       </div><div class="content" id="slide-27">
-       <div class="container"><h1 id="multiply">multiply</h1><h2 id="%E4%BB%BB%E6%84%8F%E3%81%AE%E5%9B%9E%E6%95%B0%E7%B5%90%E5%90%88%E3%81%99%E3%82%8B">任意の回数結合する</h2><pre><code class="prettyprint lang-scala">3 multiply 5 assert_=== 15
-&quot;geso&quot; multiply 2 assert_=== &quot;gesogeso&quot;
-Rational(1, 2) multiply 3 assert_=== Rational(1, 8)
-</code></pre></div>
-      </div><div class="content" id="slide-28">
        <div class="container"><h1 id="Monoid.replicate">Monoid.replicate</h1><h2 id="%E4%BB%BB%E6%84%8F%E3%81%AE%E5%9B%9E%E6%95%B0%E7%B9%B0%E3%82%8A%E8%BF%94%E3%81%97%E9%96%A2%E6%95%B0%E3%82%92%E9%81%A9%E7%94%A8%E3%81%97%E3%80%81%E7%B5%90%E6%9E%9C%E3%82%92%E9%9B%86%E3%82%81%E3%82%8B">任意の回数繰り返し関数を適用し、結果を集める</h2><pre><code class="prettyprint lang-scala">Monoid.replicate[List, Int](0)(3, 1 +) assert_=== List(0, 1, 2)
 </code></pre></div>
-      </div><div class="content" id="slide-29">
+      </div><div class="content" id="slide-28">
        <div class="container"><h1 id="Monoid.unfold">Monoid.unfold</h1><h2 id="None%E3%82%92%E8%BF%94%E3%81%99%E3%81%BE%E3%81%A7%E7%B9%B0%E3%82%8A%E8%BF%94%E3%81%97%E9%96%A2%E6%95%B0%E3%82%92%E9%81%A9%E7%94%A8%E3%81%97%E3%80%81%E7%B5%90%E6%9E%9C%E3%82%92%E9%9B%86%E3%82%81%E3%82%8B">Noneを返すまで繰り返し関数を適用し、結果を集める</h2><pre><code class="prettyprint lang-scala">Monoid.unfold[List, List[Int], Int](List(1, 2, 3)) {
   case Nil =&gt; None
   case x :: xs =&gt; Some(x * 2 -&gt; xs)
 } assert_=== List(2, 4, 6)
 </code></pre></div>
-      </div><div class="content" id="slide-30">
+      </div><div class="content" id="slide-29">
        <div class="container"><h1 id="%E5%95%8F%E9%A1%8C">問題</h1><ul><li>replicateを用いて偶数列からn個取得する関数evens
 </li><li>unfoldを用いて10進数から2進数へ変換する関数encode
 </li></ul><pre><code class="prettyprint lang-scala">def evens(n: Int): List[Int]
@@ -194,8 +196,8 @@ def encode(n: Int): List[Int]
 evens(5) assert_=== List(0, 2, 4, 6, 8)
 encode(13) assert_=== List(1, 0, 1, 1)
 </code></pre></div>
-      </div><div class="content" id="slide-31">
-       <div class="container"><h1 id="Group">Group</h1><h2 id="%E9%80%86%E5%85%83%E3%82%92%E6%8C%81%E3%81%A4Monoid">逆元を持つMonoid</h2><pre><code class="prettyprint lang-scala">object Rational {
+      </div><div class="content" id="slide-30">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Group">Group</a></h1><h2 id="%E9%80%86%E5%85%83%E3%82%92%E6%8C%81%E3%81%A4Monoid">逆元を持つMonoid</h2><pre><code class="prettyprint lang-scala">object Rational {
   implicit object RationalInstance extends Order[Rational] with Show[Rational] with Group[Rational] {
     def zero = Rational(0, 1)
     def append(r1: Rational, r2: =&gt; Rational) = r1 + r2
@@ -206,12 +208,8 @@ encode(13) assert_=== List(1, 0, 1, 1)
 1.inverse assert_=== -1
 Rational(1, 2).inverse assert_=== Rational(-1, 2)
 </code></pre></div>
-      </div><div class="content" id="slide-32">
-       <div class="container"><h1 id="%7C-%7C">|-|</h1><h2 id="%E9%80%86%E5%85%83%E3%81%A8%E7%B5%90%E5%90%88%E3%81%99%E3%82%8B">逆元と結合する</h2><pre><code class="prettyprint lang-scala">1 |-| 1 assert_=== 0
-1.2 |-| 2.1 assert_=== -0.9000000000000001
-</code></pre></div>
-      </div><div class="content" id="slide-33">
-       <div class="container"><h1 id="Plus%2C+PlusEmpty">Plus, PlusEmpty</h1><h2 id="%E9%87%8F%E5%8C%96%E3%81%95%E3%82%8C%E3%81%9FSemigroup%2C+Monoid">量化されたSemigroup, Monoid</h2><h3 id="Plus%E3%81%AF%E8%A6%81%E7%B4%A0%E3%81%AE%E6%80%A7%E8%B3%AA%E3%81%AB%E4%BE%9D%E5%AD%98%E3%81%97%E3%81%AA%E3%81%84">Plusは要素の性質に依存しない</h3><pre><code class="prettyprint lang-scala">List(1, 2) |+| List(3, 4) assert_=== List(1, 2, 3, 4)
+      </div><div class="content" id="slide-31">
+       <div class="container"><h1 id="%2C"><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Plus">Plus</a>, <a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.PlusEmpty">PlusEmpty</a></h1><h2 id="%E9%87%8F%E5%8C%96%E3%81%95%E3%82%8C%E3%81%9FSemigroup%2C+Monoid">量化されたSemigroup, Monoid</h2><h3 id="Plus%E3%81%AF%E8%A6%81%E7%B4%A0%E3%81%AE%E6%80%A7%E8%B3%AA%E3%81%AB%E4%BE%9D%E5%AD%98%E3%81%97%E3%81%AA%E3%81%84">Plusは要素の性質に依存しない</h3><pre><code class="prettyprint lang-scala">List(1, 2) |+| List(3, 4) assert_=== List(1, 2, 3, 4)
 List(1, 2) &lt;+&gt; List(3, 4) assert_=== List(1, 2, 3, 4)
 Option(1) |+| Option(1) assert_=== Option(2)
 Option(1) &lt;+&gt; Option(1) assert_=== Option(1)
@@ -225,10 +223,28 @@ object vector {
 import vector._
 assert(Vector(1, 2) &lt;+&gt; Vector(3, 4) == Vector(1, 2, 3, 4))
 </code></pre></div>
+      </div><div class="content" id="slide-32">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Id$">Id</a></h1></div>
+      </div><div class="content" id="slide-33">
+       <div class="container"><h2 id="%E6%81%92%E7%AD%89%E3%83%A2%E3%83%8A%E3%83%89">恒等モナド</h2><pre><code class="prettyprint lang-scala">(&quot;geso&quot;: Id[String]) assert_=== &quot;geso&quot;
+</code></pre></div>
       </div><div class="content" id="slide-34">
-       <div class="container"><h1 id="Order">Order</h1></div>
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.syntax.IdOps">IdOps</a></h1><h2 id="%E5%85%A8%E3%81%A6%E3%81%AE%E5%9E%8B%E3%81%AB%E5%AF%BE%E3%81%97%E3%81%A6%E3%82%B7%E3%83%B3%E3%82%BF%E3%83%83%E3%82%AF%E3%82%B9%E3%81%8C%E4%BE%9B%E7%B5%A6%E3%81%95%E3%82%8C%E3%82%8B">全ての型に対してシンタックスが供給される</h2></div>
       </div><div class="content" id="slide-35">
-       <div class="container"><h1 id="Equal">Equal</h1><h2 id="%E7%AD%89%E4%BE%A1%E6%80%A7">等価性</h2><pre><code class="prettyprint lang-scala">object Point {
+       <div class="container"><h1 id="some%2C+none%2C+left%2C+right">some, none, left, right</h1><h2 id="Option%E3%82%84Either%E3%81%AE%E3%82%A4%E3%83%B3%E3%82%B9%E3%82%BF%E3%83%B3%E3%82%B9%E3%82%92%E7%94%9F%E6%88%90%E3%81%99%E3%82%8B">OptionやEitherのインスタンスを生成する</h2><pre><code class="prettyprint lang-scala">1.some assert_=== Some(1)
+none[Int] assert_=== None
+assert(1.right[String] === Right(1))
+assert(&quot;geso&quot;.left[Int] === Left(&quot;geso&quot;))
+</code></pre></div>
+      </div><div class="content" id="slide-36">
+       <div class="container"><h1 id="%7C%3E">|&gt;</h1><h2 id="%E9%96%A2%E6%95%B0%E3%81%AB%E8%87%AA%E8%BA%AB%E3%82%92%E9%81%A9%E7%94%A8%E3%81%99%E3%82%8B">関数に自身を適用する</h2><pre><code class="prettyprint lang-scala">1 |&gt; (1 +) assert_=== 2
+&quot;geso&quot; |&gt; (_.size) assert_=== 4
+0 |&gt; Show[Int].shows assert_=== &quot;0&quot;
+</code></pre></div>
+      </div><div class="content" id="slide-37">
+       <div class="container"><h1 id="Order">Order</h1></div>
+      </div><div class="content" id="slide-38">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Equal">Equal</a></h1><h2 id="%E7%AD%89%E4%BE%A1%E6%80%A7">等価性</h2><pre><code class="prettyprint lang-scala">object Point {
   implicit object PointInstance extends Equal[Point] {
     def equal(p1: Point, p2: Point) = p1 == p2
   }
@@ -237,17 +253,15 @@ assert(Vector(1, 2) &lt;+&gt; Vector(3, 4) == Vector(1, 2, 3, 4))
 assert(Point(2, 3) === Point(2, 3))
 assert(Point(2, 3) =/= Point(3, 5))
 </code></pre></div>
-      </div><div class="content" id="slide-36">
+      </div><div class="content" id="slide-39">
        <div class="container"><h1 id="%E5%9E%8B%E5%AE%89%E5%85%A8%E3%81%AA%E6%BC%94%E7%AE%97">型安全な演算</h1><h2 id="Scalaz%E3%81%AE%E9%96%A2%E6%95%B0%E3%81%AF%E3%82%B8%E3%82%A7%E3%83%8D%E3%83%AA%E3%82%AF%E3%82%B9%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%A6%E3%81%84%E3%82%8B">Scalazの関数はジェネリクスを利用している</h2><pre><code class="prettyprint lang-scala">1 == &quot;geso&quot;
-// compile error
-// 1 === &quot;geso&quot;
+/* 1 === &quot;geso&quot; */ // compile error
 
 1 + 1.5
-// compile error
-// 1 |+| 1.5
+/* 1 |+| 1.5 */ // compile error
 </code></pre></div>
-      </div><div class="content" id="slide-37">
-       <div class="container"><h1 id="Order">Order</h1><h2 id="%E9%A0%86%E5%BA%8F">順序</h2><pre><code class="prettyprint lang-scala">object Rational {
+      </div><div class="content" id="slide-40">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Order">Order</a></h1><h2 id="%E9%A0%86%E5%BA%8F">順序</h2><pre><code class="prettyprint lang-scala">object Rational {
   implicit object RationalInstance extends Order[Rational] {
     def order(r1: Rational, r2: Rational) = r1.n * r2.d -&gt; r2.n * r1.d match {
       case (m, n) if m == n =&gt; Ordering.EQ
@@ -261,13 +275,13 @@ assert(Rational(1, 2) === Rational(1, 2))
 assert(Rational(1, 2) &lt; Rational(3, 4))
 assert(Rational(5, 2) &gt;= Rational(5, 3))
 </code></pre></div>
-      </div><div class="content" id="slide-38">
-       <div class="container"><h1 id="Ordering">Ordering</h1><h2 id="Java%E3%81%AEcompare%E3%81%8C%E8%BF%94%E3%81%99-1%E3%80%810%E3%80%811%E3%81%AB%E5%AF%BE%E5%BF%9C%E3%81%99%E3%82%8B">Javaのcompareが返す-1、0、1に対応する</h2><h3 id="Ordering%E3%81%AF%E3%83%A2%E3%83%8E%E3%82%A4%E3%83%89%E3%81%A7%E3%81%82%E3%82%8B%E3%81%9F%E3%82%81%E3%80%81%E8%A4%87%E6%95%B0%E3%81%AE%E6%AF%94%E8%BC%83%E7%B5%90%E6%9E%9C%E3%82%92%E7%B5%90%E5%90%88%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8%E3%81%8C%E3%81%A7%E3%81%8D%E3%82%8B">Orderingはモノイドであるため、複数の比較結果を結合することができる</h3><pre><code class="prettyprint lang-scala">mzero[Ordering] assert_=== Ordering.EQ
+      </div><div class="content" id="slide-41">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Ordering">Ordering</a></h1><h2 id="Java%E3%81%AEcompare%E3%81%8C%E8%BF%94%E3%81%99-1%E3%80%810%E3%80%811%E3%81%AB%E5%AF%BE%E5%BF%9C%E3%81%99%E3%82%8B">Javaのcompareが返す-1、0、1に対応する</h2><h3 id="Ordering%E3%81%AF%E3%83%A2%E3%83%8E%E3%82%A4%E3%83%89%E3%81%A7%E3%81%82%E3%82%8B%E3%81%9F%E3%82%81%E3%80%81%E8%A4%87%E6%95%B0%E3%81%AE%E6%AF%94%E8%BC%83%E7%B5%90%E6%9E%9C%E3%82%92%E7%B5%90%E5%90%88%E3%81%99%E3%82%8B%E3%81%93%E3%81%A8%E3%81%8C%E3%81%A7%E3%81%8D%E3%82%8B">Orderingはモノイドであるため、複数の比較結果を結合することができる</h3><pre><code class="prettyprint lang-scala">mzero[Ordering] assert_=== Ordering.EQ
 (Ordering.EQ: Ordering) |+| Ordering.LT assert_=== Ordering.LT
 (Ordering.GT: Ordering) |+| Ordering.LT assert_=== Ordering.GT
 (Ordering.GT: Ordering) |+| Ordering.EQ assert_=== Ordering.GT
 </code></pre></div>
-      </div><div class="content" id="slide-39">
+      </div><div class="content" id="slide-42">
        <div class="container"><h2 id="Ordering%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%9Fsort">Orderingを利用したsort</h2><pre><code class="prettyprint lang-scala">case class Person(name: String, age: Int, height: Int)
 
 object Person {
@@ -283,8 +297,8 @@ val rin = Person(&quot;rin&quot;, 14, 152)
 val len = Person(&quot;len&quot;, 14, 156)
 List(miku, rin, len) sorted Order[Person].toScalaOrdering assert_=== List(rin, len, miku)
 </code></pre></div>
-      </div><div class="content" id="slide-40">
-       <div class="container"><h1 id="%E5%95%8F%E9%A1%8C">問題</h1><ul><li>java.util.Dateに対するOrderのインスタンス
+      </div><div class="content" id="slide-43">
+       <div class="container"><h1 id="%E6%BC%94%E7%BF%92">演習</h1><ul><li>java.util.Dateに対するOrderのインスタンス
 </li><li><p>以下のクラスに対するOrderのインスタンス
 </p><ul><li>gradeとbirthdayを用いる
 </li><li>ただしgrade重きを置く
@@ -295,10 +309,10 @@ val akari = Student(&quot;akari&quot;, 1, format.parse(&quot;1995 07 24&quot;))
 val kyoko = Student(&quot;kyoko&quot;, 2, format.parse(&quot;1995 03 28&quot;))
 val yui = Student(&quot;yui&quot;, 2, format.parse(&quot;1994 04 22&quot;))
 val chinatsu = Student(&quot;chinatsu&quot;, 1, format.parse(&quot;1995 11 06&quot;))
-List(akari, kyoko, yui, chinatsu).sorted(StudentOrder.toScalaOrdering) assert_=== List(akari, chinatsu, yui, kyoko)
+List(akari, kyoko, yui, chinatsu) sorted Order[Student].toScalaOrdering assert_=== List(akari, chinatsu, yui, kyoko)
 </code></pre></div>
-      </div><div class="content" id="slide-41">
-       <div class="container"><h1 id="Enum">Enum</h1><h2 id="Order%E3%81%ABsuccessor%E3%81%A8predecessor%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E3%82%82%E3%81%AE">Orderにsuccessorとpredecessorを加えたもの</h2><pre><code class="prettyprint lang-scala">object Rational {
+      </div><div class="content" id="slide-44">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Enum">Enum</a></h1><h2 id="Order%E3%81%ABsuccessor%E3%81%A8predecessor%E3%82%92%E5%8A%A0%E3%81%88%E3%81%9F%E3%82%82%E3%81%AE">Orderにsuccessorとpredecessorを加えたもの</h2><pre><code class="prettyprint lang-scala">object Rational {
   implicit object RationalInstance extends Enum[Rational] {
     def order(r1: Rational, r2: Rational) = r1.n * r2.d -&gt; r2.n * r1.d match {
       case (m, n) if m == n =&gt; Ordering.EQ
@@ -315,18 +329,10 @@ Rational(1, 2).succ assert_=== Rational(3, 2)
 'b'.pred assert_=== 'a'
 Rational(1, 2).pred assert_=== Rational(-1, 2)
 </code></pre></div>
-      </div><div class="content" id="slide-42">
-       <div class="container"><h1 id="-%2B-%2C+%E2%80%94-">-+-, —-</h1><h2 id="%E4%BB%BB%E6%84%8F%E3%81%AE%E5%9B%9E%E6%95%B0succ%2C+pred%E3%81%97%E3%81%9F%E5%80%A4">任意の回数succ, predした値</h2><pre><code class="prettyprint lang-scala">'a' -+- 2 assert_=== 'c'
-1 --- 3 assert_=== -2
-</code></pre></div>
-      </div><div class="content" id="slide-43">
-       <div class="container"><h1 id="%7C-%3E%2C+%7C%E2%80%94%3E">|-&gt;, |—&gt;</h1><h2 id="%E4%BB%BB%E6%84%8F%E3%81%AE%E5%80%A4%E3%81%BE%E3%81%A7succ%E3%81%97%E3%81%9F%E3%82%82%E3%81%AE%E3%82%92%E9%9B%86%E3%82%81%E3%82%8B">任意の値までsuccしたものを集める</h2><pre><code class="prettyprint lang-scala">1 |-&gt; 3 assert_=== List(1, 2, 3)
-'a' |--&gt; (2, 'f') assert_=== List('a', 'c', 'e')
-</code></pre></div>
-      </div><div class="content" id="slide-44">
-       <div class="container"><h1 id="Tagged+Types">Tagged Types</h1></div>
       </div><div class="content" id="slide-45">
-       <div class="container"><h1 id="Tag">Tag</h1><h2 id="%E6%97%A2%E5%AD%98%E3%81%AE%E5%9E%8B%E3%82%92%E5%88%A5%E3%81%AE%E5%9E%8B%E3%81%A8%E3%81%97%E3%81%A6%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B">既存の型を別の型として定義する</h2><pre><code class="prettyprint lang-scala">sealed trait Author
+       <div class="container"><h1 id="Tagged+Types">Tagged Types</h1></div>
+      </div><div class="content" id="slide-46">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Tag$">Tag</a></h1><h2 id="%E6%97%A2%E5%AD%98%E3%81%AE%E5%9E%8B%E3%82%92%E5%88%A5%E3%81%AE%E5%9E%8B%E3%81%A8%E3%81%97%E3%81%A6%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B">既存の型を別の型として定義する</h2><pre><code class="prettyprint lang-scala">sealed trait Author
 sealed trait Title
 
 case class Book(title: String @@ Title, author: String @@ Author)
@@ -334,7 +340,7 @@ case class Book(title: String @@ Title, author: String @@ Author)
 val book = Book(Tag(&quot;Programming in Scala&quot;), Tag(&quot;Martin Odersky&quot;))
 /* book.copy(title = book.author) */ // compile error
 </code></pre></div>
-      </div><div class="content" id="slide-46">
+      </div><div class="content" id="slide-47">
        <div class="container"><h1 id="newtype">newtype</h1><h2 id="Scalaz6%E3%81%A7%E3%81%AFPimp+my+Library+Pattern%E3%81%8C%E7%94%A8%E3%81%84%E3%82%89%E3%82%8C%E3%81%A6%E3%82%8B">Scalaz6ではPimp my Library Patternが用いられてる</h2><h3 id="Scalaz7%E3%81%A7%E3%81%AFTagged+Types%E3%82%92%E7%94%A8%E3%81%84%E3%82%8B">Scalaz7ではTagged Typesを用いる</h3><pre><code class="prettyprint lang-scala">import scalaz.Tags._
 3 |+| 3 assert_=== 6
 (Multiplication(3) |+| Multiplication(3): Int) assert_=== 9
@@ -343,8 +349,8 @@ val book = Book(Tag(&quot;Programming in Scala&quot;), Tag(&quot;Martin Odersky&
 import scalaz.Dual._
 (Dual(&quot;hello&quot;) |+| Dual(&quot;world&quot;): String) assert_=== &quot;worldhello&quot;
 </code></pre></div>
-      </div><div class="content" id="slide-47">
-       <div class="container"><h1 id="Union+Types">Union Types</h1><h2 id="Either%E3%81%A8%E3%81%AF%E9%81%95%E3%81%84%E3%80%81%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%A7%E5%8C%85%E3%82%80%E5%BF%85%E8%A6%81%E3%81%8C%E3%81%AA%E3%81%84">Eitherとは違い、コンテナで包む必要がない</h2><pre><code class="prettyprint lang-scala">def size[A](a: A)(implicit ev: A Contains t[Int]#t[String]#t[List[_]]) = a match {
+      </div><div class="content" id="slide-48">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.UnionTypes$">UnionTypes</a></h1><h2 id="Either%E3%81%A8%E3%81%AF%E9%81%95%E3%81%84%E3%80%81%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%A7%E5%8C%85%E3%82%80%E5%BF%85%E8%A6%81%E3%81%8C%E3%81%AA%E3%81%84">Eitherとは違い、コンテナで包む必要がない</h2><pre><code class="prettyprint lang-scala">def size[A](a: A)(implicit ev: A Contains t[Int]#t[String]#t[List[_]]) = a match {
   case i: Int =&gt; i
   case s: String =&gt; s.length
   case l: List[_] =&gt; l.size
@@ -354,16 +360,16 @@ size(&quot;geso&quot;) assert_=== 4
 size(List(1, 2, 3)) assert_=== 3
 /* size(1L) */ // compile error
 </code></pre></div>
-      </div><div class="content" id="slide-48">
-       <div class="container"><h1 id="Monad">Monad</h1></div>
       </div><div class="content" id="slide-49">
+       <div class="container"><h1 id="Monad">Monad</h1></div>
+      </div><div class="content" id="slide-50">
        <div class="container"><h1 id="Higher+Kinds">Higher Kinds</h1><h2 id="%E5%9E%8B%E3%82%92%E3%83%91%E3%83%A9%E3%83%A1%E3%83%BC%E3%82%BF%E3%81%A8%E3%81%97%E3%81%A6%E3%81%A8%E3%82%8B%E5%9E%8B">型をパラメータとしてとる型</h2><pre><code class="prettyprint lang-scala">import scala.language.higherKinds
 def triple[F[_]: Plus, A](fa: F[A]) = fa &lt;+&gt; fa &lt;+&gt; fa
 triple(Option(1)) assert_=== Option(1)
 triple(List(1)) assert_=== List(1, 1, 1)
 </code></pre></div>
-      </div><div class="content" id="slide-50">
-       <div class="container"><h1 id="Functor">Functor</h1><h2 id="map">map</h2><h3 id="%E9%96%A2%E6%95%B0%E3%82%92%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AB%E9%81%A9%E7%94%A8%E3%81%99%E3%82%8B">関数をコンテナに適用する</h3><pre><code class="prettyprint lang-scala">object vector {
+      </div><div class="content" id="slide-51">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Functor">Functor</a></h1><h2 id="map">map</h2><h3 id="%E9%96%A2%E6%95%B0%E3%82%92%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AB%E9%81%A9%E7%94%A8%E3%81%99%E3%82%8B">関数をコンテナに適用する</h3><pre><code class="prettyprint lang-scala">object vector {
   implicit object VectorInstance extends Functor[Vector] {
     def map[A, B](v: Vector[A])(f: A =&gt; B) = v map f
   }
@@ -375,8 +381,8 @@ fdouble(&quot;geso&quot;.some) assert_=== Some(&quot;gesogeso&quot;)
 import vector._
 fdouble(Vector(1.2, 2.1)) assert_=== Vector(2.4, 4.2)
 </code></pre></div>
-      </div><div class="content" id="slide-51">
-       <div class="container"><h1 id="FunctorLaw">FunctorLaw</h1><h2 id="map%E3%81%AE%E6%80%A7%E8%B3%AA">mapの性質</h2><ul><li>map(fa)(x =&gt; x) == fa
+      </div><div class="content" id="slide-52">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Functor$FunctorLaw">FunctorLaw</a></h1><h2 id="map%E3%81%AE%E6%80%A7%E8%B3%AA">mapの性質</h2><ul><li>map(fa)(x =&gt; x) == fa
 </li><li>map(map(fa)(f))(g) == map(fa)(g compose f)
 </li></ul><pre><code class="prettyprint lang-scala">val fa = List(1, 2)
 lazy val f: Int =&gt; Int = _ + 2
@@ -384,8 +390,8 @@ lazy val g: Int =&gt; Int = _ * 2
 fa map (x =&gt; x) assert_=== fa
 fa map f map g assert_=== (fa map g &lt;&lt;&lt; f)
 </code></pre></div>
-      </div><div class="content" id="slide-52">
-       <div class="container"><h1 id="Pointed">Pointed</h1><h2 id="point">point</h2><h3 id="%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">コンテナを構築する</h3><pre><code class="prettyprint lang-scala">object vector {
+      </div><div class="content" id="slide-53">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Pointed">Pointed</a></h1><h2 id="point">point</h2><h3 id="%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">コンテナを構築する</h3><pre><code class="prettyprint lang-scala">object vector {
   implicit object VectorInstance extends Pointed[Vector] {
     def map[A, B](v: Vector[A])(f: A =&gt; B) = v map f
     def point[A](a: =&gt; A) = Vector(a)
@@ -397,12 +403,12 @@ Pointed[Option].point(1) assert_=== Some(1)
 import vector._
 Pointed[Vector].point(1) assert_=== Vector(1)
 </code></pre></div>
-      </div><div class="content" id="slide-53">
+      </div><div class="content" id="slide-54">
        <div class="container"><h1 id="%E5%9E%8B%E3%81%AE%E9%83%A8%E5%88%86%E9%81%A9%E7%94%A8">型の部分適用</h1><pre><code class="prettyprint lang-scala">assert(Functor[({ type F[A] = Either[String, A] })#F].map(Right(1))(_.succ) === Right(2))
 assert(Pointed[({ type F[A] = Either[String, A] })#F].point(1) === Right(1))
 </code></pre></div>
-      </div><div class="content" id="slide-54">
-       <div class="container"><h1 id="Apply">Apply</h1><h2 id="ap">ap</h2><h3 id="%E6%8C%81%E3%81%A1%E4%B8%8A%E3%81%92%E3%82%89%E3%82%8C%E3%81%9F%E9%96%A2%E6%95%B0%E3%82%92%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AB%E9%81%A9%E7%94%A8%E3%81%97%E3%80%81%E6%96%B0%E3%81%97%E3%81%84%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">持ち上げられた関数をコンテナに適用し、新しいコンテナを構築する</h3><pre><code class="prettyprint lang-scala">object vector {
+      </div><div class="content" id="slide-55">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Apply">Apply</a></h1><h2 id="ap">ap</h2><h3 id="%E6%8C%81%E3%81%A1%E4%B8%8A%E3%81%92%E3%82%89%E3%82%8C%E3%81%9F%E9%96%A2%E6%95%B0%E3%82%92%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AB%E9%81%A9%E7%94%A8%E3%81%97%E3%80%81%E6%96%B0%E3%81%97%E3%81%84%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">持ち上げられた関数をコンテナに適用し、新しいコンテナを構築する</h3><pre><code class="prettyprint lang-scala">object vector {
   implicit object VectorInstance extends Apply[Vector] {
     def map[A, B](v: Vector[A])(f: A =&gt; B) = v map f
     def ap[A, B](va: =&gt; Vector[A])(vab: =&gt; Vector[A =&gt; B]) = vab flatMap (va map _)
@@ -414,16 +420,16 @@ List(1, 2, 3) &lt;*&gt; PlusEmpty[List].empty[Int =&gt; Int] assert_=== Nil
 import vector._
 Vector(1, 2) &lt;*&gt; Vector(Enum[Int].succ _, Enum[Int].pred _) assert_===  Vector(2, 3, 0, 1)
 </code></pre></div>
-      </div><div class="content" id="slide-55">
-       <div class="container"><h1 id="Applicative">Applicative</h1><h2 id="Apply%E3%81%A8Pointed%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">ApplyとPointedを組み合わせたもの</h2><pre><code class="prettyprint lang-scala">object vector {
+      </div><div class="content" id="slide-56">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Applicative">Applicative</a></h1><h2 id="Apply%E3%81%A8Pointed%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">ApplyとPointedを組み合わせたもの</h2><pre><code class="prettyprint lang-scala">object vector {
   implicit object VectorInstance extends Applicative[Vector] {
     def point[A](a: =&gt; A) = Vector(a)
     def ap[A, B](va: =&gt; Vector[A])(vab: =&gt; Vector[A =&gt; B]) = vab flatMap (va map _)
   }
 }
 </code></pre></div>
-      </div><div class="content" id="slide-56">
-       <div class="container"><h1 id="ApplicativeLaw">ApplicativeLaw</h1><ul><li>ap(fa)(point((a: A) =&gt; a)) == fa
+      </div><div class="content" id="slide-57">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Applicative$ApplicativeLaw">ApplicativeLaw</a></h1><ul><li>ap(fa)(point((a: A) =&gt; a)) == fa
 </li><li>ap(ap(fa)(fab))(fbc) == ap(fa)(ap(fab)(ap(fbc)(point((bc: B =&gt; C) =&gt; (ab: A =&gt; B) =&gt; bc compose ab))))
 </li><li>ap(point(a))(point(ab)) == point(ab(a))
 </li><li>ap(point(a))(fab) == ap(fab)(point((f: A =&gt; B) =&gt; f(a)))
@@ -433,25 +439,26 @@ lazy val fab: Option[Int =&gt; String] = Option(_.toString)
 lazy val fbc: Option[String =&gt; Int] = Option(_.size)
 fa &lt;*&gt; ((a: Int) =&gt; a).point[Option] assert_=== fa
 fa &lt;*&gt; fab &lt;*&gt; fbc assert_=== fa &lt;*&gt; (fab &lt;*&gt; (fbc &lt;*&gt; (((bc: String =&gt; Int) =&gt; (ab: Int =&gt; String) =&gt; bc compose ab).point[Option])))
+a.point[Option] &lt;*&gt; ab.point[Option] assert_=== ab(a).point[Option]
 a.point[Option] &lt;*&gt; fab assert_=== fab &lt;*&gt; ((f: Int =&gt; String) =&gt; f(a)).point[Option]
 </code></pre></div>
-      </div><div class="content" id="slide-57">
+      </div><div class="content" id="slide-58">
        <div class="container"><h1 id="Applicative+Style">Applicative Style</h1><h2 id="ApplicativeBuilder%E3%82%92%E7%94%A8%E3%81%84%E3%81%A6%E8%A8%88%E7%AE%97%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">ApplicativeBuilderを用いて計算を構築する</h2><pre><code class="prettyprint lang-scala">def append3[F[_]: Apply, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
   (fa |@| fb |@| fc)(_ |+| _ |+| _)
 append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
 append3(Option(1), None, Option(3)) assert_=== None
 append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 </code></pre></div>
-      </div><div class="content" id="slide-58">
-       <div class="container"><h1 id="%E5%95%8F%E9%A1%8C">問題</h1><ul><li>Map[String, String]から“id“と“pass“をキーとして値を取り出しUserを構築する
+      </div><div class="content" id="slide-59">
+       <div class="container"><h1 id="%E6%BC%94%E7%BF%92">演習</h1><ul><li>Map[String, String]から“id“と“pass“をキーとして値を取り出しUserを構築する
 </li></ul><pre><code class="prettyprint lang-scala">case class User(id: String, pass: String)
 def user(m: Map[String, String]): Option[User]
 
 user(Map(&quot;id&quot; -&gt; &quot;halcat0x15a&quot;, &quot;pass&quot; -&gt; &quot;gesogeso&quot;)) assert_=== Some(User(&quot;halcat0x15a&quot;, &quot;gesogeso&quot;))
 user(Map.empty) assert_=== None
 </code></pre></div>
-      </div><div class="content" id="slide-59">
-       <div class="container"><h1 id="Bind">Bind</h1><h2 id="bind">bind</h2><h3 id="%E9%96%A2%E6%95%B0%E3%82%92%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AB%E9%81%A9%E7%94%A8%E3%81%97%E3%80%81%E6%96%B0%E3%81%97%E3%81%84%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">関数をコンテナに適用し、新しいコンテナを構築する</h3><pre><code class="prettyprint lang-scala">object vector {
+      </div><div class="content" id="slide-60">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Bind">Bind</a></h1><h2 id="bind">bind</h2><h3 id="%E9%96%A2%E6%95%B0%E3%82%92%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%81%AB%E9%81%A9%E7%94%A8%E3%81%97%E3%80%81%E6%96%B0%E3%81%97%E3%81%84%E3%82%B3%E3%83%B3%E3%83%86%E3%83%8A%E3%82%92%E6%A7%8B%E7%AF%89%E3%81%99%E3%82%8B">関数をコンテナに適用し、新しいコンテナを構築する</h3><pre><code class="prettyprint lang-scala">object vector {
   implicit object VectorInstance extends Bind[Vector] {
     def map[A, B](v: Vector[A])(f: A =&gt; B) = v map f
     def bind[A, B](v: Vector[A])(f: A =&gt; Vector[B]) = v flatMap f
@@ -464,26 +471,22 @@ def append3[F[_]: Bind, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
     b &lt;- fb
     c &lt;- fc
   } yield a |+| b |+| c
-append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
-append3(Option(1), None, Option(3)) assert_=== None
-import vector._
-append3(Vector(1), Vector(1, 2), Vector(1, 2, 3)) assert_=== Vector(3, 4, 5, 4, 5, 6)
 </code></pre></div>
-      </div><div class="content" id="slide-60">
+      </div><div class="content" id="slide-61">
        <div class="container"><h1 id="for%E5%BC%8F">for式</h1><h2 id="map%2C+flatMap%2C+filter%E3%81%AB%E5%A4%89%E6%8F%9B%E3%81%95%E3%82%8C%E3%82%8B">map, flatMap, filterに変換される</h2><pre><code class="prettyprint lang-scala">(for (a &lt;- List(1, 2)) yield a + 1) assert_=== List(1, 2).map(a =&gt; a + 1)
 (for (a &lt;- Option(1); b &lt;- Option(2)) yield a + b) assert_=== Option(1).flatMap(a =&gt; Option(2).map(b =&gt; a + b))
 (for (a &lt;- List(1, 2) if a % 2 == 0) yield a) assert_=== List(1, 2).filter(a =&gt; a % 2 == 0)
 </code></pre></div>
-      </div><div class="content" id="slide-61">
-       <div class="container"><h1 id="Monad">Monad</h1><h2 id="Applicative%E3%81%A8Bind%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">ApplicativeとBindを組み合わせたもの</h2><pre><code class="prettyprint lang-scala">object vector {
+      </div><div class="content" id="slide-62">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Monad">Monad</a></h1><h2 id="Applicative%E3%81%A8Bind%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">ApplicativeとBindを組み合わせたもの</h2><pre><code class="prettyprint lang-scala">object vector {
   implicit object VectorInstance extends Monad[Vector] {
     def point[A](a: =&gt; A) = Vector(a)
     def bind[A, B](v: Vector[A])(f: A =&gt; Vector[B]) = v flatMap f
   }
 }
 </code></pre></div>
-      </div><div class="content" id="slide-62">
-       <div class="container"><h1 id="MonadLaw">MonadLaw</h1><ul><li>bind(fa)(point(_: A)) == fa
+      </div><div class="content" id="slide-63">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Monad$MonadLaw">MonadLaw</a></h1><ul><li>bind(fa)(point(_: A)) == fa
 </li><li>bind(point(a))(f) == f(a)
 </li><li>bind(bind(fa)(f))(g) == bind(fa)((a: A) =&gt; bind(f(a))(g))
 </li></ul><pre><code class="prettyprint lang-scala">import scala.util.control.Exception._
@@ -495,10 +498,18 @@ lazy val g: String =&gt; Option[Int] = allCatch opt _.toInt
 (a.point[Option] &gt;&gt;= f) assert_=== f(a)
 (fa &gt;&gt;= f &gt;&gt;= g) assert_=== (fa &gt;&gt;= (a =&gt; f(a) &gt;&gt;= g))
 </code></pre></div>
-      </div><div class="content" id="slide-63">
-       <div class="container"><h1 id="ApplicativePlus">ApplicativePlus</h1><h2 id="Applicative%E3%81%A8PlusEmpty%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">ApplicativeとPlusEmptyを組み合わせたもの</h2></div>
       </div><div class="content" id="slide-64">
-       <div class="container"><h1 id="MonadPlus">MonadPlus</h1><h2 id="Monad%E3%81%A8ApplicativePlus%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">MonadとApplicativePlusを組み合わせたもの</h2><h3 id="filter%E3%81%8C%E5%AE%9A%E7%BE%A9%E3%81%95%E3%82%8C%E3%82%8B">filterが定義される</h3><pre><code class="prettyprint lang-scala">object vector {
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.ApplicativePlus">ApplicativePlus</a></h1><h2 id="Applicative%E3%81%A8PlusEmpty%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">ApplicativeとPlusEmptyを組み合わせたもの</h2><pre><code class="prettyprint lang-scala">object vector {
+  implicit object VectorInstance extends ApplicativePlus[Vector] {
+    def empty[A] = Vector.empty[A]
+    def plus[A](v1: Vector[A], v2: =&gt; Vector[A]) = v1 ++ v2
+    def point[A](a: =&gt; A) = Vector(a)
+    def ap[A, B](va: =&gt; Vector[A])(vab: =&gt; Vector[A =&gt; B]) = vab flatMap (va map _)
+  }
+}
+</code></pre></div>
+      </div><div class="content" id="slide-65">
+       <div class="container"><h1 id=""><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.MonadPlus">MonadPlus</a></h1><h2 id="Monad%E3%81%A8ApplicativePlus%E3%82%92%E7%B5%84%E3%81%BF%E5%90%88%E3%82%8F%E3%81%9B%E3%81%9F%E3%82%82%E3%81%AE">MonadとApplicativePlusを組み合わせたもの</h2><h3 id="filter%E3%81%8C%E5%AE%9A%E7%BE%A9%E3%81%95%E3%82%8C%E3%82%8B">filterが定義される</h3><pre><code class="prettyprint lang-scala">object vector {
   implicit object VectorInstance extends MonadPlus[Vector] {
     def empty[A] = Vector.empty[A]
     def plus[A](v1: Vector[A], v2: =&gt; Vector[A]) = v1 ++ v2

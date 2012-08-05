@@ -17,7 +17,7 @@ double("2") assert_=== "22"
 
 !SLIDE
 
-# Semigroup
+# [Semigroup](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Semigroup)
 
 ## appendは抽象メソッド、２つの値を結合する関数
 
@@ -61,7 +61,7 @@ assert(double(Point(1, 2)) == Point(2, 4))
 
 !SLIDE
 
-# Show
+# [Show](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Show)
 
 ## 文字列へ変換する関数を定義する
 
@@ -111,4 +111,7 @@ assert(implicitly[Semigroup[Rational]].append(Rational(1, 2), Rational(1, 2)) ==
 ```scala
 def quote[A](a: A)(implicit s: Show[A]) = s.show(a).mkString("'", "", "'")
 def quote[A: Show](a: A) = implicitly[Show[A]].show(a).mkString("'", "", "'")
+
+quote("geso") assert_=== "'geso'"
+quote(List(1, 2, 3)) assert_=== "'[1,2,3]'"
 ```

@@ -1,6 +1,6 @@
 !SLIDE
 
-# Monoid
+# [Monoid](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Monoid)
 
 !SLIDE
 
@@ -27,7 +27,7 @@ mzero[Rational] assert_=== Rational(0, 1)
 
 !SLIDE
 
-# MonoidLaw
+# [MonoidLaw](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Monoid$MonoidLaw)
 
 ## 恒等元の性質
 
@@ -37,19 +37,7 @@ mzero[Rational] assert_=== Rational(0, 1)
 ```scala
 val a = 1
 mzero[Int] |+| a assert_=== a
-a |+| mzero[String] assert_=== a
-```
-
-!SLIDE
-
-# multiply
-
-## 任意の回数結合する
-
-```scala
-3 multiply 5 assert_=== 15
-"geso" multiply 2 assert_=== "gesogeso"
-Rational(1, 2) multiply 3 assert_=== Rational(1, 8)
+a |+| mzero[Int] assert_=== a
 ```
 
 !SLIDE
@@ -91,7 +79,7 @@ encode(13) assert_=== List(1, 0, 1, 1)
 
 !SLIDE
 
-# Group
+# [Group](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Group)
 
 ## 逆元を持つMonoid
 
@@ -110,18 +98,7 @@ Rational(1, 2).inverse assert_=== Rational(-1, 2)
 
 !SLIDE
 
-# |-|
-
-## 逆元と結合する
-
-```scala
-1 |-| 1 assert_=== 0
-1.2 |-| 2.1 assert_=== -0.9000000000000001
-```
-
-!SLIDE
-
-# Plus, PlusEmpty
+# [Plus](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Plus), [PlusEmpty](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.PlusEmpty)
 
 ## 量化されたSemigroup, Monoid
 

@@ -17,7 +17,7 @@ triple(List(1)) assert_=== List(1, 1, 1)
 
 !SLIDE
 
-# Functor
+# [Functor](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Functor)
 
 ## map
 
@@ -39,7 +39,7 @@ fdouble(Vector(1.2, 2.1)) assert_=== Vector(2.4, 4.2)
 
 !SLIDE
 
-# FunctorLaw
+# [FunctorLaw](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Functor$FunctorLaw)
 
 ## mapの性質
 
@@ -56,7 +56,7 @@ fa map f map g assert_=== (fa map g <<< f)
 
 !SLIDE
 
-# Pointed
+# [Pointed](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Pointed)
 
 ## point
 
@@ -87,7 +87,7 @@ assert(Pointed[({ type F[A] = Either[String, A] })#F].point(1) === Right(1))
 
 !SLIDE
 
-# Apply
+# [Apply](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Apply)
 
 ## ap
 
@@ -109,7 +109,7 @@ Vector(1, 2) <*> Vector(Enum[Int].succ _, Enum[Int].pred _) assert_===  Vector(2
 
 !SLIDE
 
-# Applicative
+# [Applicative](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Applicative)
 
 ## ApplyとPointedを組み合わせたもの
 
@@ -124,7 +124,7 @@ object vector {
 
 !SLIDE
 
-# ApplicativeLaw
+# [ApplicativeLaw](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Applicative$ApplicativeLaw)
 
 * ap(fa)(point((a: A) => a)) == fa
 * ap(ap(fa)(fab))(fbc) == ap(fa)(ap(fab)(ap(fbc)(point((bc: B => C) => (ab: A => B) => bc compose ab))))
@@ -138,6 +138,7 @@ lazy val fab: Option[Int => String] = Option(_.toString)
 lazy val fbc: Option[String => Int] = Option(_.size)
 fa <*> ((a: Int) => a).point[Option] assert_=== fa
 fa <*> fab <*> fbc assert_=== fa <*> (fab <*> (fbc <*> (((bc: String => Int) => (ab: Int => String) => bc compose ab).point[Option])))
+a.point[Option] <*> ab.point[Option] assert_=== ab(a).point[Option]
 a.point[Option] <*> fab assert_=== fab <*> ((f: Int => String) => f(a)).point[Option]
 ```
 
@@ -157,7 +158,7 @@ append3(List(1), List(1, 2), List(1, 2, 3)) assert_=== List(3, 4, 5, 4, 5, 6)
 
 !SLIDE
 
-# 問題
+# 演習
 
 * Map[String, String]から"id"と"pass"をキーとして値を取り出しUserを構築する
 
@@ -171,7 +172,7 @@ user(Map.empty) assert_=== None
 
 !SLIDE
 
-# Bind
+# [Bind](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Bind)
 
 ## bind
 
@@ -191,10 +192,6 @@ def append3[F[_]: Bind, A: Semigroup](fa: F[A], fb: F[A], fc: F[A]) =
     b <- fb
     c <- fc
   } yield a |+| b |+| c
-append3(Option(1), Option(2), Option(3)) assert_=== Option(6)
-append3(Option(1), None, Option(3)) assert_=== None
-import vector._
-append3(Vector(1), Vector(1, 2), Vector(1, 2, 3)) assert_=== Vector(3, 4, 5, 4, 5, 6)
 ```
 
 !SLIDE
@@ -211,7 +208,7 @@ append3(Vector(1), Vector(1, 2), Vector(1, 2, 3)) assert_=== Vector(3, 4, 5, 4, 
 
 !SLIDE
 
-# Monad
+# [Monad](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Monad)
 
 ## ApplicativeとBindを組み合わせたもの
 
@@ -226,7 +223,7 @@ object vector {
 
 !SLIDE
 
-# MonadLaw
+# [MonadLaw](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Monad$MonadLaw)
 
 * bind(fa)(point(_: A)) == fa
 * bind(point(a))(f) == f(a)
@@ -245,13 +242,24 @@ lazy val g: String => Option[Int] = allCatch opt _.toInt
 
 !SLIDE
 
-# ApplicativePlus
+# [ApplicativePlus](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.ApplicativePlus)
 
 ## ApplicativeとPlusEmptyを組み合わせたもの
 
+```scala
+object vector {
+  implicit object VectorInstance extends ApplicativePlus[Vector] {
+    def empty[A] = Vector.empty[A]
+    def plus[A](v1: Vector[A], v2: => Vector[A]) = v1 ++ v2
+    def point[A](a: => A) = Vector(a)
+    def ap[A, B](va: => Vector[A])(vab: => Vector[A => B]) = vab flatMap (va map _)
+  }
+}
+```
+
 !SLIDE
 
-# MonadPlus
+# [MonadPlus](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.MonadPlus)
 
 ## MonadとApplicativePlusを組み合わせたもの
 

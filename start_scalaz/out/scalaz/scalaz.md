@@ -36,6 +36,9 @@
 
 ```scala
 def double[A: Semigroup](a: A) = Semigroup[A].append(a, a)
+
+implicit lazy val PointShow = Show.showA[Point]
+implicit lazy val PointEqual = Equal.equalA[Point]
 ```
 
 !SLIDE

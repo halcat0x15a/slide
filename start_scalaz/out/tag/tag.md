@@ -4,7 +4,7 @@
 
 !SLIDE
 
-# Tag
+# [Tag](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.Tag$)
 
 ## 既存の型を別の型として定義する
 
@@ -38,7 +38,7 @@ import scalaz.Dual._
 
 !SLIDE
 
-# Union Types
+# [UnionTypes](http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/index.html#scalaz.UnionTypes$)
 
 ## Eitherとは違い、コンテナで包む必要がない
 
