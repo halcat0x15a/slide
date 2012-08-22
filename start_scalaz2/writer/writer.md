@@ -34,4 +34,16 @@
 
 !SLIDE
 
-## 記録値の型に対するSemigroupのインスタンスを利用する
+# Applicative Style
+
+```scala
+case class Book(title: String, price: Int)
+
+def buy(book: Book) = book.title set book.price
+
+(buy(Book("yuruyuri", 900)) |@|
+ buy(Book("mathgirl", 1800)) |@|
+ buy(Book("genshiken", 600)) |@|
+ buy(Book("mudazumo", 700)))(_ :: _ :: _ :: _ :: Nil).run assert_===
+4000 -> List("yuruyuri", "mathgirl", "genshiken", "mudazumo")
+```
