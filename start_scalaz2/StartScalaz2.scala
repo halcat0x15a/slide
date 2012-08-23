@@ -3,6 +3,14 @@ import language.higherKinds
 
 import scalaz._, Scalaz._
 
+case class Book(title: String, price: Int)
+
+case class Person(name: String, money: Int)
+
+object Person {
+  val money: Lens[Person, Int] = Lens.lensg(p => m => p copy (money = m), _.money)
+}
+
 object StartScalaz2 extends App {
 
   def a[A: Show: Equal](a: A, b: A): Unit = a assert_=== b
@@ -37,10 +45,6 @@ object StartScalaz2 extends App {
     b <- move(Vec(5, 12))
     c <- move(Vec(7, 24))
   } yield (a.x + b.x + c.x, a.y + b.y + c.y)).run assert_=== 43.0 -> (15, 40)
-
-  case class Person(money: Int)
-
-  case class Book(title: String, price: Int)
 
   def buy(book: Book) = book.title set book.price
 
@@ -87,6 +91,33 @@ object StartScalaz2 extends App {
      buy(Book("programming in scala", 4800)) |@|
      buy(Book("ubunchu", 800)))(_ :: _ :: _ :: Nil).run assert_===
     None
+  }
+
+  locally {
+    def buy(book: Book) = Person.money -= book.price
+
+    (for {
+      _ <- buy(Book("yuruyuri", 900))
+      _ <- buy(Book("mathgirl", 1800))
+      _ <- buy(Book("genshiken", 600))
+      money <- buy(Book("mudazumo", 700))
+    } yield money) eval Person("Sanshiro", 5000) assert_=== 1000
+  }
+
+  locally {
+    def check = StateT[Option, Person, Int](p => p.money >= 0 option p -> p.money)
+
+    def buy(book: Book) = for {
+      _ <- (Person.money -= book.price).lift[Option]
+      money <- check
+    } yield money
+
+    (for {
+      _ <- buy(Book("yuruyuri", 900))
+      _ <- buy(Book("mathgirl", 1800))
+      _ <- buy(Book("genshiken", 600))
+      money <- buy(Book("mudazumo", 700))
+    } yield money) eval Person("Sanshiro", 3000) assert_=== None
   }
 
 }
