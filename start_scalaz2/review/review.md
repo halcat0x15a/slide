@@ -6,8 +6,8 @@
 
 # Type Class
 
-* [implicit parameterによるインスタンスの供給](http://halcat0x15a.github.com/slide/start_scalaz/out/#7)
 * [Context Bound](http://halcat0x15a.github.com/slide/start_scalaz/out/#14)
+* [implicit parameterによるインスタンスの供給](http://halcat0x15a.github.com/slide/start_scalaz/out/#7)
 * [implicit conversionによるシンタックスの供給](http://halcat0x15a.github.com/slide/start_scalaz/out/#21)
 
 ```scala
@@ -89,7 +89,17 @@ def double[A: Semigroup](a: A) = a |+| a
 
 ## 関数を適用する
 
+```scala
 [A, B](a: A)(f: A => B): B = a |> f
+```
+
+!SLIDE
+
+## ガード
+
+```scala
+[A](b: Boolean)(a: A): Option[A] = b option a
+```
 
 !SLIDE
 

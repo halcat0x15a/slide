@@ -5,6 +5,7 @@
     "review",
     "writer",
     "monadtrans",
-    "state"
+    "state",
+    "validation"
   ]
 }
