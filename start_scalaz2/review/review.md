@@ -6,6 +6,8 @@
 
 # Type Class
 
+## Scalazを使う上で知っておきたいこと
+
 * [Context Bound](http://halcat0x15a.github.com/slide/start_scalaz/out/#14)
 * [implicit parameterによるインスタンスの供給](http://halcat0x15a.github.com/slide/start_scalaz/out/#7)
 * [implicit conversionによるシンタックスの供給](http://halcat0x15a.github.com/slide/start_scalaz/out/#21)
@@ -31,6 +33,8 @@ def double[A: Semigroup](a: A) = a |+| a
 !SLIDE
 
 ## 文字列への変換
+
+### showはCordが返ります。
 
 ```scala
 [A: Show](a: A): String = a.shows
@@ -74,7 +78,8 @@ def double[A: Semigroup](a: A) = a |+| a
 ## [Applicative Style](http://halcat0x15a.github.com/slide/start_scalaz/out/#58)
 
 ```scala
-[F[_]: Applicative, A, B, C](fa: F[A], fb: F[B])(f: (A, B) => C): F[C] = (fa |@| fb)(f)
+[F[_]: Applicative, A, B, C](a: F[A], b: F[B])(f: (A, B) => C): F[C] =
+  (a |@| b)(f)
 ```
 
 !SLIDE
@@ -87,7 +92,7 @@ def double[A: Semigroup](a: A) = a |+| a
 
 !SLIDE
 
-## 関数を適用する
+## 関数の適用
 
 ```scala
 [A, B](a: A)(f: A => B): B = a |> f
@@ -95,7 +100,7 @@ def double[A: Semigroup](a: A) = a |+| a
 
 !SLIDE
 
-## ガード
+## if (b) Some(a) else None
 
 ```scala
 [A](b: Boolean)(a: A): Option[A] = b option a

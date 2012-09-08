@@ -15,7 +15,8 @@
 # WriterとOption
 
 ```scala
-def buy(book: Book) = book.price < 2000 option (book.title set book.price)
+def buy(book: Book): Option[Writer[Int, String]] =
+  book.price < 2000 option (book.title set book.price)
 
 (for {
   a <- buy(Book("yuruyuri", 900))
@@ -49,7 +50,8 @@ Some(4000 -> List("yuruyuri", "mathgirl", "genshiken", "mudazumo"))
 # WriterT Option
 
 ```scala
-def buy(book: Book) = WriterT(book.price < 2000 option book.price -> book.title)
+def buy(book: Book): WriterT[Option, Int, String] =
+  WriterT(book.price < 2000 option book.price -> book.title)
 
 (buy(Book("yuruyuri", 900)) |@|
  buy(Book("mathgirl", 1800)) |@|

@@ -40,4 +40,3 @@ ArrId[({ type F[A, B] = Kleisli[Option, A, B] })#F].id(2) assert_=== Some(2)
 !SLIDE
 
 # Arrow
-

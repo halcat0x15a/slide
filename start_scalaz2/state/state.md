@@ -4,36 +4,62 @@
 
 !SLIDE
 
-# 状態を持つ
-
-## 状態 => (状態, 値)
-
-```scala
-case class Person(name: String, money: Int)
-
-(for {
-  person <- init[Person]
-  _ <- modify[Person](_ copy (money = person.money + 100))
-  person <- get
-} yield person.money) eval Person("Sanshiro", 1000) assert_=== 1100
-```
-
-!SLIDE
-
 # Lens
 
 ## フィールドに対するgetterとsetter
 
 ```scala
-case class Person(name: String, money: Int)
+case class Person(name: String, property: Set[String], money: Int)
 
 object Person {
-  val money: Lens[Person, Int] = Lens.lensg(p => m => p copy (money = m), _.money)
+
+  val property: Lens[Person, Set[String]] =
+    Lens.lensu((p, pr) => p copy (property = pr), _.property)
+
+  val money: Lens[Person, Int] =
+    Lens.lensg(p => m => p copy (money = m), _.money)
+
 }
+```
+
+!SLIDE
+
+# 演習
+
+> たかしくんは400円を持って80円のりんごを2つ、60円のみかんを3つ買いました。
+> この時のたかしくんの所持金を求めなさい。
+> ただし、計算にREPLを使ってよいものとする。
+
+```scala
+def buy(thing: String, price: Int): State[Person, Unit] =
+  for {
+    _ <- Person.property += thing
+    _ <- Person.money -= price
+  } yield ()
 
 (for {
-  money <- Person.money += 100
-} yield money) eval Person("Sanshiro", 1000) assert_=== 1100
+  _ <- buy("apple", 80)
+  _ <- buy("apple", 80)
+  _ <- buy("orange", 60)
+  _ <- buy("orange", 60)
+  _ <- buy("orange", 60)
+  takashi <- get
+} yield takashi.money) eval Person("takashi", Set.empty, 400)
+```
+
+!SLIDE
+
+# State
+
+## 状態 => (状態, 値)
+
+```scala
+(for {
+  _ <- Person.property := Set("orange")
+  property <- Person.property += "apple"
+  money <- Person.money -= 80
+} yield property -> money) eval
+  Person("takashi", Set.empty, 100) assert_=== Set("orange", "apple") -> 20
 ```
 
 !SLIDE
@@ -41,31 +67,48 @@ object Person {
 # Example
 
 ```scala
-def buy(book: Book) = Person.money -= book.price
+def buy(book: Book): State[Person, Unit] =
+  buy(book.title, book.price)
 
 (for {
   _ <- buy(Book("yuruyuri", 900))
   _ <- buy(Book("mathgirl", 1800))
   _ <- buy(Book("genshiken", 600))
-  money <- buy(Book("mudazumo", 700))
-} yield money) eval Person("Sanshiro", 5000) assert_=== 1000
+  _ <- buy(Book("mudazumo", 700))
+  sanshiro <- get
+} yield sanshiro.money) eval
+  Person("Sanshiro", Set.empty, 5000) assert_=== 1000
+```
+
+!SLIDE
+
+# StateT
+
+```scala
+def check = StateT[Option, Person, Unit](p => p.money >= 0 option p -> ())
+
+(for {
+  money <- (Person.money -= 80).lift[Option]
+  _ <- check
+} yield money) eval
+  Person("takashi", Set.empty, 100) assert_=== Some(20)
 ```
 
 !SLIDE
 
 # 演習
 
-## 先の例で所持金がマイナスになったらNoneを返すようにするため、check関数を定義せよ
+## 所持金がマイナスになったらNoneを返すようなbuyAndCheck関数を定義せよ
 
 ```scala
-def check: StateT[Option, Person, Unit]
+def buyAndCheck(book: Book): StateT[Option, Person, Unit]
 
 (for {
-  _ <- buy(Book("yuruyuri", 900)).lift[Option]
-  _ <- buy(Book("mathgirl", 1800)).lift[Option]
-  _ <- buy(Book("genshiken", 600)).lift[Option]
-  _ <- buy(Book("mudazumo", 700)).lift[Option]
-  _ <- check
+  _ <- buyAndCheck(Book("yuruyuri", 900))
+  _ <- buyAndCheck(Book("mathgirl", 1800))
+  _ <- buyAndCheck(Book("genshiken", 600))
+  _ <- buyAndCheck(Book("mudazumo", 700))
   person <- get.lift[Option]
-} yield person.money) eval Person("Sanshiro", 3000) assert_=== None
+} yield person.money) eval
+  Person("Sanshiro", Set.empty, 3000) assert_=== None
 ```

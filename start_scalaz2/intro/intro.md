@@ -15,7 +15,7 @@
 * Scalaは2.5年くらい書いてます
 * Scalazは1年くらい
 * 大学生になりました
-* 夏休みです
+* 夏休みです（今日まで）
 
 !SLIDE
 
@@ -30,15 +30,16 @@
 * build.sbt
 
 ```scala
-scalaVersion := "2.10.0-M6"
+scalaVersion := "2.10.0-M7"
 
-resolvers += "Typesafe Snapshots" at "http://repo.typesafe.com/typesafe/snapshots/"
-
-libraryDependencies ++= Seq(
-  "org.scalaz" %% "scalaz-core" % "7.0.0-M2"
+libraryDependencies <+= scalaVersion(v =>
+  "org.scalaz" %  ("scalaz-core_" + v) % "7.0.0-M3"
 )
 
-scalacOptions += "-feature"
+scalacOptions ++= Seq(
+  "-feature",
+  "-deprecation"
+)
 
 initialCommands in console := "import scalaz._, Scalaz._"
 ```

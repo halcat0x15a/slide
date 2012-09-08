@@ -6,6 +6,9 @@
     "writer",
     "monadtrans",
     "state",
-    "validation"
+    "validation",
+    "kleisli",
+    "arrow",
+    "omake"
   ]
 }
