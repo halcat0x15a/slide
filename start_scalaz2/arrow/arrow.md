@@ -39,4 +39,37 @@ ArrId[({ type F[A, B] = Kleisli[Option, A, B] })#F].id(2) assert_=== Some(2)
 
 !SLIDE
 
+* Arrow
+* Choice
+* Split
+
+!SLIDE
+
 # Arrow
+
+## FizzBuzz
+
+```scala
+def mod(n: Int, s: String): Int => Option[String] =
+  _ % n === 0 option s
+lazy val fold: ((Option[String], Option[String])) => Option[String] =
+  _.fold(_ |+| _)
+lazy val default: ((Option[String], Int)) => String =
+  _.fold(_ | _.shows)
+lazy val fizzbuzz: Int => String =
+  ((mod(3, "Fizz") &&& mod(5, "Buzz")) >>> fold &&& identity) >>> default
+
+fizzbuzz(2) assert_=== "2"
+fizzbuzz(3) assert_=== "Fizz"
+fizzbuzz(5) assert_=== "Buzz"
+fizzbuzz(15) assert_=== "FizzBuzz"
+```
+
+!SLIDE
+
+# ArrowOps
+
+```scala
+[F[_, _], A, B, C](f: F[A, B], g: F[A, C]): F[A, (B, C)] = f &&& g
+[F[_, _], A, B, C, D](f: F[A, B], g: F[C, D]): F[(A, C), (B, D)] = f *** g
+```

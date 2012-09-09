@@ -8,7 +8,6 @@
     "state",
     "validation",
     "kleisli",
-    "arrow",
-    "omake"
+    "arrow"
   ]
 }

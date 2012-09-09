@@ -9,11 +9,11 @@
 ## フィールドに対するgetterとsetter
 
 ```scala
-case class Person(name: String, property: Set[String], money: Int)
+case class Person(name: String, property: List[String], money: Int)
 
 object Person {
 
-  val property: Lens[Person, Set[String]] =
+  val property: Lens[Person, List[String]] =
     Lens.lensu((p, pr) => p copy (property = pr), _.property)
 
   val money: Lens[Person, Int] =
@@ -33,7 +33,7 @@ object Person {
 ```scala
 def buy(thing: String, price: Int): State[Person, Unit] =
   for {
-    _ <- Person.property += thing
+    _ <- Person.property %= (thing :: _)
     _ <- Person.money -= price
   } yield ()
 
@@ -44,7 +44,7 @@ def buy(thing: String, price: Int): State[Person, Unit] =
   _ <- buy("orange", 60)
   _ <- buy("orange", 60)
   takashi <- get
-} yield takashi.money) eval Person("takashi", Set.empty, 400)
+} yield takashi.money) eval Person("takashi", Nil, 400)
 ```
 
 !SLIDE
@@ -55,11 +55,11 @@ def buy(thing: String, price: Int): State[Person, Unit] =
 
 ```scala
 (for {
-  _ <- Person.property := Set("orange")
-  property <- Person.property += "apple"
+  _ <- Person.property := List("orange")
+  property <- Person.property %= ("apple" :: _)
   money <- Person.money -= 80
 } yield property -> money) eval
-  Person("takashi", Set.empty, 100) assert_=== Set("orange", "apple") -> 20
+  Person("takashi", Nil, 100) assert_=== List("apple", "orange") -> 20
 ```
 
 !SLIDE
@@ -77,7 +77,7 @@ def buy(book: Book): State[Person, Unit] =
   _ <- buy(Book("mudazumo", 700))
   sanshiro <- get
 } yield sanshiro.money) eval
-  Person("Sanshiro", Set.empty, 5000) assert_=== 1000
+  Person("Sanshiro", Nil, 5000) assert_=== 1000
 ```
 
 !SLIDE
@@ -91,7 +91,7 @@ def check = StateT[Option, Person, Unit](p => p.money >= 0 option p -> ())
   money <- (Person.money -= 80).lift[Option]
   _ <- check
 } yield money) eval
-  Person("takashi", Set.empty, 100) assert_=== Some(20)
+  Person("takashi", Nil, 100) assert_=== Some(20)
 ```
 
 !SLIDE
@@ -110,5 +110,5 @@ def buyAndCheck(book: Book): StateT[Option, Person, Unit]
   _ <- buyAndCheck(Book("mudazumo", 700))
   person <- get.lift[Option]
 } yield person.money) eval
-  Person("Sanshiro", Set.empty, 3000) assert_=== None
+  Person("Sanshiro", Nil, 3000) assert_=== None
 ```

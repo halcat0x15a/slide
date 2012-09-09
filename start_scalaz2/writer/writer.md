@@ -9,32 +9,30 @@
 ## (記録値, 計算値)
 
 ```scala
-(2 set "" run) assert_=== Writer("", 2).run
-(2 set "" value) assert_=== 2
-(2 set "" written) assert_=== ""
-"".tell.written assert_=== ""
+(2 set "geso" run) assert_=== "geso" -> 2
+(2 set "geso" value) assert_=== 2
+(2 set "geso" written) assert_=== "geso"
+"geso".tell.written assert_=== "geso"
 ```
 
 !SLIDE
 
 # 計算の過程を記録する
 
-## 合成時にSemigroupを利用する
-
 ```scala
 (for {
-  _ <- NonEmptyList("start").tell
-  a <- 2 set NonEmptyList("a = 2")
+  _ <- "start;".tell
+  a <- 2 set "a = 2;"
   b = a + 2
-  _ <- NonEmptyList(s"a + 2 = $b").tell
-  _ <- NonEmptyList("end").tell
-} yield b).run assert_=== NonEmptyList(
-  "start",
-  "a = 2",
-  "a + 2 = 4",
-  "end"
-) -> 4
+  _ <- s"a + 2 = $b;".tell
+  _ <- "end;".tell
+} yield b).run assert_===
+  "start;a = 2;a + 2 = 4;end;" -> 4
 ```
+
+!SLIDE
+
+# 合成する時にSemigroupを利用する
 
 !SLIDE
 

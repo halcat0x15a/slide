@@ -67,7 +67,7 @@ None
 
 !SLIDE
 
-# Writer === WriterT Id
+# Writer = WriterT Id
 
 ## Scalazのデータ型の殆どはモナド変換子
 

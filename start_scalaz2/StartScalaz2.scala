@@ -5,11 +5,18 @@ import scalaz._, Scalaz._
 
 case class Book(title: String, price: Int)
 
-case class Person(name: String, property: Set[String], money: Int)
+case class Person(name: String, property: List[String], money: Int)
 
 object Person {
-  val property: Lens[Person, Set[String]] = Lens.lensu((p, pr) => p copy (property = pr), _.property)
+  val property: Lens[Person, List[String]] = Lens.lensu((p, pr) => p copy (property = pr), _.property)
   val money: Lens[Person, Int] = Lens.lensg(p => m => p copy (money = m), _.money)
+}
+
+case class User(id: String, age: Int)
+
+object User {
+  implicit lazy val ShowUser = Show.showA[User]
+  implicit lazy val EqualUser = Equal.equalA[User]
 }
 
 object StartScalaz2 extends App {
@@ -28,10 +35,10 @@ object StartScalaz2 extends App {
     def k[A](b: Boolean)(a: A): Option[A] = b option a
   }
 
-  (2 set "" run) assert_=== Writer("", 2).run
-  (2 set "" value) assert_=== 2
-  (2 set "" written) assert_=== ""
-  "".tell.written assert_=== ""
+  (2 set "geso" run) assert_=== "geso" -> 2
+  (2 set "geso" value) assert_=== 2
+  (2 set "geso" written) assert_=== "geso"
+  "geso".tell.written assert_=== "geso"
 
   locally {
     (for {
@@ -44,17 +51,13 @@ object StartScalaz2 extends App {
   }
 
   (for {
-    _ <- NonEmptyList("start").tell
-    a <- 2 set NonEmptyList("a = 2")
+    _ <- "start;".tell
+    a <- 2 set "a = 2;"
     b = a + 2
-    _ <- NonEmptyList(s"a + 2 = $b").tell
-    _ <- NonEmptyList("end").tell
-  } yield b).run assert_=== NonEmptyList(
-    "start",
-    "a = 2",
-    "a + 2 = 4",
-    "end"
-  ) -> 4
+    _ <- s"a + 2 = $b;".tell
+    _ <- "end;".tell
+  } yield b).run assert_===
+    "start;a = 2;a + 2 = 4;end;" -> 4
 
   case class Vec(x: Int, y: Int)
 
@@ -119,7 +122,7 @@ object StartScalaz2 extends App {
 
   def buy(thing: String, price: Int): State[Person, Unit] =
     for {
-      _ <- Person.property += thing
+      _ <- Person.property %= (thing :: _)
       _ <- Person.money -= price
     } yield ()
 
@@ -131,11 +134,11 @@ object StartScalaz2 extends App {
       person <- init[Person]
       _ <- modify[Person](_ copy (money = person.money + 100))
       person <- get
-    } yield person.money) eval Person("Sanshiro", Set.empty, 1000) assert_=== 1100
+    } yield person.money) eval Person("Sanshiro", Nil, 1000) assert_=== 1100
 
     (for {
       money <- Person.money += 100
-    } yield money) eval Person("Sanshiro", Set.empty, 1000) assert_=== 1100
+    } yield money) eval Person("Sanshiro", Nil, 1000) assert_=== 1100
 
     (for {
       _ <- buy("apple", 80)
@@ -144,14 +147,14 @@ object StartScalaz2 extends App {
       _ <- buy("orange", 60)
       _ <- buy("orange", 60)
       takashi <- get
-    } yield takashi.money) eval Person("takashi", Set.empty, 400)
+    } yield takashi.money) eval Person("takashi", Nil, 400) assert_=== 60
 
     (for {
-      _ <- Person.property := Set("orange")
-      property <- Person.property += "apple"
+      _ <- Person.property := List("orange")
+      property <- Person.property %= ("apple" :: _)
       money <- Person.money -= 80
     } yield property -> money) eval
-    Person("takashi", Set.empty, 100) assert_=== Set("orange", "apple") -> 20
+    Person("takashi", Nil, 100) assert_=== List("apple", "orange") -> 20
 
     (for {
       _ <- buy(Book("yuruyuri", 900))
@@ -160,7 +163,7 @@ object StartScalaz2 extends App {
       _ <- buy(Book("mudazumo", 700))
       sanshiro <- get
     } yield sanshiro.money) eval
-      Person("Sanshiro", Set.empty, 5000) assert_=== 1000
+      Person("Sanshiro", Nil, 5000) assert_=== 1000
 
 //    def buy(book: Book): State[Person, Unit] =
   //    buy(book.title, book.price)
@@ -172,7 +175,7 @@ object StartScalaz2 extends App {
       money <- (Person.money -= 80).lift[Option]
       _ <- check
     } yield money) eval
-      Person("takashi", Set.empty, 100) assert_=== Some(20)
+      Person("takashi", Nil, 100) assert_=== Some(20)
 
     def buyAndCheck(book: Book): StateT[Option, Person, Unit] =
       for {
@@ -187,7 +190,7 @@ object StartScalaz2 extends App {
       _ <- buyAndCheck(Book("mudazumo", 700))
       person <- get.lift[Option]
     } yield person.money) eval
-      Person("Sanshiro", Set.empty, 3000) assert_=== None 
+      Person("Sanshiro", Nil, 3000) assert_=== None 
   }
 
   2.success[String] assert_=== Validation.success(2)
@@ -226,10 +229,6 @@ object StartScalaz2 extends App {
       """For input string: "bar""""
     ).failure
 
-    case class User(id: String, age: Int)
-    implicit lazy val ShowUser = Show.showA[User]
-    implicit lazy val EqualUser = Equal.equalA[User]
-
     def get[K, V](k: K)(m: Map[K, V]): String \?/ V = try {
       m(k).success
     } catch {
@@ -262,6 +261,45 @@ object StartScalaz2 extends App {
   }
 
   locally {
+    def get(s: String): Reader[Map[String, String], String] =
+      Reader(_(s))
+
+    (for {
+      id <- get("id")
+      age <- get("age")
+    } yield User(id, age.toInt)) run 
+      Map(
+	"id" -> "halcat0x15a",
+	"age" -> "19"
+      ) assert_=== User("halcat0x15a", 19)
+  }
+
+  locally {
+    def get(s: String): Kleisli[Option, Map[String, String], String] =
+      Kleisli(_ get s)
+
+    (for {
+      id <- get("id")
+      age <- get("age")
+    } yield User(id, age.toInt)) run 
+      Map(
+	"age" -> "19"
+      ) assert_=== None
+  }
+
+  locally {
+    def buy(book: Book): Kleisli[Option, Person, Person] =
+      Kleisli(p =>
+	p.money >= 0 option p.copy(money = p.money - book.price))
+    for {
+      _ <- buy(Book("yuruyuri", 900))
+      _ <- buy(Book("mathgirl", 1800))
+      _ <- buy(Book("genshiken", 600))
+      p <- buy(Book("mudazumo", 700))
+    } yield p
+  }
+
+  locally {
     lazy val f: String => Int = _.toInt
     lazy val g: Int => String = 1 / _ shows
     lazy val h: String => String = f andThen g
@@ -278,5 +316,34 @@ object StartScalaz2 extends App {
 
   ArrId[Function1].id(2) assert_=== 2
   ArrId[({ type F[A, B] = Kleisli[Option, A, B] })#F].id(2) assert_=== Some(2)
+
+  locally {
+    def mod(n: Int, s: String): Int => Option[String] =
+      _ % n === 0 option s
+    lazy val fold: ((Option[String], Option[String])) => Option[String] =
+      _.fold(_ |+| _)
+    lazy val default: ((Option[String], Int)) => String =
+      _.fold(_ | _.shows)
+    lazy val fizzbuzz: Int => String =
+      ((mod(3, "Fizz") &&& mod(5, "Buzz")) >>> fold &&& identity) >>> default
+
+    fizzbuzz(2) assert_=== "2"
+    fizzbuzz(3) assert_=== "Fizz"
+    fizzbuzz(5) assert_=== "Buzz"
+    fizzbuzz(15) assert_=== "FizzBuzz"
+  }
+
+  lazy val fib: Int => Int = {
+    case 0 => 0
+    case 1 => 1
+    case n => fib(n - 1) + fib(n - 2)
+  }
+
+  locally {
+    lazy val m: Int => Int = identity
+    lazy val n: Int => Int = n => fib(n - 1) + fib(n - 2)
+    lazy val either: Int => Int \/ Int = n => n < 2 either n or n
+    lazy val fib: Int => Int = either >>> (m ||| n)    
+  }
 
 }
