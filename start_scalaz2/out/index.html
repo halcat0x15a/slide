@@ -1,0 +1,386 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>start_scalaz2</title>
+        <link type="text/css" rel="stylesheet" href="assets/css/show.css" />
+        <link type="text/css" rel="stylesheet" href="assets/css/prettify.css" />
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/show.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/prettify.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/lang-apollo.js"></script><script type="text/javascript" src="assets/js/prettify/lang-css.js"></script><script type="text/javascript" src="assets/js/prettify/lang-hs.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lisp.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lua.js"></script><script type="text/javascript" src="assets/js/prettify/lang-ml.js"></script><script type="text/javascript" src="assets/js/prettify/lang-proto.js"></script><script type="text/javascript" src="assets/js/prettify/lang-scala.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vb.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vhdl.js"></script><script type="text/javascript" src="assets/js/prettify/lang-wiki.js"></script><script type="text/javascript" src="assets/js/prettify/lang-yaml.js"></script>
+      <script type="text/javascript"><!--
+        window.onload=function() { prettyPrint(); };
+      --></script>
+      </head>
+      <body>
+        <div id="slides">
+          <div id="reel">
+            <div class="content" id="slide-0">
+       <div class="container"><h1 id="Start+Scalaz%21%21">Start Scalaz!!</h1></div>
+      </div><div class="content" id="slide-1">
+       <div class="container"><h1 id="%E4%BC%9A%E5%A0%B4%E6%A1%88%E5%86%85%E3%81%A8%E3%81%8B%EF%BC%9F">会場案内とか？</h1></div>
+      </div><div class="content" id="slide-2">
+       <div class="container"><h1 id="%E7%99%BA%E8%A1%A8%E8%80%85">発表者</h1><ul><li>よしださんしろう(<a  href="https://twitter.com/halcat0x15a">halcat0x15a</a>)
+</li><li>Scala, Clojure, Haskellとか
+</li><li>Scalaは2.5年くらい書いてます
+</li><li>Scalazは1年くらい
+</li><li>大学生になりました
+</li><li>夏休みです（今日まで）
+</li></ul></div>
+      </div><div class="content" id="slide-3">
+       <div class="container"><h1 id="%E4%BB%8A%E6%97%A5%E3%81%AE%E5%86%85%E5%AE%B9">今日の内容</h1><ul><li>Scalaz Data Types
+</li></ul></div>
+      </div><div class="content" id="slide-4">
+       <div class="container"><ul><li><a  href="http://halcat0x15a.github.com/scalaz/core/target/scala-2.9.2/api/">apidoc</a>
+</li><li>build.sbt
+</li></ul><pre><code class="prettyprint lang-scala">scalaVersion := &quot;2.10.0-M7&quot;
+
+libraryDependencies &lt;+= scalaVersion(v =&gt;
+  &quot;org.scalaz&quot; %  (&quot;scalaz-core_&quot; + v) % &quot;7.0.0-M3&quot;
+)
+
+scalacOptions ++= Seq(
+  &quot;-feature&quot;,
+  &quot;-deprecation&quot;
+)
+
+initialCommands in console := &quot;import scalaz._, Scalaz._&quot;
+</code></pre></div>
+      </div><div class="content" id="slide-5">
+       <div class="container"><ul><li>発表中のツッコミは大歓迎
+</li><li>わからないところがあったら聞いて下さい
+</li><li>適当に休憩をとります
+</li></ul></div>
+      </div><div class="content" id="slide-6">
+       <div class="container"><h1 id="%E5%89%8D%E5%9B%9E%E3%81%AE%E5%BE%A9%E7%BF%92">前回の復習</h1></div>
+      </div><div class="content" id="slide-7">
+       <div class="container"><h1 id="Type+Class">Type Class</h1><h2 id="Scalaz%E3%82%92%E4%BD%BF%E3%81%86%E4%B8%8A%E3%81%A7%E7%9F%A5%E3%81%A3%E3%81%A6%E3%81%8A%E3%81%8D%E3%81%9F%E3%81%84%E3%81%93%E3%81%A8">Scalazを使う上で知っておきたいこと</h2><ul><li><a  href="http://halcat0x15a.github.com/slide/start_scalaz/out/#14">Context Bound</a>
+</li><li><a  href="http://halcat0x15a.github.com/slide/start_scalaz/out/#7">implicit parameterによるインスタンスの供給</a>
+</li><li><a  href="http://halcat0x15a.github.com/slide/start_scalaz/out/#21">implicit conversionによるシンタックスの供給</a>
+</li></ul><pre><code class="prettyprint lang-scala">def double[A: Semigroup](a: A) = a |+| a
+</code></pre></div>
+      </div><div class="content" id="slide-8">
+       <div class="container"><h1 id="%E9%87%8D%E8%A6%81%E3%81%AA%E5%9E%8B%E3%82%AF%E3%83%A9%E3%82%B9%E3%81%A8%E9%96%A2%E6%95%B0">重要な型クラスと関数</h1></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><h2 id="%E8%A1%A8%E6%98%8E">表明</h2><h3 id="%E3%82%88%E3%81%8F%E4%BE%8B%E3%81%AB%E4%BD%BF%E7%94%A8%E3%81%99%E3%82%8B">よく例に使用する</h3><pre><code class="prettyprint lang-scala">[A: Show: Equal](a: A, b: A): Unit = a assert_=== b
+</code></pre></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><h2 id="%E6%96%87%E5%AD%97%E5%88%97%E3%81%B8%E3%81%AE%E5%A4%89%E6%8F%9B">文字列への変換</h2><h3 id="show%E3%81%AFCord%E3%81%8C%E8%BF%94%E3%82%8A%E3%81%BE%E3%81%99%E3%80%82">showはCordが返ります。</h3><pre><code class="prettyprint lang-scala">[A: Show](a: A): String = a.shows
+</code></pre></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><h2 id="%E6%AF%94%E8%BC%83">比較</h2><pre><code class="prettyprint lang-scala">[A: Equal](a: A, b: A): Boolean = a === b
+[A: Equal](a: A, b: A): Boolean = a =/= b
+</code></pre></div>
+      </div><div class="content" id="slide-12">
+       <div class="container"><h2 id="%E7%B5%90%E5%90%88%E6%BC%94%E7%AE%97">結合演算</h2><pre><code class="prettyprint lang-scala">[A: Semigroup](a: A, b: A): A = a |+| b
+</code></pre></div>
+      </div><div class="content" id="slide-13">
+       <div class="container"><h2 id="%E5%8D%98%E4%BD%8D%E5%85%83">単位元</h2><pre><code class="prettyprint lang-scala">[A: Monoid]: A = mzero[A]
+</code></pre></div>
+      </div><div class="content" id="slide-14">
+       <div class="container"><h2 id="map">map</h2><pre><code class="prettyprint lang-scala">[F[_]: Functor, A, B](fa: F[A])(f: A =&gt; B): F[B] = fa map f
+</code></pre></div>
+      </div><div class="content" id="slide-15">
+       <div class="container"><h2 id=""><a  href="http://halcat0x15a.github.com/slide/start_scalaz/out/#58">Applicative Style</a></h2><pre><code class="prettyprint lang-scala">[F[_]: Applicative, A, B, C](a: F[A], b: F[B])(f: (A, B) =&gt; C): F[C] =
+  (a |@| b)(f)
+</code></pre></div>
+      </div><div class="content" id="slide-16">
+       <div class="container"><h2 id="flatMap">flatMap</h2><pre><code class="prettyprint lang-scala">[F[_]: Monad, A, B](fa: F[A])(f: A =&gt; F[B]): F[B] = fa &gt;&gt;= f
+</code></pre></div>
+      </div><div class="content" id="slide-17">
+       <div class="container"><h2 id="%E9%96%A2%E6%95%B0%E3%81%AE%E9%81%A9%E7%94%A8">関数の適用</h2><pre><code class="prettyprint lang-scala">[A, B](a: A)(f: A =&gt; B): B = a |&gt; f
+</code></pre></div>
+      </div><div class="content" id="slide-18">
+       <div class="container"><h2 id="if+%28b%29+Some%28a%29+else+None">if (b) Some(a) else None</h2><pre><code class="prettyprint lang-scala">[A](b: Boolean)(a: A): Option[A] = b option a
+</code></pre></div>
+      </div><div class="content" id="slide-19">
+       <div class="container"><h1 id="%E3%83%91%E3%83%83%E3%82%B1%E3%83%BC%E3%82%B8%E3%81%A8%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87">パッケージと命名規則</h1><p><a  href="http://halcat0x15a.github.com/slide/start_scalaz/out/#16">前回資料参照</a>
+</p></div>
+      </div><div class="content" id="slide-20">
+       <div class="container"><h1 id="Writer">Writer</h1></div>
+      </div><div class="content" id="slide-21">
+       <div class="container"><h1 id="%E8%A8%88%E7%AE%97%E3%82%92%E8%A8%98%E9%8C%B2%E3%81%99%E3%82%8B">計算を記録する</h1><h2 id="%28%E8%A8%98%E9%8C%B2%E5%80%A4%2C+%E8%A8%88%E7%AE%97%E5%80%A4%29">(記録値, 計算値)</h2><pre><code class="prettyprint lang-scala">(2 set &quot;geso&quot; run) assert_=== &quot;geso&quot; -&gt; 2
+(2 set &quot;geso&quot; value) assert_=== 2
+(2 set &quot;geso&quot; written) assert_=== &quot;geso&quot;
+&quot;geso&quot;.tell.written assert_=== &quot;geso&quot;
+</code></pre></div>
+      </div><div class="content" id="slide-22">
+       <div class="container"><h1 id="%E8%A8%88%E7%AE%97%E3%81%AE%E9%81%8E%E7%A8%8B%E3%82%92%E8%A8%98%E9%8C%B2%E3%81%99%E3%82%8B">計算の過程を記録する</h1><pre><code class="prettyprint lang-scala">(for {
+  _ &lt;- &quot;start;&quot;.tell
+  a &lt;- 2 set &quot;a = 2;&quot;
+  b = a + 2
+  _ &lt;- s&quot;a + 2 = $b;&quot;.tell
+  _ &lt;- &quot;end;&quot;.tell
+} yield b).run assert_===
+  &quot;start;a = 2;a + 2 = 4;end;&quot; -&gt; 4
+</code></pre></div>
+      </div><div class="content" id="slide-23">
+       <div class="container"><h1 id="%E5%90%88%E6%88%90%E3%81%99%E3%82%8B%E6%99%82%E3%81%ABSemigroup%E3%82%92%E5%88%A9%E7%94%A8%E3%81%99%E3%82%8B">合成する時にSemigroupを利用する</h1></div>
+      </div><div class="content" id="slide-24">
+       <div class="container"><h1 id="Applicative+Style">Applicative Style</h1><pre><code class="prettyprint lang-scala">case class Book(title: String, price: Int)
+
+def buy(book: Book) = book.title set book.price
+
+(buy(Book(&quot;yuruyuri&quot;, 900)) |@|
+ buy(Book(&quot;mathgirl&quot;, 1800)) |@|
+ buy(Book(&quot;genshiken&quot;, 600)) |@|
+ buy(Book(&quot;mudazumo&quot;, 700)))(_ :: _ :: _ :: _ :: Nil).run assert_===
+4000 -&gt; List(&quot;yuruyuri&quot;, &quot;mathgirl&quot;, &quot;genshiken&quot;, &quot;mudazumo&quot;)
+</code></pre></div>
+      </div><div class="content" id="slide-25">
+       <div class="container"><h1 id="Monad+Trans">Monad Trans</h1></div>
+      </div><div class="content" id="slide-26">
+       <div class="container"><h1 id="%E3%83%A2%E3%83%8A%E3%83%89%E5%A4%89%E6%8F%9B%E5%AD%90">モナド変換子</h1><h2 id="%E5%85%A5%E3%82%8C%E5%AD%90%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%9F%E3%83%A2%E3%83%8A%E3%83%89%E3%82%92%E6%89%B1%E3%81%86%E4%BB%95%E7%B5%84%E3%81%BF">入れ子になったモナドを扱う仕組み</h2><h3 id="%E8%A4%87%E6%95%B0%E3%81%AE%E3%83%A2%E3%83%8A%E3%83%89%E3%82%92%E5%90%88%E6%88%90%E3%81%99%E3%82%8B">複数のモナドを合成する</h3></div>
+      </div><div class="content" id="slide-27">
+       <div class="container"><h1 id="Writer%E3%81%A8Option">WriterとOption</h1><pre><code class="prettyprint lang-scala">def buy(book: Book): Option[Writer[Int, String]] =
+  book.price &lt; 2000 option (book.title set book.price)
+
+(for {
+  a &lt;- buy(Book(&quot;yuruyuri&quot;, 900))
+  b &lt;- buy(Book(&quot;mathgirl&quot;, 1800))
+  c &lt;- buy(Book(&quot;genshiken&quot;, 600))
+  d &lt;- buy(Book(&quot;mudazumo&quot;, 700))
+} yield (for {
+  e &lt;- a
+  f &lt;- b
+  g &lt;- c
+  h &lt;- d
+} yield List(e, f, g, h)).run) assert_===
+Some(4000 -&gt; List(&quot;yuruyuri&quot;, &quot;mathgirl&quot;, &quot;genshiken&quot;, &quot;mudazumo&quot;))
+</code></pre></div>
+      </div><div class="content" id="slide-28">
+       <div class="container"><h1 id="Applicative+Style">Applicative Style</h1><pre><code class="prettyprint lang-scala">(buy(Book(&quot;yuruyuri&quot;, 900)) |@|
+ buy(Book(&quot;mathgirl&quot;, 1800)) |@|
+ buy(Book(&quot;genshiken&quot;, 600)) |@|
+ buy(Book(&quot;mudazumo&quot;, 700)))(
+   _ |@| _ |@| _ |@| _ |&gt; (_(_ :: _ :: _ :: _ :: Nil).run)) assert_===
+Some(4000 -&gt; List(&quot;yuruyuri&quot;, &quot;mathgirl&quot;, &quot;genshiken&quot;, &quot;mudazumo&quot;))
+</code></pre></div>
+      </div><div class="content" id="slide-29">
+       <div class="container"><h1 id="WriterT+Option">WriterT Option</h1><pre><code class="prettyprint lang-scala">def buy(book: Book): WriterT[Option, Int, String] =
+  WriterT(book.price &lt; 2000 option book.price -&gt; book.title)
+
+(buy(Book(&quot;yuruyuri&quot;, 900)) |@|
+ buy(Book(&quot;mathgirl&quot;, 1800)) |@|
+ buy(Book(&quot;genshiken&quot;, 600)) |@|
+ buy(Book(&quot;mudazumo&quot;, 700)))(_ :: _ :: _ :: _ :: Nil).run assert_===
+Some(4000 -&gt; List(&quot;yuruyuri&quot;, &quot;mathgirl&quot;, &quot;genshiken&quot;, &quot;mudazumo&quot;))
+
+(buy(Book(&quot;yuriyuri&quot;, 900)) |@|
+ buy(Book(&quot;programming in scala&quot;, 4800)) |@|
+ buy(Book(&quot;ubunchu&quot;, 800)))(_ :: _ :: _ :: Nil).run assert_===
+None
+</code></pre></div>
+      </div><div class="content" id="slide-30">
+       <div class="container"><h1 id="Writer+%3D+WriterT+Id">Writer = WriterT Id</h1><h2 id="Scalaz%E3%81%AE%E3%83%87%E3%83%BC%E3%82%BF%E5%9E%8B%E3%81%AE%E6%AE%86%E3%81%A9%E3%81%AF%E3%83%A2%E3%83%8A%E3%83%89%E5%A4%89%E6%8F%9B%E5%AD%90">Scalazのデータ型の殆どはモナド変換子</h2><h3 id="%E3%83%A2%E3%83%8A%E3%83%89%E5%A4%89%E6%8F%9B%E5%AD%90%E3%82%92%E6%96%B0%E3%81%9F%E3%81%AB%E5%AE%9A%E7%BE%A9%E3%81%99%E3%82%8B%E3%81%AE%E3%81%A7%E3%81%AF%E3%81%AA%E3%81%8F%E3%80%81%E3%83%A2%E3%83%8A%E3%83%89%E5%A4%89%E6%8F%9B%E5%AD%90%E3%81%AB%E3%82%88%E3%81%A3%E3%81%A6%E5%AE%9A%E7%BE%A9%E3%81%95%E3%82%8C%E3%82%8B">モナド変換子を新たに定義するのではなく、モナド変換子によって定義される</h3></div>
+      </div><div class="content" id="slide-31">
+       <div class="container"><h1 id="State">State</h1></div>
+      </div><div class="content" id="slide-32">
+       <div class="container"><h1 id="Lens">Lens</h1><h2 id="%E3%83%95%E3%82%A3%E3%83%BC%E3%83%AB%E3%83%89%E3%81%AB%E5%AF%BE%E3%81%99%E3%82%8Bgetter%E3%81%A8setter">フィールドに対するgetterとsetter</h2><pre><code class="prettyprint lang-scala">case class Person(name: String, property: List[String], money: Int)
+
+object Person {
+
+  val property: Lens[Person, List[String]] =
+    Lens.lensu((p, pr) =&gt; p copy (property = pr), _.property)
+
+  val money: Lens[Person, Int] =
+    Lens.lensg(p =&gt; m =&gt; p copy (money = m), _.money)
+
+}
+</code></pre></div>
+      </div><div class="content" id="slide-33">
+       <div class="container"><h1 id="%E6%BC%94%E7%BF%92">演習</h1><blockquote><p>たかしくんは400円を持って80円のりんごを2つ、60円のみかんを3つ買いました。
+この時のたかしくんの所持金を求めなさい。
+ただし、計算にREPLを使ってよいものとする。
+</p></blockquote><pre><code class="prettyprint lang-scala">def buy(thing: String, price: Int): State[Person, Unit] =
+  for {
+    _ &lt;- Person.property %= (thing :: _)
+    _ &lt;- Person.money -= price
+  } yield ()
+
+(for {
+  _ &lt;- buy(&quot;apple&quot;, 80)
+  _ &lt;- buy(&quot;apple&quot;, 80)
+  _ &lt;- buy(&quot;orange&quot;, 60)
+  _ &lt;- buy(&quot;orange&quot;, 60)
+  _ &lt;- buy(&quot;orange&quot;, 60)
+  takashi &lt;- get
+} yield takashi.money) eval Person(&quot;takashi&quot;, Nil, 400)
+</code></pre></div>
+      </div><div class="content" id="slide-34">
+       <div class="container"><h1 id="State">State</h1><h2 id="%E7%8A%B6%E6%85%8B+%3D%3E+%28%E7%8A%B6%E6%85%8B%2C+%E5%80%A4%29">状態 =&gt; (状態, 値)</h2><pre><code class="prettyprint lang-scala">(for {
+  _ &lt;- Person.property := List(&quot;orange&quot;)
+  property &lt;- Person.property %= (&quot;apple&quot; :: _)
+  money &lt;- Person.money -= 80
+} yield property -&gt; money) eval
+  Person(&quot;takashi&quot;, Nil, 100) assert_=== List(&quot;apple&quot;, &quot;orange&quot;) -&gt; 20
+</code></pre></div>
+      </div><div class="content" id="slide-35">
+       <div class="container"><h1 id="Example">Example</h1><pre><code class="prettyprint lang-scala">def buy(book: Book): State[Person, Unit] =
+  buy(book.title, book.price)
+
+(for {
+  _ &lt;- buy(Book(&quot;yuruyuri&quot;, 900))
+  _ &lt;- buy(Book(&quot;mathgirl&quot;, 1800))
+  _ &lt;- buy(Book(&quot;genshiken&quot;, 600))
+  _ &lt;- buy(Book(&quot;mudazumo&quot;, 700))
+  sanshiro &lt;- get
+} yield sanshiro.money) eval
+  Person(&quot;Sanshiro&quot;, Nil, 5000) assert_=== 1000
+</code></pre></div>
+      </div><div class="content" id="slide-36">
+       <div class="container"><h1 id="StateT">StateT</h1><pre><code class="prettyprint lang-scala">def check = StateT[Option, Person, Unit](p =&gt; p.money &gt;= 0 option p -&gt; ())
+
+(for {
+  money &lt;- (Person.money -= 80).lift[Option]
+  _ &lt;- check
+} yield money) eval
+  Person(&quot;takashi&quot;, Nil, 100) assert_=== Some(20)
+</code></pre></div>
+      </div><div class="content" id="slide-37">
+       <div class="container"><h1 id="%E6%BC%94%E7%BF%92">演習</h1><h2 id="%E6%89%80%E6%8C%81%E9%87%91%E3%81%8C%E3%83%9E%E3%82%A4%E3%83%8A%E3%82%B9%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%9F%E3%82%89None%E3%82%92%E8%BF%94%E3%81%99%E3%82%88%E3%81%86%E3%81%AAbuyAndCheck%E9%96%A2%E6%95%B0%E3%82%92%E5%AE%9A%E7%BE%A9%E3%81%9B%E3%82%88">所持金がマイナスになったらNoneを返すようなbuyAndCheck関数を定義せよ</h2><pre><code class="prettyprint lang-scala">def buyAndCheck(book: Book): StateT[Option, Person, Unit]
+
+(for {
+  _ &lt;- buyAndCheck(Book(&quot;yuruyuri&quot;, 900))
+  _ &lt;- buyAndCheck(Book(&quot;mathgirl&quot;, 1800))
+  _ &lt;- buyAndCheck(Book(&quot;genshiken&quot;, 600))
+  _ &lt;- buyAndCheck(Book(&quot;mudazumo&quot;, 700))
+  person &lt;- get.lift[Option]
+} yield person.money) eval
+  Person(&quot;Sanshiro&quot;, Nil, 3000) assert_=== None
+</code></pre></div>
+      </div><div class="content" id="slide-38">
+       <div class="container"><h1 id="Validation">Validation</h1></div>
+      </div><div class="content" id="slide-39">
+       <div class="container"><h1 id="%E6%88%90%E5%8A%9F%E3%80%81%E5%A4%B1%E6%95%97%E3%82%92%E8%A1%A8%E3%81%99">成功、失敗を表す</h1><pre><code class="prettyprint lang-scala">2.success[String] assert_=== Validation.success(2)
+&quot;geso&quot;.failure[Int] assert_=== Validation.failure(&quot;geso&quot;)
+</code></pre></div>
+      </div><div class="content" id="slide-40">
+       <div class="container"><h1 id="%E5%9E%8B%E3%81%A7%E8%A1%A8%E3%81%9B%E3%82%8B">型で表せる</h1><h2 id="Scala%E3%81%AB%E3%81%AF%E6%A4%9C%E6%9F%BB%E4%BE%8B%E5%A4%96%E3%81%AF%E3%81%AA%E3%81%84">Scalaには検査例外はない</h2></div>
+      </div><div class="content" id="slide-41">
+       <div class="container"><h1 id="parse">parse</h1><pre><code class="prettyprint lang-scala">import Validation._
+
+def parseInt(s: String): String \?/ Int = try {
+  s.toInt.success
+} catch {
+  case e: Throwable =&gt; e.getMessage.failure
+}
+
+parseInt(&quot;2&quot;) assert_=== 2.success
+parseInt(&quot;geso&quot;) assert_=== &quot;&quot;&quot;For input string: &quot;geso&quot;&quot;&quot;&quot;.failure
+</code></pre></div>
+      </div><div class="content" id="slide-42">
+       <div class="container"><h1 id="Applicative+Style">Applicative Style</h1><h2 id="Error%E3%82%92%E8%93%84%E7%A9%8D%E3%81%99%E3%82%8B">Errorを蓄積する</h2><pre><code class="prettyprint lang-scala">(parseInt(&quot;2&quot;).toValidationNEL |@|
+  parseInt(&quot;2&quot;).toValidationNEL)(_ * _) assert_===
+    4.success
+
+(parseInt(&quot;foo&quot;).toValidationNEL |@|
+  parseInt(&quot;bar&quot;).toValidationNEL)(_ * _) assert_===
+    NonEmptyList(
+      &quot;&quot;&quot;For input string: &quot;foo&quot;&quot;&quot;&quot;,
+      &quot;&quot;&quot;For input string: &quot;bar&quot;&quot;&quot;&quot;
+    ).failure
+</code></pre></div>
+      </div><div class="content" id="slide-43">
+       <div class="container"><h1 id="%E6%BC%94%E7%BF%92">演習</h1><ul><li>キーとマップをとり、Validationで返す関数get
+</li><li>マップからユーザーを構築する関数user
+</li></ul><pre><code class="prettyprint lang-scala">case class User(id: String, age: Int)
+implicit lazy val ShowUser = Show.showA[User]
+implicit lazy val EqualUser = Equal.equalA[User]
+
+def get[K, V](k: K)(m: Map[K, V]): String \?/ V
+
+def user(m: Map[String, String]): NonEmptyList[String] \?/ User
+
+user(Map(&quot;id&quot; -&gt; &quot;halcat0x15a&quot;, &quot;age&quot; -&gt; &quot;19&quot;)) assert_=== User(&quot;halcat0x15a&quot;, 19).success
+user(Map(&quot;id&quot; -&gt; &quot;halcat0x15a&quot;)) assert_=== NonEmptyList(&quot;key not found: age&quot;).failure
+user(Map(&quot;age&quot; -&gt; &quot;geso&quot;)) assert_===
+  NonEmptyList(&quot;key not found: id&quot;, &quot;&quot;&quot;For input string: &quot;geso&quot;&quot;&quot;&quot;).failure
+</code></pre></div>
+      </div><div class="content" id="slide-44">
+       <div class="container"><h1 id="Kleisli">Kleisli</h1></div>
+      </div><div class="content" id="slide-45">
+       <div class="container"><h1 id="%E6%BC%94%E7%BF%92">演習</h1><h2 id="%E9%96%A2%E6%95%B0f%2Cg%E3%82%92%E7%94%A8%E3%81%84%E3%81%A6%E9%96%A2%E6%95%B0h%E3%82%92%E5%AE%9A%E7%BE%A9%E3%81%9B%E3%82%88">関数f,gを用いて関数hを定義せよ</h2><pre><code class="prettyprint lang-scala">lazy val f: String =&gt; Option[Int] = _.parseInt.toOption
+lazy val g: Int =&gt; Option[String] = n =&gt; n =/= 0 option (1 / n shows)
+
+lazy val h: String =&gt; Option[String]
+</code></pre></div>
+      </div><div class="content" id="slide-46">
+       <div class="container"><h1 id="Kleisli%E3%82%92%E7%94%A8%E3%81%84%E3%82%8B%E3%81%A8Monad%E3%82%92%E5%88%A9%E7%94%A8%E3%81%97%E3%81%9F%E5%90%88%E6%88%90%E3%81%8C%E5%87%BA%E6%9D%A5%E3%82%8B">Kleisliを用いるとMonadを利用した合成が出来る</h1></div>
+      </div><div class="content" id="slide-47">
+       <div class="container"><pre><code class="prettyprint lang-scala">lazy val h: Kleisli[Option, String, String] =
+  Kleisli(f) &gt;=&gt; Kleisli(g)
+</code></pre></div>
+      </div><div class="content" id="slide-48">
+       <div class="container"><h1 id="Reader">Reader</h1><h2 id="I+%3D%3E+O">I =&gt; O</h2><pre><code class="prettyprint lang-scala">def get(s: String): Reader[Map[String, String], String] =
+  Reader(m =&gt; m(s))
+
+(for {
+  id &lt;- get(&quot;id&quot;)
+  age &lt;- get(&quot;age&quot;)
+} yield User(id, age.toInt)) run 
+  Map(
+    &quot;id&quot; -&gt; &quot;halcat0x15a&quot;,
+    &quot;age&quot; -&gt; &quot;19&quot;
+  ) assert_=== User(&quot;halcat0x15a&quot;, 19)
+</code></pre></div>
+      </div><div class="content" id="slide-49">
+       <div class="container"><h1 id="Reader+%3D+Kleisli+Id">Reader = Kleisli Id</h1><h2 id="Kleisli%E3%81%AFReader%E3%81%AE%E3%83%A2%E3%83%8A%E3%83%89%E5%A4%89%E6%8F%9B%E5%AD%90%E7%89%88">KleisliはReaderのモナド変換子版</h2></div>
+      </div><div class="content" id="slide-50">
+       <div class="container"><h1 id="%E6%BC%94%E7%BF%92">演習</h1><ul><li>先の例の結果をOptionで返すように変更せよ
+</li></ul><pre><code class="prettyprint lang-scala">def get(s: String): Kleisli[Option, Map[String, String], String]
+
+(for {
+  id &lt;- get(&quot;id&quot;)
+  age &lt;- get(&quot;age&quot;)
+} yield User(id, age.toInt)) run 
+  Map(&quot;age&quot; -&gt; &quot;19&quot;) assert_=== None
+</code></pre></div>
+      </div><div class="content" id="slide-51">
+       <div class="container"><h1 id="Arrow">Arrow</h1></div>
+      </div><div class="content" id="slide-52">
+       <div class="container"><h1 id="Category">Category</h1><h2 id="%E6%81%92%E7%AD%89%E5%B0%84%E3%81%A8%E5%90%88%E6%88%90%E5%B0%84">恒等射と合成射</h2><pre><code class="prettyprint lang-scala">lazy val f: String =&gt; Int = _.toInt
+lazy val g: Int =&gt; String = 1 / _ shows
+lazy val h: String =&gt; String = f andThen g
+</code></pre></div>
+      </div><div class="content" id="slide-53">
+       <div class="container"><h1 id="Compose">Compose</h1><h2 id="%3E%3E%3E">&gt;&gt;&gt;</h2><pre><code class="prettyprint lang-scala">lazy val h: String =&gt; String = f &gt;&gt;&gt; g
+
+lazy val f: Kleisli[Option, String, Int] = Kleisli(_.parseInt.toOption)
+lazy val g: Kleisli[Option, Int, String] = Kleisli(n =&gt; n =/= 0 option (1 / n shows))
+lazy val h: Kleisli[Option, String, String] = f &gt;&gt;&gt; g
+</code></pre></div>
+      </div><div class="content" id="slide-54">
+       <div class="container"><h1 id="ArrId">ArrId</h1><pre><code class="prettyprint lang-scala">ArrId[Function1].id(2) assert_=== 2
+ArrId[({ type F[A, B] = Kleisli[Option, A, B] })#F].id(2) assert_=== Some(2)
+</code></pre></div>
+      </div><div class="content" id="slide-55">
+       <div class="container"><ul><li>Arrow
+</li><li>Choice
+</li><li>Split
+</li></ul></div>
+      </div><div class="content" id="slide-56">
+       <div class="container"><h1 id="Arrow">Arrow</h1><h2 id="FizzBuzz">FizzBuzz</h2><pre><code class="prettyprint lang-scala">def mod(n: Int, s: String): Int =&gt; Option[String] =
+  _ % n === 0 option s
+lazy val fold: ((Option[String], Option[String])) =&gt; Option[String] =
+  _.fold(_ |+| _)
+lazy val default: ((Option[String], Int)) =&gt; String =
+  _.fold(_ | _.shows)
+lazy val fizzbuzz: Int =&gt; String =
+  ((mod(3, &quot;Fizz&quot;) &amp;&amp;&amp; mod(5, &quot;Buzz&quot;)) &gt;&gt;&gt; fold &amp;&amp;&amp; identity) &gt;&gt;&gt; default
+
+fizzbuzz(2) assert_=== &quot;2&quot;
+fizzbuzz(3) assert_=== &quot;Fizz&quot;
+fizzbuzz(5) assert_=== &quot;Buzz&quot;
+fizzbuzz(15) assert_=== &quot;FizzBuzz&quot;
+</code></pre></div>
+      </div><div class="content" id="slide-57">
+       <div class="container"><h1 id="ArrowOps">ArrowOps</h1><pre><code class="prettyprint lang-scala">[F[_, _], A, B, C](f: F[A, B], g: F[A, C]): F[A, (B, C)] = f &amp;&amp;&amp; g
+[F[_, _], A, B, C, D](f: F[A, B], g: F[C, D]): F[(A, C), (B, D)] = f *** g
+</code></pre></div>
+      </div>
+          </div>
+        </div>
+        
+      </body>
+    </html>
