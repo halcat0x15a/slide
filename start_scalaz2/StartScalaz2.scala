@@ -120,6 +120,15 @@ object StartScalaz2 extends App {
     None
   }
 
+  def buy_(thing: String, price: Int): State[Person, Unit] =
+    for {
+      p <- get
+      _ <- (p.money > price) ? (for {
+	_ <- Person.property %= (thing :: _)
+        _ <- Person.money -= price
+      } yield ()) | State(p => p -> ())
+    } yield ()
+
   def buy(thing: String, price: Int): State[Person, Unit] =
     for {
       _ <- Person.property %= (thing :: _)
@@ -179,8 +188,8 @@ object StartScalaz2 extends App {
 
     def buyAndCheck(book: Book): StateT[Option, Person, Unit] =
       for {
-	_ <- buy(book).lift[Option]
-	_ <- check
+        _ <- buy(book).lift[Option]
+        _ <- check
       } yield ()
 
     (for {
@@ -322,10 +331,12 @@ object StartScalaz2 extends App {
       _ % n === 0 option s
     lazy val fold: ((Option[String], Option[String])) => Option[String] =
       _.fold(_ |+| _)
-    lazy val default: ((Option[String], Int)) => String =
-      _.fold(_ | _.shows)
+    lazy val toString: ((Option[String], Int)) => (Option[String], String) =
+      identity[Option[String]] _ *** Show[Int].shows
+    lazy val default: ((Option[String], String)) => String =
+      _.fold(_ | _)
     lazy val fizzbuzz: Int => String =
-      ((mod(3, "Fizz") &&& mod(5, "Buzz")) >>> fold &&& identity) >>> default
+      ((mod(3, "Fizz") &&& mod(5, "Buzz")) >>> fold &&& identity) >>> toString >>> default
 
     fizzbuzz(2) assert_=== "2"
     fizzbuzz(3) assert_=== "Fizz"
