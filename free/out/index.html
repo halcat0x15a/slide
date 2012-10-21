@@ -1,0 +1,440 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>stackless scala with free monad</title>
+        <link type="text/css" rel="stylesheet" href="assets/css/show.css" />
+        <link type="text/css" rel="stylesheet" href="assets/css/prettify.css" />
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/show.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/prettify.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/lang-apollo.js"></script><script type="text/javascript" src="assets/js/prettify/lang-css.js"></script><script type="text/javascript" src="assets/js/prettify/lang-hs.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lisp.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lua.js"></script><script type="text/javascript" src="assets/js/prettify/lang-ml.js"></script><script type="text/javascript" src="assets/js/prettify/lang-proto.js"></script><script type="text/javascript" src="assets/js/prettify/lang-scala.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vb.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vhdl.js"></script><script type="text/javascript" src="assets/js/prettify/lang-wiki.js"></script><script type="text/javascript" src="assets/js/prettify/lang-yaml.js"></script>
+      <script type="text/javascript"><!--
+        window.onload=function() { prettyPrint(); };
+      --></script>
+      </head>
+      <body>
+        <div id="slides">
+          <div id="reel">
+            <div class="content" id="slide-0">
+       <div class="container"><h1 id="%E3%81%99%E3%81%9F%E3%81%A3%E3%81%8F%E3%82%8C%E3%81%99+%E3%81%99%E3%81%8B%E3%82%89">すたっくれす すから</h1><h1 id="%E3%81%86%E3%81%83%E3%81%9A">うぃず</h1><h1 id="%E3%81%B5%E3%82%8A%E3%83%BC+%E3%82%82%E3%81%AA%E3%81%A9">ふりー もなど</h1><h2 id="Sanshiro+Yoshida+%28%29">Sanshiro Yoshida (<a  href="http://twitter.com/halcat0x15a">@halcat0x15a</a>)</h2></div>
+      </div><div class="content" id="slide-1">
+       <div class="container"><h1 id="%E3%81%82%E3%81%B6%E3%81%99%E3%81%A8%E3%82%89%E3%81%8F%E3%81%A8">あぶすとらくと</h1><p>Scalaコンパイラの末尾再帰除去は自分自身を呼び出すメソッドのみに限定されます
+</p></div>
+      </div><div class="content" id="slide-2">
+       <div class="container"><p>今回は、どんな再帰呼び出しでもスタックを消費しないようにする方法を紹介します
+</p></div>
+      </div><div class="content" id="slide-3">
+       <div class="container"><h1 id="1.+Introduction">1. Introduction</h1></div>
+      </div><div class="content" id="slide-4">
+       <div class="container"><h1 id="StackOverflowError">StackOverflowError</h1><h2 id="%E3%81%BF%E3%81%AA%E3%81%95%E3%82%93%E7%B5%8C%E9%A8%93%E3%81%82%E3%82%8A%E3%81%BE%E3%81%99%E3%81%AD%EF%BC%9F">みなさん経験ありますね？</h2></div>
+      </div><div class="content" id="slide-5">
+       <div class="container"><h1 id="%E4%BE%8B">例</h1><pre><code class="prettyprint lang-scala">val Zero = BigInt(0)
+val One = BigInt(1)
+
+lazy val factorial: BigInt =&gt; BigInt = {
+  case Zero | One =&gt; One
+  case n =&gt; n * factorial(n - 1)
+}
+</code></pre></div>
+      </div><div class="content" id="slide-6">
+       <div class="container"><pre><code class="prettyprint lang-scala">scala&gt; factorial(10000)
+java.lang.StackOverflowError
+        at scala.math.BigInt$.maxCached(BigInt.scala:22)
+        at scala.math.BigInt$.apply(BigInt.scala:39)
+        at scala.math.BigInt$.int2bigInt(BigInt.scala:102)
+        at $anonfun$factorial$1.apply(&lt;console&gt;:17)
+        at $anonfun$factorial$1.apply(&lt;console&gt;:15)
+        at $anonfun$factorial$1.apply(&lt;console&gt;:17)
+        at $anonfun$factorial$1.apply(&lt;console&gt;:15)
+        at $anonfun$factorial$1.apply(&lt;console&gt;:17)
+        .
+        .
+        .
+</code></pre></div>
+      </div><div class="content" id="slide-7">
+       <div class="container"><h1 id="2.+Background%3A+Tail-call+elimination+in+Scala">2. Background: Tail-call elimination in Scala</h1></div>
+      </div><div class="content" id="slide-8">
+       <div class="container"><h1 id="%E6%9C%AB%E5%B0%BE%E3%81%A7%E8%87%AA%E8%BA%AB%E3%82%92%E5%91%BC%E3%81%B3%E5%87%BA%E3%81%99%E9%96%A2%E6%95%B0">末尾で自身を呼び出す関数</h1><pre><code class="prettyprint lang-scala">def foldl[A, B](as: List[A], b: B, f: (B, A) =&gt; B): B =
+  as match {
+    case Nil =&gt; b
+    case x :: xs =&gt; foldl(xs, f(b, x), f)
+  }
+</code></pre></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><p>これは、varとwhileを使ったコードに機械的に変換出来る
+</p></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><h3 id="%E3%82%B3%E3%83%B3%E3%83%91%E3%82%A4%E3%83%AB%E3%81%95%E3%82%8C%E3%81%9F%E3%82%B3%E3%83%BC%E3%83%89%E3%81%AF%E4%BB%A5%E4%B8%8B%E3%81%A8%E5%90%8C%E7%AD%89">コンパイルされたコードは以下と同等</h3><pre><code class="prettyprint lang-scala">def foldl[A, B](as: List[A], b: B, f: (B, A) =&gt; B): B = {
+  var z = b
+  var az = as
+  while (true) {
+    az match {
+      case Nil =&gt; return z
+      case x :: xs =&gt; {
+        z = f(z, x)
+        az = xs
+      }
+    }
+  }
+  z
+}
+</code></pre></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><blockquote><p>末尾呼び出しならなんでも最適化されるのか？
+</p></blockquote></div>
+      </div><div class="content" id="slide-12">
+       <div class="container"><h1 id="%E6%9C%80%E9%81%A9%E5%8C%96%E3%81%95%E3%82%8C%E3%81%AA%E3%81%84%E4%BE%8B">最適化されない例</h1></div>
+      </div><div class="content" id="slide-13">
+       <div class="container"><h2 id="%E7%9B%B8%E4%BA%92%E5%86%8D%E5%B8%B0">相互再帰</h2><pre><code class="prettyprint lang-scala">lazy val even: Int =&gt; Boolean = {
+  case 0 =&gt; true
+  case n =&gt; odd(n - 1)
+}
+
+lazy val odd: Int =&gt; Boolean = {
+  case 0 =&gt; false
+  case n =&gt; even(n - 1)
+}
+</code></pre></div>
+      </div><div class="content" id="slide-14">
+       <div class="container"><pre><code class="prettyprint lang-scala">scala&gt; even(100000)
+java.lang.StackOverflowError
+        at .even(&lt;console&gt;:13)
+        at $anonfun$odd$1.apply$mcZI$sp(&lt;console&gt;:20)
+        at $anonfun$even$1.apply$mcZI$sp(&lt;console&gt;:15)
+        at $anonfun$odd$1.apply$mcZI$sp(&lt;console&gt;:20)
+        at $anonfun$even$1.apply$mcZI$sp(&lt;console&gt;:15)
+        at $anonfun$odd$1.apply$mcZI$sp(&lt;console&gt;:20)
+        .
+        .
+        .
+</code></pre></div>
+      </div><div class="content" id="slide-15">
+       <div class="container"><p>これらの問題を解決するデータ構造が存在します
+</p></div>
+      </div><div class="content" id="slide-16">
+       <div class="container"><h1 id="3.+Tampolines%3A+Trading+stack+for+heap">3. Tampolines: Trading stack for heap</h1></div>
+      </div><div class="content" id="slide-17">
+       <div class="container"><h1 id="Trampoline">Trampoline</h1><pre><code class="prettyprint lang-scala">sealed trait Trampoline[+A] {
+  final def runT: A =
+    this match {
+       case More(k) =&gt; k().runT
+       case Done(v) =&gt; v
+    }
+}
+
+case class Done[+A](a: A)
+  extends Trampoline[A]
+
+case class More[+A](k: () =&gt; Trampoline[A])
+  extends Trampoline[A]
+</code></pre></div>
+      </div><div class="content" id="slide-18">
+       <div class="container"><p>runTは再帰的に次のステップを呼び出し、結果を得る
+</p></div>
+      </div><div class="content" id="slide-19">
+       <div class="container"><h1 id="Trampoline%E3%82%92%E7%94%A8%E3%81%84%E3%81%9F%E7%9B%B8%E4%BA%92%E5%86%8D%E5%B8%B0">Trampolineを用いた相互再帰</h1><pre><code class="prettyprint lang-scala">lazy val even: Int =&gt; Trampoline[Boolean] = {
+  case 0 =&gt; Done(true)
+  case n =&gt; More(() =&gt; odd(n - 1))
+}
+
+lazy val odd: Int =&gt; Trampoline[Boolean] = {
+  case 0 =&gt; Done(false)
+  case n =&gt; More(() =&gt; even(n - 1))
+}
+</code></pre></div>
+      </div><div class="content" id="slide-20">
+       <div class="container"><pre><code class="prettyprint lang-scala">scala&gt; even(10000)
+res0: Trampoline[Boolean] = More(&lt;function0&gt;)
+
+scala&gt; .runT
+res1: Boolean = true
+
+</code></pre></div>
+      </div><div class="content" id="slide-21">
+       <div class="container"><h1 id="4.+Making+every+call+a+tail+cal">4. Making every call a tail cal</h1></div>
+      </div><div class="content" id="slide-22">
+       <div class="container"><h2 id="%E6%9C%80%E5%88%9D%E3%81%AB%E6%8C%99%E3%81%92%E3%81%9F%E4%BE%8B%E3%82%92%E8%A7%A3%E6%B1%BA%E5%87%BA%E6%9D%A5%E3%82%8B%E3%81%8B%EF%BC%9F">最初に挙げた例を解決出来るか？</h2></div>
+      </div><div class="content" id="slide-23">
+       <div class="container"><pre><code class="prettyprint lang-scala">val Zero = BigInt(0)
+val One = BigInt(1)
+
+lazy val factorial: BigInt =&gt; Trampoline[BigInt] = {
+  case Zero | One =&gt; Done(One)
+  case n =&gt; More(() =&gt; Done(n * factorial(n - 1).runT))
+}
+</code></pre></div>
+      </div><div class="content" id="slide-24">
+       <div class="container"><pre><code class="prettyprint lang-scala">scala&gt; factorial(10000)
+res0: Trampoline[BigInt] = More(&lt;function0&gt;)
+
+scala&gt; .runT
+java.lang.StackOverflowError
+        at scala.math.BigInt.bigInteger(BigInt.scala:117)
+        at scala.math.BigInt.compare(BigInt.scala:182)
+        at scala.math.BigInt.equals(BigInt.scala:178)
+        at scala.math.BigInt.equals(BigInt.scala:126)
+        at scala.runtime.BoxesRunTime.equalsNumNum(Unknown Source)
+        at $anonfun$factorial$1.apply(Trampoline.scala:77)
+        at $anonfun$factorial$1.apply(Trampoline.scala:76)
+        at $anonfun$factorial$1$$anonfun$apply$3.apply(Trampoline.scala:78)
+        at $anonfun$factorial$1$$anonfun$apply$3.apply(Trampoline.scala:78)
+        at Trampoline$class.runT(Trampoline.scala:52)
+        at More.runT(Trampoline.scala:59)
+        at $anonfun$factorial$1$$anonfun$apply$3.apply(Trampoline.scala:78)
+        .
+        .
+        .
+</code></pre></div>
+      </div><div class="content" id="slide-25">
+       <div class="container"><p>関数内でrunTを呼び出してしまっている
+</p></div>
+      </div><div class="content" id="slide-26">
+       <div class="container"><h1 id="Trampoline+Monad">Trampoline Monad</h1></div>
+      </div><div class="content" id="slide-27">
+       <div class="container"><h2 id="4.1+A+Trampoline+monad%3F">4.1 A Trampoline monad?</h2><p>モナドにすることで解決を試みます
+</p></div>
+      </div><div class="content" id="slide-28">
+       <div class="container"><h1 id="%3E%3E%3D">&gt;&gt;=</h1><h2 id="%E5%8D%98%E7%B4%94%E3%81%AB%E5%AE%9F%E8%A3%85%E3%81%99%E3%82%8B%E3%81%A8">単純に実装すると</h2><pre><code class="prettyprint lang-scala">def flatMap[B](f: A =&gt; Trampoline[B]) =
+  More(() =&gt; f(runT))
+</code></pre></div>
+      </div><div class="content" id="slide-29">
+       <div class="container"><p>しかし、flatMap内でrunTを呼び出してしまうと先ほどと同じ結果になってしまう。
+</p></div>
+      </div><div class="content" id="slide-30">
+       <div class="container"><h2 id="4.2+Building+the+monad+right+in">4.2 Building the monad right in</h2><p>ここではTrampolineの構成子を追加します
+</p></div>
+      </div><div class="content" id="slide-31">
+       <div class="container"><pre><code class="prettyprint lang-scala">case class FlatMap[A, +B](sub: Trampoline[A], k: A =&gt; Trampoline[B])
+  extends Trampoline[B]
+</code></pre></div>
+      </div><div class="content" id="slide-32">
+       <div class="container"><p>flatMap, mapは次のように定義できる
+</p></div>
+      </div><div class="content" id="slide-33">
+       <div class="container"><pre><code class="prettyprint lang-scala">def flatMap[B](f: A =&gt; Trampoline[B]): Trampoline[B] =
+  this match {
+    case a FlatMap g =&gt;
+      FlatMap(a, (x: Any) =&gt; g(x) flatMap f)
+    case x =&gt; FlatMap(x, f)
+  }
+def map[B](f: A =&gt; B): Trampoline[B] =
+  flatMap(a =&gt; Done(f(a)))
+</code></pre></div>
+      </div><div class="content" id="slide-34">
+       <div class="container"><p>構成子を追加したことでrunTに変更を加えなければならない
+</p><p>新しいrunTは次に示す、resumeメソッドによって定義される
+</p></div>
+      </div><div class="content" id="slide-35">
+       <div class="container"><pre><code class="prettyprint lang-scala">final def resume: Either[() =&gt; Trampoline[A], A] =
+  this match {
+    case Done(a) =&gt; Right(a)
+    case More(k) =&gt; Left(k)
+    case a FlatMap f =&gt; a match {
+      case Done(a) =&gt; f(a).resume
+      case More(k) =&gt; Left(() =&gt; k() flatMap f)
+      case b FlatMap g =&gt; b.flatMap((x: Any) =&gt; g(x) flatMap f).resume
+    }
+  }
+</code></pre></div>
+      </div><div class="content" id="slide-36">
+       <div class="container"><p>resumeメソッドはFlatMapを適用して結果か次のステップを返す
+</p></div>
+      </div><div class="content" id="slide-37">
+       <div class="container"><p>runTはresumeを利用して、以下の様に書くことが出来る
+</p><pre><code class="prettyprint lang-scala">final def runT: A = resume match {
+  case Right(a) =&gt; a
+  case Left(k) =&gt; k().runT
+}
+</code></pre></div>
+      </div><div class="content" id="slide-38">
+       <div class="container"><p>resume, runTは末尾で自身を呼び出しているので、このメソッドはコンパイラによって最適化される
+</p></div>
+      </div><div class="content" id="slide-39">
+       <div class="container"><h2 id="4.4+Stackless+Scala">4.4 Stackless Scala</h2></div>
+      </div><div class="content" id="slide-40">
+       <div class="container"><p>flatMap, mapが定義されたことによって最初の例は次のようになる
+</p></div>
+      </div><div class="content" id="slide-41">
+       <div class="container"><pre><code class="prettyprint lang-scala">val Zero = BigInt(0)
+val One = BigInt(1)
+lazy val factorial: BigInt =&gt; Trampoline[BigInt] = {
+  case Zero | One =&gt; Done(One)
+  case n =&gt; More(() =&gt; factorial(n - 1)).map(n *)
+}
+</code></pre></div>
+      </div><div class="content" id="slide-42">
+       <div class="container"><p>もう一つ例を示す
+</p></div>
+      </div><div class="content" id="slide-43">
+       <div class="container"><h3 id="%E3%82%88%E3%81%8F%E3%81%82%E3%82%8B%E3%81%B5%E3%81%83%E3%81%BC%E3%81%AA%E3%81%A3%E3%81%A1%E6%95%B0%E3%81%AE%E4%BE%8B">よくあるふぃぼなっち数の例</h3><pre><code class="prettyprint lang-scala">lazy val fib: Int =&gt; Int = {
+  case n if n &lt; 2 =&gt; n
+  case n =&gt; fib(n - 1) + fib(n - 2)
+}
+</code></pre></div>
+      </div><div class="content" id="slide-44">
+       <div class="container"><p>末尾で呼び出しているのは+めそっど
+</p><p>最適化はされない
+</p></div>
+      </div><div class="content" id="slide-45">
+       <div class="container"><p>Trampoline Monadとfor式を用いると自然な形で記述することが出来る
+</p></div>
+      </div><div class="content" id="slide-46">
+       <div class="container"><pre><code class="prettyprint lang-scala">lazy val fib: Int =&gt; Trampoline[Int] = {
+  case n if n &lt; 2 =&gt; Done(n)
+  case n =&gt; for {
+    x &lt;- More(() =&gt; fib(n - 1))
+    y &lt;- More(() =&gt; fib(n - 2))
+  } yield x + y
+}
+</code></pre></div>
+      </div><div class="content" id="slide-47">
+       <div class="container"><h1 id="6.+Free+Monads%3A+A+Generalization+of">6. Free Monads: A Generalization of</h1><p>Trampoline
+</p></div>
+      </div><div class="content" id="slide-48">
+       <div class="container"><p>TrampolineはFunction0を利用しています
+</p><p>このFunction0の部分を抽象化すると次のような定義が可能です
+</p></div>
+      </div><div class="content" id="slide-49">
+       <div class="container"><pre><code class="prettyprint lang-scala">sealed trait Free[S[+_], +A] {
+  private case class FlatMap[S[+_], A, +B](a: Free[S, A], f: A =&gt; Free[S, B]) extends Free[S, B]
+}
+
+case class Done[S[+_], +A](a: A) extends Free[S, A]
+
+case class More[S[+_], +A](k: S[Free[S, A]]) extends Free[S, A]
+</code></pre></div>
+      </div><div class="content" id="slide-50">
+       <div class="container"><p>Trampolineは以下のように定義出来る
+</p><pre><code class="prettyprint lang-scala">type Trampoline[+A] = Free[Function0, A]
+</code></pre></div>
+      </div><div class="content" id="slide-51">
+       <div class="container"><p>Function0を抽象化したことによって、resumeを変更しなければならない
+</p><p>実は、resumeではFunction0をFunctorとして利用することが出来た
+</p></div>
+      </div><div class="content" id="slide-52">
+       <div class="container"><h1 id="Functor">Functor</h1><pre><code class="prettyprint lang-scala">trait Functor[F[_]] {
+  def map[A, B](m: F[A])(f: A =&gt; B): F[B]
+}
+</code></pre></div>
+      </div><div class="content" id="slide-53">
+       <div class="container"><h2 id="Function0Functor">Function0Functor</h2><pre><code class="prettyprint lang-scala">implicit val f0Functor =
+  new Functor[Function0] {
+    def map[A, B](a: () =&gt; A)(f: A =&gt; B): () =&gt; B =
+      () =&gt; f(a())
+  }
+</code></pre></div>
+      </div><div class="content" id="slide-54">
+       <div class="container"><h1 id="6.1+Functions+de%EF%AC%81ned+on+all+free+monads">6.1 Functions deﬁned on all free monads</h1><p>resumeはFunctorを利用して次のように定義出来る
+</p></div>
+      </div><div class="content" id="slide-55">
+       <div class="container"><pre><code class="prettyprint lang-scala">final def resume(implicit S: Functor[S]): Either[S[Free[S, A]], A] =
+  this match {
+    case Done(a) =&gt; Right(a)
+    case More(k) =&gt; Left(k)
+    case a FlatMap f =&gt; a match {
+      case Done(a) =&gt; f(a).resume
+      case More(k) =&gt; Left(S.map(k)(_ flatMap f))
+      case b FlatMap g =&gt; b.flatMap((x: Any) =&gt; g(x) flatMap f).resume
+    }
+  }
+</code></pre></div>
+      </div><div class="content" id="slide-56">
+       <div class="container"><h1 id="6.2+Common+data+types+as+free+monads">6.2 Common data types as free monads</h1></div>
+      </div><div class="content" id="slide-57">
+       <div class="container"><p>Freeで表現出来るデータ型はTrampolineだけではありません
+</p><p>Free[S, A]のSを枝、Aを葉と見做すことで木構造を表現出来ます
+</p></div>
+      </div><div class="content" id="slide-58">
+       <div class="container"><pre><code class="prettyprint lang-scala">type Pair[+A] = (A, A)
+
+type BinTree[+A] = Free[Pair, A]
+</code></pre></div>
+      </div><div class="content" id="slide-59">
+       <div class="container"><p>この場合は枝はTuple2、葉はAで二分木を表現しています
+</p><p>Pairに対して2つの要素に関数を適用するようなFunctorを定義すれば、BinTreeは全ての葉を走査するようなMonadが定義されます
+</p></div>
+      </div><div class="content" id="slide-60">
+       <div class="container"><h1 id="6.3+A+free+State+monad">6.3 A free State monad</h1><p>最後に、Freeを使ったプログラミングについて話します
+</p><p>ここでは例としてStateを構築します
+</p></div>
+      </div><div class="content" id="slide-61">
+       <div class="container"><p>まず最初に、枝となるデータ型を定義します
+</p></div>
+      </div><div class="content" id="slide-62">
+       <div class="container"><pre><code class="prettyprint lang-scala">sealed trait StateF[S, +A]
+
+case class Get[S, A](f: S =&gt; A)
+  extends State[S, A]
+
+case class Put[S, A](s: S, a: A)
+  extends State[S, A]
+</code></pre></div>
+      </div><div class="content" id="slide-63">
+       <div class="container"><p>ここで大切なことは関数のモデルをレコードで表現することで、実装は行ないません
+</p></div>
+      </div><div class="content" id="slide-64">
+       <div class="container"><p>次にFunctorを定義します
+</p></div>
+      </div><div class="content" id="slide-65">
+       <div class="container"><pre><code class="prettyprint lang-scala">implicit def statefFun[S] =
+  new Functor[({ type F[A] = StateF[S, A] })#F] {
+    def map[A, B](m: StateF[S, A])(f: A =&gt; B): StateF[S, B] =
+      m match {
+        case Get(g) =&gt; Get((s: S) =&gt; f(g(s)))
+        case Put(s, a) =&gt; Put(s, f(a))
+      }
+  }
+</code></pre></div>
+      </div><div class="content" id="slide-66">
+       <div class="container"><p>Functor則に気を付ければ自然とmapを定義することが可能です
+</p></div>
+      </div><div class="content" id="slide-67">
+       <div class="container"><p>StateFを使ったFreeStateの定義は以下のようになります
+</p></div>
+      </div><div class="content" id="slide-68">
+       <div class="container"><pre><code class="prettyprint lang-scala">type FreeState[S, +A] =
+  Free[({ type F[B] = StateF[S, B] })#F, A]
+</code></pre></div>
+      </div><div class="content" id="slide-69">
+       <div class="container"><p>FreeStateを返す関数として、次のようなものが定義出来ます
+</p></div>
+      </div><div class="content" id="slide-70">
+       <div class="container"><pre><code class="prettyprint lang-scala">def pureState[S, A](a: A): FreeState[S, A] =
+  Done[({ type F[+B] = StateF[S, B] })#F, A](a)
+
+def getState[S]: FreeState[S, S] =
+  More[({ type F[+B] = StateF[S, B] })#F, S](
+    Get(s =&gt; Done[({ type F[+B] = StateF[S, B] })#F, S](s)))
+
+def setState[S](s: S): FreeState[S, Unit] =
+  More[({ type F[+B] = StateF[S, B] })#F, Unit](
+    Put(s, Done[({ type F[+B] = StateF[S, B] })#F, Unit](())))
+</code></pre></div>
+      </div><div class="content" id="slide-71">
+       <div class="container"><p>そして、最初に定義した関数のモデルの実装は、以下のように定義されます
+</p></div>
+      </div><div class="content" id="slide-72">
+       <div class="container"><pre><code class="prettyprint lang-scala">def evalS[S, A](s: S, t: FreeState[S, A]): A =
+  t.resume match {
+    case Left(Get(f)) =&gt; evalS(s, f(s))
+    case Left(Put(n, a)) =&gt; evalS(n, a)
+    case Right(a) =&gt; a
+  }
+</code></pre></div>
+      </div><div class="content" id="slide-73">
+       <div class="container"><p>evalSは末尾で自身を呼び出しており、コンパイラによって最適化されます
+</p><p>このように、resumeを呼び出す関数で再帰的にモデルの評価を行なうことでス
+タックを消費しない関数を定義することが可能です
+</p></div>
+      </div><div class="content" id="slide-74">
+       <div class="container"><p>以上で終わります
+</p></div>
+      </div><div class="content" id="slide-75">
+       <div class="container"><h1 id="Reference">Reference</h1><p><a  href="http://days2012.scala-lang.org/sites/days2012/files/bjarnason_trampolines.pdf">Stackless Scala With Free Monads</a>
+</p></div>
+      </div>
+          </div>
+        </div>
+        
+      </body>
+    </html>
