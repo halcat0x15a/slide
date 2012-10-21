@@ -5,6 +5,9 @@
 	"abstract",
 	"intro",
 	"background",
-	"trampoline"
+	"trampoline",
+	"monad",
+	"free",
+	"reference"
     ]
 }

@@ -1,6 +1,6 @@
 !SLIDE
 
-# 1. いんとろ
+# 1. Introduction
 
 !SLIDE
 
@@ -18,7 +18,7 @@ val One = BigInt(1)
 
 lazy val factorial: BigInt => BigInt = {
   case Zero | One => One
-  case n => n + factorial(n - 1)
+  case n => n * factorial(n - 1)
 }
 ```
 

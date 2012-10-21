@@ -1,6 +1,6 @@
 !SLIDE
 
-# 2. まつびさいきじょきょ
+# 2. Background: Tail-call elimination in Scala
 
 !SLIDE
 
@@ -16,11 +16,11 @@ def foldl[A, B](as: List[A], b: B, f: (B, A) => B): B =
 
 !SLIDE
 
-# コンパイルされたコード
+これは、varとwhileを使ったコードに機械的に変換出来る
 
 !SLIDE
 
-## 以下と同等
+### コンパイルされたコードは以下と同等
 
 ```scala
 def foldl[A, B](as: List[A], b: B, f: (B, A) => B): B = {
@@ -28,11 +28,11 @@ def foldl[A, B](as: List[A], b: B, f: (B, A) => B): B = {
   var az = as
   while (true) {
     az match {
-	case Nil => return z
-	case x :: xs => {
-	  z = f(z, x)
-	  az = xs
-	}
+      case Nil => return z
+      case x :: xs => {
+        z = f(z, x)
+        az = xs
+      }
     }
   }
   z
@@ -41,7 +41,7 @@ def foldl[A, B](as: List[A], b: B, f: (B, A) => B): B = {
 
 !SLIDE
 
-> 末尾での関数呼び出しならなんでも最適化されるのか？
+> 末尾呼び出しならなんでも最適化されるのか？
 
 !SLIDE
 
