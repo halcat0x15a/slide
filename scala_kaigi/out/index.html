@@ -16,27 +16,312 @@
         <div id="slides">
           <div id="reel">
             <div class="content" id="slide-0">
-       <div class="container"><h1 id="mapAppend%E3%81%AE%E8%A7%A3%E8%AA%AC">mapAppendの解説</h1></div>
+       <div class="container"><h1 id="Scalaz%21">Scalaz!</h1><p><a  href="http://twitter.com/#!/halcat0x15a">@halcat0x15a</a>
+</p></div>
       </div><div class="content" id="slide-1">
+       <div class="container"><h1 id="%E8%87%AA%E5%B7%B1%E7%B4%B9%E4%BB%8B">自己紹介</h1><ul><li>よしだ さんしろう
+</li><li>高校生
+</li><li>Scala, Clojure, Python
+</li><li>Twitter <a  href="http://twitter.com/#!/halcat0x15a">http://twitter.com/#!/halcat0x15a</a>
+</li><li>github <a  href="http://github.com/halcat0x15a">http://github.com/halcat0x15a</a>
+</li></ul></div>
+      </div><div class="content" id="slide-2">
+       <div class="container"><p>今日はScalazについて話します。
+</p><p>JIT(Just In Tsukkomi)は大歓迎。
+</p></div>
+      </div><div class="content" id="slide-3">
+       <div class="container"><p>いま話題のScalaz！
+</p></div>
+      </div><div class="content" id="slide-4">
+       <div class="container"><h1 id="%E7%9A%86%E3%81%95%E3%82%93%E3%81%AE%E5%A3%B0">皆さんの声</h1><ul><li>難しい！
+</li><li>怖い！
+</li><li>変態！
+</li><li>Haskell！
+</li><li>☆！
+</li></ul></div>
+      </div><div class="content" id="slide-5">
+       <div class="container"><h1 id="%E3%81%A3%E3%81%A6%E3%81%AA%E3%81%82%E3%81%AB%EF%BC%9F"><a  href="http://code.google.com/p/scalaz/">Scalaz</a>ってなあに？</h1><p><a  href="http://github.com/scalaz/scalaz">github</a>には
+</p><p><em>“An extension to the core scala library.“</em>
+</p><p>と書いてある。
+</p></div>
+      </div><div class="content" id="slide-6">
+       <div class="container"><p>まあ、コードを見ればわかるのではないか？
+</p></div>
+      </div><div class="content" id="slide-7">
+       <div class="container"><h1 id="%E4%BD%BF%E3%81%84%E6%96%B9">使い方</h1><pre><code class="prettyprint lang-scala">scala&gt; import scalaz._
+import scalaz._
+
+scala&gt; import Scalaz._
+import Scalaz._
+
+scala&gt;
+</code></pre></div>
+      </div><div class="content" id="slide-8">
+       <div class="container"><p>簡単そうだね！
+</p></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><h1 id="%E4%BD%95%E3%81%8C%E3%81%A7%E3%81%8D%E3%82%8B%E3%82%88%E3%81%86%E3%81%AB%E3%81%AA%E3%81%A3%E3%81%9F%E3%81%8B">何ができるようになったか</h1><pre><code class="prettyprint lang-scala">scala&gt; 1 |+| 1
+res0: Int = 2
+
+scala&gt; 'A === 'A
+res1: Boolean = true
+
+scala&gt; 1.0.some
+res2: Option[Double] = Some(1.0)
+
+scala&gt; 
+</code></pre></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><p>(；ﾟДﾟ)！？
+</p></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><h1 id="%E4%BD%95%E3%81%8C%E8%B5%B7%E3%81%8D%E3%81%A6%E3%81%84%E3%82%8B%E3%81%AE%E3%81%8B">何が起きているのか</h1><p><a  href="http://www.scala-lang.org/api/current/index.html#scala.Int">Int</a>や<a  href="http://www.scala-lang.org/api/current/index.html#scala.Symbol">Symbol</a>,<a  href="http://www.scala-lang.org/api/current/index.html#scala.Double">Double</a>に存在しないメソッドが呼べた =&gt; implicit conversion!
+</p></div>
+      </div><div class="content" id="slide-12">
+       <div class="container"><p>どんなものに変換されているのだろう？
+</p></div>
+      </div><div class="content" id="slide-13">
+       <div class="container"><h1 id="%E8%AA%BF%E3%81%B9%E3%82%8B">調べる</h1><pre><code class="prettyprint lang-scala">scala&gt; (1: { def some: Option[Int] }).getClass
+res16: java.lang.Class[_ &lt;: AnyRef] = class scalaz.Identity$$anon$1
+
+</code></pre></div>
+      </div><div class="content" id="slide-14">
+       <div class="container"><p>どうやら<em>Identity</em>とやらに変換されている模様
+</p></div>
+      </div><div class="content" id="slide-15">
+       <div class="container"><h1 id=""><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc.sxr/scalaz/Identity.scala.html">Identity</a></h1><pre><code class="prettyprint lang-scala">scala&gt; (1: Identity[Int])
+res19: scalaz.Identity[Int] = 1
+
+scala&gt; res19.
+/==             ===             ??              ?|?             asInstanceOf    assert_===      assert_≟        canEqual        cons            
+constantState   doWhile         dual            equal           equalA          equalBy         fail            failNel         gt              
+gte             isInstanceOf    iterate         leaf            left            logger          lt              lte             mapply          
+matchOrZero     max             min             node            ok              pair            print           println         pure            
+pureUnit        repeat          replicate       right           set             show            shows           snoc            some            
+squared         state           success         successNel      text            toString        unfold          unfoldTree      unfoldTreeM     
+unit            value           whileDo         wrapNel         zipper          |+|             |&gt;              η               σ               
+≟               ≠               ⊹               
+
+scala&gt; res19.
+</code></pre></div>
+      </div><div class="content" id="slide-16">
+       <div class="container"><p>なんだか変な名前のメソッドがいっぱいですね！
+</p></div>
+      </div><div class="content" id="slide-17">
+       <div class="container"><h1 id="%E8%87%AA%E5%88%86%E3%81%A7%E5%AE%9A%E7%BE%A9%E3%81%97%E3%81%9F%E3%82%AF%E3%83%A9%E3%82%B9%E3%82%92%E8%A9%A6%E3%81%99">自分で定義したクラスを試す</h1><pre><code class="prettyprint lang-scala">scala&gt; case class ScalaChan()
+defined class ScalaChan
+
+scala&gt; ScalaChan() === ScalaChan()
+&lt;console&gt;:16: error: could not find implicit value for parameter e: scalaz.Equal[ScalaChan]
+              ScalaChan() === ScalaChan()
+                          ^
+
+scala&gt; 
+</code></pre></div>
+      </div><div class="content" id="slide-18">
+       <div class="container"><p><strong>Equal[ScalaChan]</strong>の<em>implicit value</em>が見つからない。
+</p></div>
+      </div><div class="content" id="slide-19">
+       <div class="container"><h1 id="%E3%81%AE%E5%AE%9A%E7%BE%A9"><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc.sxr/scalaz/Identity.scala.html#48251">===</a>の定義</h1><pre><code class="prettyprint lang-scala">sealed trait Identity[A] extends Equals with IdentitySugar[A] {
+  def value: A
+
+  def ===(a: A)(implicit e: Equal[A]): Boolean = e equal (value, a)
+
+</code></pre></div>
+      </div><div class="content" id="slide-20">
+       <div class="container"><h1 id="%E3%81%AE%E5%AE%9A%E7%BE%A9"><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc.sxr/scalaz/Equal.scala.html">Equal</a>の定義</h1><pre><code class="prettyprint lang-scala">trait Equal[-A] {
+  def equal(a1: A, a2: A): Boolean
+}
+</code></pre></div>
+      </div><div class="content" id="slide-21">
+       <div class="container"><p>シンプル！
+</p></div>
+      </div><div class="content" id="slide-22">
+       <div class="container"><h1 id="Type+Class">Type Class</h1><p>この<em>Equal</em>というのは一般的に<em>型クラス</em>と呼ばれるものです。
+</p><p><em>型クラス</em>はある型に対して性質を定義することができます。
+</p></div>
+      </div><div class="content" id="slide-23">
+       <div class="container"><p>Equalは同値比較をするための型クラスです。
+</p></div>
+      </div><div class="content" id="slide-24">
+       <div class="container"><h1 id="%E8%AB%96%E3%82%88%E3%82%8A%E3%82%B3%E3%83%BC%E3%83%89">論よりコード</h1><pre><code class="prettyprint lang-scala">scala&gt; implicit lazy val ScalaChanEqual: Equal[ScalaChan] = new Equal[ScalaChan] {
+     |   def equal(a1: ScalaChan, a2: ScalaChan): Boolean = a1 == a2
+     | }
+ScalaChanEqual: java.lang.Object with scalaz.Equal[ScalaChan]
+
+scala&gt; ScalaChan() === ScalaChan()
+res21: Boolean = true
+
+scala&gt; Identity(ScalaChan()).===(ScalaChan())(ScalaChanEqual)
+res22: Boolean = true
+
+scala&gt; 
+</code></pre></div>
+      </div><div class="content" id="slide-25">
+       <div class="container"><p><em>ScalaChanEqual</em>を作ったことで<strong>ScalaChan</strong>も<em>===</em>が利用できるようになりました。
+</p></div>
+      </div><div class="content" id="slide-26">
+       <div class="container"><h1 id="%E3%82%82%E3%81%86%E4%B8%80%E3%81%A4%E4%BE%8B">もう一つ例</h1><pre><code class="prettyprint lang-scala">scala&gt; implicit lazy val ScalaChanShow: Show[ScalaChan] = new Show[ScalaChan] {
+     |   def show(a: ScalaChan): List[Char] = &quot;Scalaちゃん&quot;.toList
+     | }
+ScalaChanShow: scalaz.Show[ScalaChan] = &lt;lazy&gt;
+
+scala&gt; ScalaChan().shows
+res0: String = Scalaちゃん
+
+scala&gt; Identity(ScalaChan()).shows(ScalaChanShow)
+res1: String = Scalaちゃん
+
+scala&gt; 
+</code></pre></div>
+      </div><div class="content" id="slide-27">
+       <div class="container"><p>このようにScalazでは<strong>implicit value</strong>を定義していくことで、利用できる関数が増えていきます。
+</p></div>
+      </div><div class="content" id="slide-28">
+       <div class="container"><h1 id="%E3%81%86%E3%82%8C%E3%81%97%E3%81%84%E3%81%A8%E3%81%93%E3%82%8D">うれしいところ</h1><ul><li>もとのデータに変更を加えることなく拡張が可能
+</li><li><p>必要最低限のものを定義するだけで高度な関数を利用可能
+</p><ul><li>これには複数の性質を定義することが必要な場合も
+</li></ul></li></ul></div>
+      </div><div class="content" id="slide-29">
+       <div class="container"><h1 id="%E8%A4%87%E6%95%B0%E3%81%AE%E6%80%A7%E8%B3%AA%E3%82%92%E4%BD%BF%E3%81%86">複数の性質を使う</h1><p><em>すべての要素にある値を加算する</em>
+</p></div>
+      </div><div class="content" id="slide-30">
+       <div class="container"><h1 id="%E6%99%AE%E9%80%9A%E3%81%AB%E6%9B%B8%E3%81%8F">普通に書く</h1><pre><code class="prettyprint lang-scala">scala&gt; def mapAppend(s: Seq[Int])(i: Int): Seq[Int] = s.map(_ + i)
+mapAppend: (s: Seq[Int])(i: Int)Seq[Int]
+
+scala&gt; mapAppend(List(1, 2, 3))(5)
+res0: Seq[Int] = List(6, 7, 8)
+
+scala&gt; mapAppend(Vector(1, 2, 3))(5)
+res1: Seq[Int] = Vector(6, 7, 8)
+
+scala&gt; 
+</code></pre></div>
+      </div><div class="content" id="slide-31">
+       <div class="container"><p>Int以外にDoubleやStringも対応させたい。
+</p><p><em>結合二項演算</em>が必要。
+</p></div>
+      </div><div class="content" id="slide-32">
+       <div class="container"><h1 id=""><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Semigroup">Semigroup</a></h1><pre><code class="prettyprint lang-scala">scala&gt; def mapAppend[A: Semigroup](s: Seq[A])(a: A): Seq[A] = s.map(_ |+| a)
+mapAppend: [A](s: Seq[A])(a: A)(implicit evidence$1: scalaz.Semigroup[A])Seq[A]
+
+scala&gt; mapAppend(List(1, 2, 3))(5)
+res2: Seq[Int] = List(6, 7, 8)
+
+scala&gt; mapAppend(List(&quot;Hello&quot;, &quot;Real&quot;))(&quot;World&quot;)
+res3: Seq[java.lang.String] = List(HelloWorld, RealWorld)
+
+scala&gt; 
+</code></pre></div>
+      </div><div class="content" id="slide-33">
+       <div class="container"><p>Seq以外にも対応したい。
+</p><p>各要素に関数を適用する関数(<em>map</em>)が必要。
+</p></div>
+      </div><div class="content" id="slide-34">
+       <div class="container"><h1 id=""><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Functor">Functor</a></h1><pre><code class="prettyprint lang-scala">scala&gt; def mapAppend[M[_]: Functor, A: Semigroup](m: M[A])(a: A): M[A] = m.map(_ |+| a)
+mapAppend: [M[_], A](m: M[A])(a: A)(implicit evidence$1: scalaz.Functor[M], implicit evidence$2: scalaz.Semigroup[A])M[A]
+
+scala&gt; mapAppend(List(1, 2, 3))(5)
+res4: List[Int] = List(6, 7, 8)
+
+scala&gt; mapAppend(Option(&quot;Hello&quot;))(&quot;World&quot;)
+res5: Option[java.lang.String] = Some(HelloWorld)
+
+scala&gt; 
+</code></pre></div>
+      </div><div class="content" id="slide-35">
+       <div class="container"><h1 id="%E8%A7%A3%E6%B1%BA%E6%B8%88%E3%81%BF%E3%81%AEmapAppend">解決済みのmapAppend</h1><pre><code class="prettyprint lang-scala">def mapAppend[M[_], A](m: M[A])(a: A)(implicit f: Functor[M], s: Semigroup[A]) =
+  maImplicit(m).map(x =&gt; (mkIdentity(x) |+| a)(s))(f)
+
+mapAppend[Option, String](
+  Option(&quot;Hello&quot;)
+)(
+  &quot;World&quot;
+)(
+  Functor.OptionFunctor, Semigroup.StringSemigroup
+)
+</code></pre></div>
+      </div><div class="content" id="slide-36">
+       <div class="container"><h1 id="Scalaz%E3%81%AE%E5%9F%BA%E6%9C%AC">Scalazの基本</h1><ul><li><strong>性質を定義する</strong>
+</li><li><strong>性質を利用する</strong>
+</li></ul></div>
+      </div><div class="content" id="slide-37">
+       <div class="container"><h1 id="Scalaz%E3%81%AB%E9%96%A2%E3%81%99%E3%82%8B%E5%9F%BA%E7%A4%8E%E7%9F%A5%E8%AD%98">Scalazに関する基礎知識</h1></div>
+      </div><div class="content" id="slide-38">
+       <div class="container"><h1 id="%E9%87%8D%E8%A6%81%E3%81%AA%EF%BC%93%E3%81%A4%E3%81%AE%E5%9E%8B">重要な３つの型</h1><p>implicit conversionによりScalazの主な関数を提供します。
+</p><ul><li><p><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Identity">Identity</a>
+</p><ul><li>すべての型
+</li></ul></li><li><p><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MA">MA</a>
+</p><ul><li>型パラメータを１つとる型
+</li></ul></li><li><p><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MAB">MAB</a>
+</p><ul><li>型パラメータを２つとる型
+</li></ul></li></ul></div>
+      </div><div class="content" id="slide-39">
+       <div class="container"><h1 id="%E5%91%BD%E5%90%8D%E8%A6%8F%E5%89%87">命名規則</h1></div>
+      </div><div class="content" id="slide-40">
+       <div class="container"><h1 id="%E3%82%AF%E3%83%A9%E3%82%B9%E5%90%8D%2BW">クラス名+W</h1><h2 id=""><em>Wrapper Class</em></h2><ul><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.IntW">IntW</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.StringW">StringW</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.ListW">ListW</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.OptionW">OptionW</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Tuples$Tuple2W">Tuple2W</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Function1W">Function1W</a>
+</li><li>etc…
+</li></ul></div>
+      </div><div class="content" id="slide-41">
+       <div class="container"><h1 id="%E5%9E%8B%E3%82%AF%E3%83%A9%E3%82%B9%E5%90%8D%2Bs">型クラス名+s</h1><h2 id="%2C"><em>implicit conversion</em>, <em>factory method</em></h2><p>ScalazオブジェクトにMix-inされる。
+</p><ul><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Equals">Equals</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Orders">Orders</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Shows">Shows</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Semigroups">Semigroups</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Zeros">Zeros</a>
+</li><li>etc…
+</li></ul></div>
+      </div><div class="content" id="slide-42">
+       <div class="container"><h1 id="%E5%9E%8B%E3%82%AF%E3%83%A9%E3%82%B9%E5%90%8D%2BLow">型クラス名+Low</h1><h2 id=""><em>implicit function</em></h2><p>型クラス自身が継承する。
+</p><ul><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.OrderLow">OrderLow</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MonoidLow">MonoidLow</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.ApplicativeLow">ApplicativeLow</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MonadLow">MonadLow</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.Comonad">ComonadLow</a>
+</li><li>etc…
+</li></ul></div>
+      </div><div class="content" id="slide-43">
+       <div class="container"><h1 id="%E5%9E%8B%E5%90%8D%2BSugar">型名+Sugar</h1><h2 id=""><em>function sugar</em></h2><p>例のunicode文字の関数が定義されたもの。
+</p><ul><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.IdentitySugar">IdentitySugar</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MASugar">MASugar</a>
+</li><li><a  href="http://scalaz.github.com/scalaz/scalaz-2.9.1-6.0.2/doc/index.html#scalaz.MAContravariantSugar">MAContravariantSugar</a>
+</li></ul></div>
+      </div><div class="content" id="slide-44">
+       <div class="container"><p>Scalazのドキュメントはこれらを抑えておけば読めるようにます。
+</p></div>
+      </div><div class="content" id="slide-45">
+       <div class="container"><h1 id="%E6%9C%80%E5%BE%8C%E3%81%AB">最後に</h1><p><a  href="http://partake.in/events/4b3afdc8-e4ec-4010-b8ec-31b89210dda0">一人Scalaz Advent Calendar</a>やってます。
+</p><p>少しでもScalazの日本語の情報が増えたらなと思います。
+</p></div>
+      </div><div class="content" id="slide-46">
+       <div class="container"><h1 id="%E3%81%94%E6%B8%85%E8%81%B4%E3%81%82%E3%82%8A%E3%81%8C%E3%81%A8%E3%81%86%E3%81%94%E3%81%96%E3%81%84%E3%81%BE%E3%81%97%E3%81%9F">ご清聴ありがとうございました</h1></div>
+      </div><div class="content" id="slide-47">
+       <div class="container"><h1 id="mapAppend%E3%81%AE%E8%A7%A3%E8%AA%AC">mapAppendの解説</h1></div>
+      </div><div class="content" id="slide-48">
        <div class="container"><h1 id="%E6%9C%80%E5%88%9D%E3%81%AE%E3%82%B3%E3%83%BC%E3%83%89">最初のコード</h1><pre><code class="prettyprint lang-scala">def mapAppend[M[_]: Functor, A: Semigroup](m: M[A])(a: A) = m.map(_ |+| a)
 </code></pre></div>
-      </div><div class="content" id="slide-2">
+      </div><div class="content" id="slide-49">
        <div class="container"><h1 id="implicit+parameter%E3%81%AE%E7%95%A5%E8%A8%98%E6%B3%95%E3%82%92%E4%BD%BF%E3%82%8F%E3%81%AA%E3%81%84">implicit parameterの略記法を使わない</h1><pre><code class="prettyprint lang-scala">def mapAppend[M[_], A](m: M[A])(a: A)(implicit f: Functor[M], s: Semigroup[A]) = 
   m.map(_ |+| a)
 </code></pre></div>
-      </div><div class="content" id="slide-3">
+      </div><div class="content" id="slide-50">
        <div class="container"><h1 id="%E3%82%A2%E3%83%B3%E3%83%80%E3%83%BC%E3%82%B9%E3%82%B3%E3%82%A2%E3%82%92%E4%BD%BF%E3%82%8F%E3%81%AA%E3%81%84">アンダースコアを使わない</h1><pre><code class="prettyprint lang-scala">def mapAppend[M[_], A](m: M[A])(a: A)(implicit f: Functor[M], s: Semigroup[A]) = 
   m.map(x =&gt; x |+| a)
 </code></pre></div>
-      </div><div class="content" id="slide-4">
+      </div><div class="content" id="slide-51">
        <div class="container"><h1 id="implicit+conversion%E3%81%AE%E8%A7%A3%E6%B1%BA">implicit conversionの解決</h1><pre><code class="prettyprint lang-scala">def mapAppend[M[_], A](m: M[A])(a: A)(implicit f: Functor[M], s: Semigroup[A]) = 
   maImplicit(m).map(x =&gt; mkIdentity(x) |+| a)
 </code></pre></div>
-      </div><div class="content" id="slide-5">
+      </div><div class="content" id="slide-52">
        <div class="container"><h1 id="implicit+value%E3%82%92%E6%98%8E%E7%A4%BA%E7%9A%84%E3%81%AB%E6%B8%A1%E3%81%99%E3%80%82">implicit valueを明示的に渡す。</h1><pre><code class="prettyprint lang-scala">def mapAppend[M[_], A](m: M[A])(a: A)(implicit f: Functor[M], s: Semigroup[A]) =
   maImplicit(m).map(x =&gt; (mkIdentity(x) |+| a)(s))(f)
 </code></pre></div>
-      </div><div class="content" id="slide-6">
+      </div><div class="content" id="slide-53">
        <div class="container"><h1 id="mapAppend%E3%81%AEimplicit+parameter%E3%82%92%E8%A7%A3%E6%B1%BA%E3%81%99%E3%82%8B">mapAppendのimplicit parameterを解決する</h1><pre><code class="prettyprint lang-scala">mapAppend(List(1, 2, 3))(5)(Functor.TraversableFunctor, Semigroup.IntSemigroup)
 
 mapAppend(Option(&quot;Hello&quot;))(&quot;World&quot;)(Functor.OptionFunctor, Semigroup.StringSemigroup)
