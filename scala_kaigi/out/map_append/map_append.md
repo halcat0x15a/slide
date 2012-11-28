@@ -52,4 +52,6 @@ def mapAppend[M[_], A](m: M[A])(a: A)(implicit f: Functor[M], s: Semigroup[A]) =
 
 ```scala
 mapAppend(List(1, 2, 3))(5)(Functor.TraversableFunctor, Semigroup.IntSemigroup)
+
+mapAppend(Option("Hello"))("World")(Functor.OptionFunctor, Semigroup.StringSemigroup)
 ```
