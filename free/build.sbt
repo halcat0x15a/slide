@@ -9,5 +9,3 @@ scalacOptions ++= Seq(
   "-feature",
   "-deprecation"
 )
-
-initialCommands in console := "import scalaz._, Scalaz._"

@@ -6,8 +6,38 @@ package object free {
 
   implicit val f0Functor =
     new Functor[Function0] {
-      def map[A, B](a: () => A)(f: A => B) =
+      def map[A, B](a: () => A)(f: A => B): () => B =
 	() => f(a())
+    }
+
+  implicit def statefFun[S] =
+    new Functor[({ type F[+A] = StateF[S, A] })#F] {
+      def map[A, B](m: StateF[S, A])(f: A => B): StateF[S, B] =
+	m match {
+	  case Get(g) => Get((s: S) => f(g(s)))
+	  case Put(s, a) => Put(s, f(a))
+	}
+    }
+
+  type FreeState[S, +A] =
+    Free[({ type F[+B] = StateF[S, B] })#F, A]
+
+  def pureState[S, A](a: A): FreeState[S, A] =
+    Done[({ type F[+B] = StateF[S, B] })#F, A](a)
+
+  def getState[S]: FreeState[S, S] =
+    More[({ type F[+B] = StateF[S, B] })#F, S](
+      Get(s => Done[({ type F[+B] = StateF[S, B] })#F, S](s)))
+
+  def setState[S](s: S): FreeState[S, Unit] =
+    More[({ type F[+B] = StateF[S, B] })#F, Unit](
+      Put(s, Done[({ type F[+B] = StateF[S, B] })#F, Unit](())))
+
+  def evalS[S, A](s: S, t: FreeState[S, A]): A =
+    t.resume match {
+      case Left(Get(f)) => evalS(s, f(s))
+      case Left(Put(n, a)) => evalS(n, a)
+      case Right(a) => a
     }
 
 }
@@ -56,5 +86,13 @@ package free {
   trait Functor[F[_]] {
     def map[A, B](m: F[A])(f: A => B): F[B]
   }
+
+  sealed trait StateF[S, +A]
+
+  case class Get[S, A](f: S => A)
+    extends StateF[S, A]
+
+  case class Put[S, A](s: S, a: A)
+    extends StateF[S, A]
 
 }
