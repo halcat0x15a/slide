@@ -1,0 +1,103 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>stream processing</title>
+        <link type="text/css" rel="stylesheet" href="assets/css/show.css" />
+        <link type="text/css" rel="stylesheet" href="assets/css/prettify.css" />
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/show.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/prettify.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/lang-apollo.js"></script><script type="text/javascript" src="assets/js/prettify/lang-css.js"></script><script type="text/javascript" src="assets/js/prettify/lang-hs.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lisp.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lua.js"></script><script type="text/javascript" src="assets/js/prettify/lang-ml.js"></script><script type="text/javascript" src="assets/js/prettify/lang-proto.js"></script><script type="text/javascript" src="assets/js/prettify/lang-scala.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vb.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vhdl.js"></script><script type="text/javascript" src="assets/js/prettify/lang-wiki.js"></script><script type="text/javascript" src="assets/js/prettify/lang-yaml.js"></script>
+      <script type="text/javascript"><!--
+        window.onload=function() { prettyPrint(); };
+      --></script>
+      </head>
+      <body>
+        <div id="slides">
+          <div id="reel">
+            <div class="content" id="slide-0">
+       <div class="container"><h1 id="Stream+Processing+Libraries%21">Stream Processing Libraries!</h1><p><a  href="https://twitter.com/halcat0x15a">@halcat0x15a</a>
+</p></div>
+      </div><div class="content" id="slide-1">
+       <div class="container"><h1 id="Iteratee">Iteratee</h1><p>現在Scalaで広く使われている
+</p><ul><li>Play Framework
+</li><li>Slick
+</li><li>Akka
+</li><li>Scalaz
+</li></ul></div>
+      </div><div class="content" id="slide-2">
+       <div class="container"><h1 id="%E5%88%A9%E7%82%B9">利点</h1><ul><li>メモリ効率
+</li><li>データの供給、処理、変換の分離
+</li></ul></div>
+      </div><div class="content" id="slide-3">
+       <div class="container"><h1 id="%E6%AC%A0%E7%82%B9">欠点</h1><p>書くのがめんどい
+</p></div>
+      </div><div class="content" id="slide-4">
+       <div class="container"><h1 id="New+Streaming+IO">New Streaming IO</h1><ul><li><p>Haskell
+</p><ul><li>Machines
+</li><li>Conduit
+</li></ul></li><li><p>Scala
+</p><ul><li>scala-machines
+</li><li>scala-conduit
+</li><li>scalaz.stream
+</li></ul></li></ul></div>
+      </div><div class="content" id="slide-5">
+       <div class="container"><h1 id="%E5%85%B1%E9%80%9A%E7%82%B9">共通点</h1><p>モナドとプリミティブ
+</p><pre><code class="prettyprint lang-scala">for {
+  input &lt;- await[String] // 読み込み
+  _ &lt;- emit(input) // 書き込み
+} yield ()
+</code></pre></div>
+      </div><div class="content" id="slide-6">
+       <div class="container"><h1 id="scala-machines">scala-machines</h1><p>副作用が完全に分離されている
+</p><ul><li>Plan
+</li><li>Driver
+</li><li>Procedure
+</li></ul></div>
+      </div><div class="content" id="slide-7">
+       <div class="container"><h1 id="Plan">Plan</h1><pre><code class="prettyprint lang-scala">def append[A: Semigroup] = for {
+  e1 &lt;- await[A]
+  e2 &lt;- await[A]
+  _ &lt;- emit(e1 |+| e2)
+} yield ()
+</code></pre></div>
+      </div><div class="content" id="slide-8">
+       <div class="container"><h1 id="Driver">Driver</h1><pre><code class="prettyprint lang-scala">def lines = new Driver[IO, String =&gt; Any] {
+  val M = Monad[IO]
+  def apply(k: String =&gt; Any) = readLn map k map Some.apply
+}
+</code></pre></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><h1 id="Procedure">Procedure</h1><pre><code class="prettyprint lang-scala">new Procedure[IO, String] {
+  type K = String =&gt; Any
+  def machine = append[String].compile
+  def withDriver[R](f: Driver[IO, K] =&gt; IO[R]) = f(lines)
+} foreach putStrLn
+</code></pre></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><h1 id="%E5%A4%89%E6%8F%9B">変換</h1><pre><code class="prettyprint lang-scala">def count = for {
+  s &lt;- await[String]
+  _ &lt;- emit(s.size)
+} yield ()
+
+def show = for {
+  i &lt;- await[Int]
+  _ &lt;- emit(i.shows)
+} yield ()
+
+def machine = count.compile andThen show.compile
+</code></pre></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><h1 id="Twitter%E3%81%AEUser+Streams">TwitterのUser Streams</h1><p><a  href="https://gist.github.com/halcat0x15a/5172645">Gist</a>
+</p></div>
+      </div><div class="content" id="slide-12">
+       <div class="container"><h1 id="%E9%9B%91%E6%84%9F">雑感</h1><ul><li>Iterateeより書きやすい(？)
+</li><li>DriverとProcedureが大きくなる
+</li><li>Planを構築するときに副作用が書けない
+</li></ul></div>
+      </div>
+          </div>
+        </div>
+        
+      </body>
+    </html>
