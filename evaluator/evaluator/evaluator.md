@@ -1,12 +1,12 @@
 !SLIDE
 
-# Scheme on Clojure
+# Lisp on Clojure
 
 [halcat0x15a](https://twitter.com/halcat0x15a)
 
 !SLIDE
 
-Clojureの特徴を簡単なScheme評価機を作る過程で紹介します。
+Clojureの特徴を簡単なLisp評価機を作る過程で紹介します。
 
 !SLIDE
 
