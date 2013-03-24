@@ -1,0 +1,201 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>evaluator</title>
+        <link type="text/css" rel="stylesheet" href="assets/css/show.css" />
+        <link type="text/css" rel="stylesheet" href="assets/css/prettify.css" />
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/show.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/prettify.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/lang-apollo.js"></script><script type="text/javascript" src="assets/js/prettify/lang-css.js"></script><script type="text/javascript" src="assets/js/prettify/lang-hs.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lisp.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lua.js"></script><script type="text/javascript" src="assets/js/prettify/lang-ml.js"></script><script type="text/javascript" src="assets/js/prettify/lang-proto.js"></script><script type="text/javascript" src="assets/js/prettify/lang-scala.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vb.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vhdl.js"></script><script type="text/javascript" src="assets/js/prettify/lang-wiki.js"></script><script type="text/javascript" src="assets/js/prettify/lang-yaml.js"></script>
+      <script type="text/javascript"><!--
+        window.onload=function() { prettyPrint(); };
+      --></script>
+      </head>
+      <body>
+        <div id="slides">
+          <div id="reel">
+            <div class="content" id="slide-0">
+       <div class="container"><h1 id="Scheme+on+Clojure">Scheme on Clojure</h1><p><a  href="https://twitter.com/halcat0x15a">halcat0x15a</a>
+</p></div>
+      </div><div class="content" id="slide-1">
+       <div class="container"><p>Clojureの特徴を簡単なScheme評価機を作る過程で紹介します。
+</p></div>
+      </div><div class="content" id="slide-2">
+       <div class="container"><h1 id="%E8%A9%95%E4%BE%A1%E6%A9%9F">評価機</h1><p>この評価機は、以下のような動作をします。
+</p><pre><code class="prettyprint lang-clojure">(def env (atom {'+ +}))
+
+(eval env '(define double (lambda (x) (+ x x))))
+(eval env '(define foo (double (double 3))))
+(assert (= (@env 'foo) 12))
+</code></pre></div>
+      </div><div class="content" id="slide-3">
+       <div class="container"><h1 id="Atom">Atom</h1><p>Clojureはdefによりvarに値を束縛することが出来る。
+</p><p>しかし、通常、他のLispのようにset!による代入は出来ない。
+</p><p>ここでは、可変参照としてatomを使用する。
+</p><pre><code class="prettyprint lang-clojure">(def a (atom 1))
+(assert (= @a 1))
+(reset! a 2)
+(assert (= @a 2))
+(swap! a inc)
+(assert (= @a 3))
+</code></pre></div>
+      </div><div class="content" id="slide-4">
+       <div class="container"><h1 id="%E8%87%AA%E5%B7%B1%E8%A9%95%E4%BE%A1%E5%BC%8F">自己評価式</h1><p>文字列や数値やなど。
+</p><pre><code class="prettyprint lang-clojure">(defn self-evaluating? [exp]
+  (or (true? exp)
+      (false? exp)
+      (number? exp)
+      (string? exp)))
+
+(defn eval [env exp]
+  (cond (self-evaluating? exp) exp))
+
+(assert (= (eval (atom {}) 100) 100))
+(assert (= (eval (atom {}) &quot;foo&quot;) &quot;foo&quot;))
+</code></pre></div>
+      </div><div class="content" id="slide-5">
+       <div class="container"><h1 id="%E5%A4%89%E6%95%B0%E3%81%AE%E6%8E%A2%E7%B4%A2">変数の探索</h1><p>環境はhash-mapで表現している。
+</p><pre><code class="prettyprint lang-clojure">(defn eval [env exp]
+  (cond (self-evaluating? exp) exp
+        (symbol? exp) (@env exp)))
+
+(assert (= ({'foo 100} 'foo) 100))
+(assert (= (eval (atom {'foo 100}) 'foo)) 100)
+</code></pre></div>
+      </div><div class="content" id="slide-6">
+       <div class="container"><h1 id="%E7%89%B9%E6%AE%8A%E5%BD%A2%E5%BC%8F">特殊形式</h1><p>特殊形式の判別はリストの先頭を比較する必要がある。
+</p><p>ClojureのMultimethodを用いて、evalを変更することなく制御構造を追加する。
+</p><pre><code class="prettyprint lang-clojure">(defmulti eval-form (fn [env exp] (first exp)))
+
+(defn eval [env exp]
+  (cond (self-evaluating? exp) exp
+        (symbol? exp) (@env exp)
+        (seq? exp) (eval-form env exp)))
+</code></pre></div>
+      </div><div class="content" id="slide-7">
+       <div class="container"><h1 id="Multimethod">Multimethod</h1><p>defmultiでdispatch関数を定義し、defmethodにより対応する値と手続きを定義します。
+</p><p>単純な比較ではなく、hierarchyも考慮される。
+</p><pre><code class="prettyprint lang-clojure">(defmulti foo (fn [x] x))
+(defmethod foo 'foo [x] 100)
+(defmethod foo 'bar [x] &quot;bar&quot;)
+(defmethod foo :default [x] x)
+
+(assert (= (foo 'foo) 100))
+(assert (= (foo 'bar) &quot;bar&quot;))
+(assert (= (foo 'baz) 'baz))
+</code></pre></div>
+      </div><div class="content" id="slide-8">
+       <div class="container"><h1 id="quote%2C+if">quote, if</h1><p>式の分解には分配束縛を用いる。
+</p><pre><code class="prettyprint lang-clojure">(defmethod eval-form 'quote [env [_ quotation]] quotation)
+
+(defmethod eval-form 'if [env [_ predicate consequent alternative]]
+  (if (eval predicate)
+    (eval consequent)
+    (eval alternative)))
+
+(assert (= (eval (atom {}) '(quote (foo bar))) '(foo bar)))
+(assert (= (eval (atom {}) '(if false &quot;foo&quot; 100)) 100))
+</code></pre></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><h1 id="define">define</h1><p>無名関数(fn [x] (f x))を#(f %)と記述できる。
+</p><pre><code class="prettyprint lang-clojure">(defmethod eval-form 'define [env [_ name body]]
+  (swap! env #(assoc % name (eval env body))))
+
+(def env (atom {}))
+(eval env '(define foo 100))
+(assert (= (eval env 'foo) 100))
+</code></pre></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><h1 id="begin">begin</h1><p>&amp;を使うことで複数の値をseqとして束縛出来る。
+</p><pre><code class="prettyprint lang-clojure">(defmethod eval-form 'begin [env [&amp; exps]]
+  (-&gt;&gt; exps (map (partial eval env)) last))
+
+(assert (= (eval (atom {}) '(begin &quot;foo&quot; 100)) 100))
+(assert (= (eval (atom {}) '(begin (define bar &quot;bar&quot;) bar)) &quot;bar&quot;))
+</code></pre></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><h1 id="Arrow">Arrow</h1><p>利点
+</p><ul><li>データの流れが分り易い
+</li><li>ネストが無くなる
+</li><li>括弧が減る
+</li></ul><pre><code class="prettyprint lang-clojure">(assert (= (-&gt; [] (conj &quot;foo&quot;) (conj &quot;bar&quot;) first)
+           (first (conj (conj [] &quot;foo&quot;) &quot;bar&quot;))))
+
+(assert (= (-&gt;&gt; (range 10) (filter odd?) reverse)
+           (reverse (filter odd? (range 10)))))
+</code></pre></div>
+      </div><div class="content" id="slide-12">
+       <div class="container"><h1 id="Apply">Apply</h1><p>この評価機では２種類の関数が存在する。
+</p><ul><li>評価機で定義した関数
+</li><li>Clojureの関数
+</li></ul><p>これらに対してProtocolを定義する。
+</p><pre><code class="prettyprint lang-clojure">(defprotocol Procedure
+  (appl [f args]))
+
+(defmethod eval-form :default [env [operator operands]]
+  (appl (eval operator) (map eval operands)))
+</code></pre></div>
+      </div><div class="content" id="slide-13">
+       <div class="container"><h1 id="Protocol%2C+Type%2C+Record">Protocol, Type, Record</h1><p>ProtocolはJavaのinterfaceと相違ない。
+</p><p>TypeやRecordは定義時にProtocolを実装することができる。
+</p><pre><code class="prettyprint lang-clojure">(defprotocol Foo
+  (foo [x]))
+
+(deftype Bar [value]
+  Foo
+  (foo [x] value))
+
+(defrecord Baz []
+  Foo
+  (foo [x] &quot;baz&quot;))
+
+(assert (= (foo (Bar. 100)) 100))
+(assert (= (foo (Bar. &quot;bar&quot;)) &quot;bar&quot;))
+(assert (= (foo (Baz.)) &quot;baz&quot;))
+</code></pre></div>
+      </div><div class="content" id="slide-14">
+       <div class="container"><h1 id="lambda">lambda</h1><p>仮引数と実引数のペアで環境を拡張する。
+</p><pre><code class="prettyprint lang-clojure">(deftype Lambda [env parameters body]
+  Procedure
+  (appl [lambda args]
+    (eval (atom (merge @env (zipmap parameters args))) body)))
+
+(defmethod eval-form 'lambda [env [_ parameters body]]
+  (Lambda. env parameters body))
+
+(assert (= (eval (atom {}) '((lambda (x y) y) &quot;foo&quot; &quot;bar&quot;)) &quot;bar&quot;))
+</code></pre></div>
+      </div><div class="content" id="slide-15">
+       <div class="container"><h1 id="primitive">primitive</h1><p>extend-protocolにより既存のデータ型に対してProtocolの実装が可能。
+</p><pre><code class="prettyprint lang-clojure">(import 'clojure.lang.IFn)
+
+(extend-protocol Procedure
+  IFn
+  (appl [f args] (apply f args)))
+
+(assert (= (eval (atom {'+ +}) '(+ 2 3)) 5))
+</code></pre></div>
+      </div><div class="content" id="slide-16">
+       <div class="container"><p>これで目標とする評価機が完成した。
+</p></div>
+      </div><div class="content" id="slide-17">
+       <div class="container"><h1 id="ClojureScript">ClojureScript</h1><p>Clojureのみで書かれているので、JavaScriptにコンパイルが可能…
+</p><p>な筈だがextend-protocolの部分を書き換える必要がある。
+</p><pre><code class="prettyprint lang-clojure">(extend-protocol Procedure
+  js/Function
+  (appl [f args] (apply f args)))
+</code></pre></div>
+      </div><div class="content" id="slide-18">
+       <div class="container"><h1 id="%E3%81%BE%E3%81%A8%E3%82%81">まとめ</h1><p>以下の言語機能を紹介した。
+</p><ul><li>Multimethod
+</li><li>Destructuring
+</li><li>Arrow
+</li><li>Procotol
+</li></ul></div>
+      </div>
+          </div>
+        </div>
+        
+      </body>
+    </html>
