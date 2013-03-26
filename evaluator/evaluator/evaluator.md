@@ -19,7 +19,7 @@ Clojureの特徴を簡単なLisp評価機を作る過程で紹介します。
 
 (eval env '(define double (lambda (x) (+ x x))))
 (eval env '(define foo (double (double 3))))
-(assert (= (@env 'foo) 12))
+(assert (= (eval env 'foo) 12))
 ```
 
 !SLIDE
@@ -33,12 +33,12 @@ Clojureはdefによりvarに値を束縛することが出来る。
 ここでは、可変参照としてatomを使用する。
 
 ```clojure
-(def a (atom 1))
-(assert (= @a 1))
-(reset! a 2)
-(assert (= @a 2))
-(swap! a inc)
-(assert (= @a 3))
+(def foo (atom 1))
+(assert (= @foo 1))
+(reset! foo 2)
+(assert (= @foo 2))
+(swap! foo inc)
+(assert (= @foo 3))
 ```
 
 !SLIDE
@@ -72,7 +72,6 @@ Clojureはdefによりvarに値を束縛することが出来る。
   (cond (self-evaluating? exp) exp
         (symbol? exp) (@env exp)))
 
-(assert (= ({'foo 100} 'foo) 100))
 (assert (= (eval (atom {'foo 100}) 'foo)) 100)
 ```
 
@@ -122,9 +121,9 @@ defmultiでdispatch関数を定義し、defmethodにより対応する値と手�
 (defmethod eval-form 'quote [env [_ quotation]] quotation)
 
 (defmethod eval-form 'if [env [_ predicate consequent alternative]]
-  (if (eval predicate)
-    (eval consequent)
-    (eval alternative)))
+  (if (eval env predicate)
+    (eval env consequent)
+    (eval env alternative)))
 
 (assert (= (eval (atom {}) '(quote (foo bar))) '(foo bar)))
 (assert (= (eval (atom {}) '(if false "foo" 100)) 100))
@@ -137,8 +136,8 @@ defmultiでdispatch関数を定義し、defmethodにより対応する値と手�
 無名関数(fn [x] (f x))を#(f %)と記述できる。
 
 ```clojure
-(defmethod eval-form 'define [env [_ name body]]
-  (swap! env #(assoc % name (eval env body))))
+(defmethod eval-form 'define [env [_ variable value]]
+  (swap! env #(assoc % variable (eval env value))))
 
 (def env (atom {}))
 (eval env '(define foo 100))
@@ -155,7 +154,6 @@ defmultiでdispatch関数を定義し、defmethodにより対応する値と手�
 (defmethod eval-form 'begin [env [& exps]]
   (->> exps (map (partial eval env)) last))
 
-(assert (= (eval (atom {}) '(begin "foo" 100)) 100))
 (assert (= (eval (atom {}) '(begin (define bar "bar") bar)) "bar"))
 ```
 
@@ -192,8 +190,8 @@ defmultiでdispatch関数を定義し、defmethodにより対応する値と手�
 (defprotocol Procedure
   (appl [f args]))
 
-(defmethod eval-form :default [env [operator operands]]
-  (appl (eval operator) (map eval operands)))
+(defmethod eval-form :default [env [operator & operands]]
+  (appl (eval env operator) (map (partial eval env) operands)))
 ```
 
 !SLIDE

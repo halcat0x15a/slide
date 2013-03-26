@@ -22,8 +22,8 @@
     (eval env consequent)
     (eval env alternative)))
 
-(defmethod eval-form 'define [env [_ name body]]
-  (swap! env #(assoc % name (eval env body))))
+(defmethod eval-form 'define [env [_ variable value]]
+  (swap! env #(assoc % variable (eval env value))))
 
 (defmethod eval-form 'begin [env [& exps]]
   (->> exps (map (partial eval env)) last))

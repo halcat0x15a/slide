@@ -27,18 +27,18 @@
 
 (eval env '(define double (lambda (x) (+ x x))))
 (eval env '(define foo (double (double 3))))
-(assert (= (@env 'foo) 12))
+(assert (= (eval env 'foo) 12))
 </code></pre></div>
       </div><div class="content" id="slide-3">
        <div class="container"><h1 id="Atom">Atom</h1><p>Clojureはdefによりvarに値を束縛することが出来る。
 </p><p>しかし、通常、他のLispのようにset!による代入は出来ない。
 </p><p>ここでは、可変参照としてatomを使用する。
-</p><pre><code class="prettyprint lang-clojure">(def a (atom 1))
-(assert (= @a 1))
-(reset! a 2)
-(assert (= @a 2))
-(swap! a inc)
-(assert (= @a 3))
+</p><pre><code class="prettyprint lang-clojure">(def foo (atom 1))
+(assert (= @foo 1))
+(reset! foo 2)
+(assert (= @foo 2))
+(swap! foo inc)
+(assert (= @foo 3))
 </code></pre></div>
       </div><div class="content" id="slide-4">
        <div class="container"><h1 id="%E8%87%AA%E5%B7%B1%E8%A9%95%E4%BE%A1%E5%BC%8F">自己評価式</h1><p>文字列や数値やなど。
@@ -60,7 +60,6 @@
   (cond (self-evaluating? exp) exp
         (symbol? exp) (@env exp)))
 
-(assert (= ({'foo 100} 'foo) 100))
 (assert (= (eval (atom {'foo 100}) 'foo)) 100)
 </code></pre></div>
       </div><div class="content" id="slide-6">
@@ -90,17 +89,17 @@
 </p><pre><code class="prettyprint lang-clojure">(defmethod eval-form 'quote [env [_ quotation]] quotation)
 
 (defmethod eval-form 'if [env [_ predicate consequent alternative]]
-  (if (eval predicate)
-    (eval consequent)
-    (eval alternative)))
+  (if (eval env predicate)
+    (eval env consequent)
+    (eval env alternative)))
 
 (assert (= (eval (atom {}) '(quote (foo bar))) '(foo bar)))
 (assert (= (eval (atom {}) '(if false &quot;foo&quot; 100)) 100))
 </code></pre></div>
       </div><div class="content" id="slide-9">
        <div class="container"><h1 id="define">define</h1><p>無名関数(fn [x] (f x))を#(f %)と記述できる。
-</p><pre><code class="prettyprint lang-clojure">(defmethod eval-form 'define [env [_ name body]]
-  (swap! env #(assoc % name (eval env body))))
+</p><pre><code class="prettyprint lang-clojure">(defmethod eval-form 'define [env [_ variable value]]
+  (swap! env #(assoc % variable (eval env value))))
 
 (def env (atom {}))
 (eval env '(define foo 100))
@@ -111,7 +110,6 @@
 </p><pre><code class="prettyprint lang-clojure">(defmethod eval-form 'begin [env [&amp; exps]]
   (-&gt;&gt; exps (map (partial eval env)) last))
 
-(assert (= (eval (atom {}) '(begin &quot;foo&quot; 100)) 100))
 (assert (= (eval (atom {}) '(begin (define bar &quot;bar&quot;) bar)) &quot;bar&quot;))
 </code></pre></div>
       </div><div class="content" id="slide-11">
@@ -133,8 +131,8 @@
 </p><pre><code class="prettyprint lang-clojure">(defprotocol Procedure
   (appl [f args]))
 
-(defmethod eval-form :default [env [operator operands]]
-  (appl (eval operator) (map eval operands)))
+(defmethod eval-form :default [env [operator &amp; operands]]
+  (appl (eval env operator) (map (partial eval env) operands)))
 </code></pre></div>
       </div><div class="content" id="slide-13">
        <div class="container"><h1 id="Protocol%2C+Type%2C+Record">Protocol, Type, Record</h1><p>ProtocolはJavaのinterfaceと相違ない。
