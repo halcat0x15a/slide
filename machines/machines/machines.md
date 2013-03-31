@@ -47,11 +47,11 @@ type Machine k o = forall m. Monad m => MachineT m k o
 
 !SLIDE
 
-# Procedures
+# Primitives
 
-* Await: apply input
-* Yield: output
-* Stop: end of stream
+* await: apply input
+* yield: output
+* stop: end of stream
 
 !SLIDE
 
