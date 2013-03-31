@@ -205,7 +205,7 @@ main = runT_ $ lineSource ~> printMachine
 
 !SLIDE
 
-# Feature
+# Summary
 
 * Simple API
 * Do not take part in I/O (only MonadIO)
@@ -246,7 +246,7 @@ object Main extends SafeApp {
 
 !SLIDE
 
-# Feature
+# Summary
 
 * different approach
 * can separate I/O
