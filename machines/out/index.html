@@ -1,0 +1,190 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>machines</title>
+        <link type="text/css" rel="stylesheet" href="assets/css/show.css" />
+        <link type="text/css" rel="stylesheet" href="assets/css/prettify.css" />
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/show.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/prettify.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/lang-apollo.js"></script><script type="text/javascript" src="assets/js/prettify/lang-css.js"></script><script type="text/javascript" src="assets/js/prettify/lang-hs.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lisp.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lua.js"></script><script type="text/javascript" src="assets/js/prettify/lang-ml.js"></script><script type="text/javascript" src="assets/js/prettify/lang-proto.js"></script><script type="text/javascript" src="assets/js/prettify/lang-scala.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vb.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vhdl.js"></script><script type="text/javascript" src="assets/js/prettify/lang-wiki.js"></script><script type="text/javascript" src="assets/js/prettify/lang-yaml.js"></script>
+      <script type="text/javascript"><!--
+        window.onload=function() { prettyPrint(); };
+      --></script>
+      </head>
+      <body>
+        <div id="slides">
+          <div id="reel">
+            <div class="content" id="slide-0">
+       <div class="container"><h1 id="Machines">Machines</h1></div>
+      </div><div class="content" id="slide-1">
+       <div class="container"><p><a  href="https://twitter.com/halcat0x15a">@halcat0x15a</a>
+</p><ul><li>Scala and Clojure fan.
+</li><li>I can read Haskell, but can not write.
+</li><li>I was interested in the scala-machines.
+</li></ul></div>
+      </div><div class="content" id="slide-2">
+       <div class="container"><h1 id="Machines">Machines</h1><ul><li>Stream processing library
+</li><li>Author: <a  href="https://twitter.com/kmett">@kmett</a>, <a  href="https://twitter.com/runarorama">@runarorama</a>
+</li><li>implemented by Haskell and Scala
+</li></ul></div>
+      </div><div class="content" id="slide-3">
+       <div class="container"><h1 id="Types">Types</h1><ul><li><p>Machine
+</p><ul><li>Input and output stream
+</li></ul></li><li><p>Plan
+</p><ul><li>for <em>Machine</em>
+</li></ul></li><li><p>Process
+</p><ul><li>Transducer
+</li></ul></li><li>Source
+</li></ul></div>
+      </div><div class="content" id="slide-4">
+       <div class="container"><h1 id="Machine">Machine</h1><pre><code class="prettyprint lang-haskell">data Step k o r
+  = Stop
+  | Yield o r
+  | forall t. Await (t -&gt; r) (k t) r
+
+newtype MachineT m k o = MachineT { runMachineT :: m (Step k o (MachineT m k o)) }
+
+type Machine k o = forall m. Monad m =&gt; MachineT m k o
+</code></pre></div>
+      </div><div class="content" id="slide-5">
+       <div class="container"><h1 id="Procedures">Procedures</h1><ul><li>Await: apply input
+</li><li>Yield: output
+</li><li>Stop: end of stream
+</li></ul></div>
+      </div><div class="content" id="slide-6">
+       <div class="container"><h1 id="Plan">Plan</h1><pre><code class="prettyprint lang-haskell">data Plan k o a
+  = Done a
+  | Yield o (Plan k o a)
+  | forall z. Await (z -&gt; Plan o a) (k z) (Plan k o a)
+  | Fail
+
+yield :: o -&gt; Plan k o ()
+await :: Category k =&gt; Plan (k i) o i
+stop :: Plan k o a
+
+construct :: Monad m =&gt; PlanT k o m a -&gt; MachineT m k o
+repeatedly :: Monad m =&gt; PlanT k o m a -&gt; MachineT m k o
+before :: Monad m =&gt; MachineT m k o -&gt; PlanT k o m a -&gt; MachineT m k o
+</code></pre></div>
+      </div><div class="content" id="slide-7">
+       <div class="container"><h1 id="Construct+Machine">Construct Machine</h1><p>Construct <em>Plan</em> by <em>Monad</em> and then compile <em>Plan</em> for <em>Machine</em>
+</p><pre><code class="prettyprint lang-haskell">filtered :: (a -&gt; Bool) -&gt; Process a a
+filtered p = repeatedly $ do
+  i &lt;- await
+  when (p i) $ yield i
+
+source :: Foldable f =&gt; f b -&gt; Source b
+source xs = construct (traverse_ yield xs)
+</code></pre></div>
+      </div><div class="content" id="slide-8">
+       <div class="container"><h1 id="Process%2C+Source">Process, Source</h1><pre><code class="prettyprint lang-haskell">type Source b = forall k. Machine k b
+type SourceT m b = forall k. MachineT m k b
+
+type Process a b = Machine (Is a) b
+type ProcessT m a b = MachineT m (Is a) b
+
+data Is a b where
+  Refl :: Is a a
+</code></pre></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><h1 id="Transduce">Transduce</h1><pre><code class="prettyprint lang-haskell">(&lt;~) :: Monad m =&gt; ProcessT m b c -&gt; MachineT m k b -&gt; MachineT m k c
+(~&gt;) :: Monad m =&gt; MachineT m k b -&gt; ProcessT m b c -&gt; MachineT m k c
+</code></pre></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><h1 id="Run">Run</h1><pre><code class="prettyprint lang-haskell">Prelude Data.Machine&gt; run $ source [1 .. 10] ~&gt; filtered even
+[2,4,6,8,10]
+</code></pre></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><h1 id="Automaton">Automaton</h1><p><em>auto</em> is lift to <em>Process</em>
+</p><pre><code class="prettyprint lang-haskell">class Automaton k where
+  auto :: k a b -&gt; Process a b
+</code></pre><p>Automaton (-&gt;)
+</p><pre><code class="prettyprint lang-haskell">Prelude Data.Machine&gt; run $ source [1 .. 5] ~&gt; auto (* 2)
+[2,4,6,8,10]
+</code></pre></div>
+      </div><div class="content" id="slide-12">
+       <div class="container"><h1 id="Tee%2C+Wye">Tee, Wye</h1><p>can read from two input stream
+</p><pre><code class="prettyprint lang-haskell">type Tee a b c = Machine (T a b) c
+type TeeT m a b c = MachineT m (T a b) c
+
+data T a b c where
+  L :: T a b a
+  R :: T a b b
+
+type Wye a b c = Machine (Y a b) c
+type WyeT m a b c = MachineT m (Y a b) c
+
+data Y a b c where
+  X :: Y a b a
+  Y :: Y a b b
+  Z :: Y a b (Either a b)
+</code></pre></div>
+      </div><div class="content" id="slide-13">
+       <div class="container"><h1 id="awaits">awaits</h1><p>choice input source by <em>awaits</em>
+</p><p>provide <em>Source</em> by <em>tee</em> or <em>wye</em>
+</p><pre><code class="prettyprint lang-haskell">main = (runT $ tee odds evens plus) &gt;&gt;= print
+  where
+    odds = numbers ~&gt; filtered odd
+    evens = numbers ~&gt; filtered even
+    numbers = source [1 .. 10]
+    plus = repeatedly $ do
+      l &lt;- awaits L
+      r &lt;- awaits R
+      yield $ l + r
+</code></pre></div>
+      </div><div class="content" id="slide-14">
+       <div class="container"><h1 id="I%2FO">I/O</h1><p>can include side-effect in <em>Plan</em> by <em>liftIO</em>
+</p><pre><code class="prettyprint lang-haskell">lineSource :: SourceT IO String
+lineSource = repeatedly $ do
+  s &lt;- liftIO getLine
+  yield s
+
+printMachine :: ProcessT IO String ()
+printMachine = repeatedly $ do
+  s &lt;- await
+  liftIO $ putStrLn s
+
+main = runT_ $ lineSource ~&gt; printMachine
+</code></pre></div>
+      </div><div class="content" id="slide-15">
+       <div class="container"><h1 id="Feature">Feature</h1><ul><li>Simple API
+</li><li>Do not take part in I/O (only MonadIO)
+</li></ul></div>
+      </div><div class="content" id="slide-16">
+       <div class="container"><h1 id="scala-machines">scala-machines</h1><ul><li><em>Monad</em> transformer does not exist
+</li><li>using <em>Procedure</em> and <em>Driver</em>
+</li></ul></div>
+      </div><div class="content" id="slide-17">
+       <div class="container"><h1 id="Driver%2C+Procedure">Driver, Procedure</h1><ul><li><p>Driver
+</p><ul><li>apply input to continuations
+</li></ul></li><li><p>Procedure
+</p><ul><li>drive <em>Machine</em> by <em>Driver</em>
+</li></ul></li></ul></div>
+      </div><div class="content" id="slide-18">
+       <div class="container"><h1 id="Example">Example</h1><pre><code class="prettyprint lang-scala">object Main extends SafeApp {
+  override def runc = new Procedure[IO, String] {
+    type K = String =&gt; Any
+    val machine = await[String] flatMap emit repeatedly
+    def withDriver[R](f: Driver[IO, K] =&gt; IO[R]) =
+      new Driver[IO, K] {
+        val M = Monad[IO]
+        def apply(k: K) = readLn map (k &gt;&gt;&gt; Option[Any])
+      } |&gt; f
+  } foreach putStrLn
+}
+</code></pre></div>
+      </div><div class="content" id="slide-19">
+       <div class="container"><h1 id="Feature">Feature</h1><ul><li>different approach
+</li><li>can separate I/O
+</li></ul></div>
+      </div><div class="content" id="slide-20">
+       <div class="container"><h1 id="References">References</h1><ul><li><a  href="http://krdlab.hatenablog.com/entry/2013/03/16/204039">Haskell の machines に入門してみた，というお話</a>
+</li><li><a  href="https://dl.dropbox.com/u/4588997/Machines.pdf">Machines</a> by runarorama
+</li></ul></div>
+      </div>
+          </div>
+        </div>
+        
+      </body>
+    </html>
