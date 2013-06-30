@@ -1,0 +1,157 @@
+<html>
+      <head>
+        <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+        <title>More Monad</title>
+        <link type="text/css" rel="stylesheet" href="assets/css/show.css" />
+        <link type="text/css" rel="stylesheet" href="assets/css/prettify.css" />
+        <script type="text/javascript" src="assets/js/jquery.min.js"></script>
+        <script type="text/javascript" src="assets/js/show.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/prettify.js"></script>
+        <script type="text/javascript" src="assets/js/prettify/lang-apollo.js"></script><script type="text/javascript" src="assets/js/prettify/lang-css.js"></script><script type="text/javascript" src="assets/js/prettify/lang-hs.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lisp.js"></script><script type="text/javascript" src="assets/js/prettify/lang-lua.js"></script><script type="text/javascript" src="assets/js/prettify/lang-ml.js"></script><script type="text/javascript" src="assets/js/prettify/lang-proto.js"></script><script type="text/javascript" src="assets/js/prettify/lang-scala.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-sql.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vb.js"></script><script type="text/javascript" src="assets/js/prettify/lang-vhdl.js"></script><script type="text/javascript" src="assets/js/prettify/lang-wiki.js"></script><script type="text/javascript" src="assets/js/prettify/lang-yaml.js"></script>
+      <script type="text/javascript"><!--
+        window.onload=function() { prettyPrint(); };
+      --></script>
+      </head>
+      <body>
+        <div id="slides">
+          <div id="reel">
+            <div class="content" id="slide-0">
+       <div class="container"><h1 id="%E3%83%A2%E3%83%8A%E3%83%89%E3%82%92%E4%BD%BF%E3%81%8A%E3%81%86%21">モナドを使おう!</h1><p><a  href="https://twitter.com/halcat0x15a">@halcat0x15a</a>
+</p></div>
+      </div><div class="content" id="slide-1">
+       <div class="container"><p>やっぱりClojureでもモナドを使いたい
+</p><ul><li>汎用的な制御構造
+</li><li>シンプルなインターフェース
+</li></ul></div>
+      </div><div class="content" id="slide-2">
+       <div class="container"><h1 id="%E3%83%A2%E3%83%8A%E3%83%89%E5%86%85%E5%8C%85%E8%A1%A8%E8%A8%98">モナド内包表記</h1><p>簡単な変換規則が存在する
+</p><pre><code class="prettyprint lang-clojure">(= (for-m [a ma] (f a))
+   (fmap ma (fn [a] (f a))))
+(= (for-m [a ma b mb] (f a b))
+   (bind ma (fn [a] (fmap mb (fn [b] (f a b))))))
+(= (for-m [a ma b mb c mc] (f a b c))
+   (bind ma (fn [a] (bind mb (fn [b] (fmap mc (fn [c] (f a b c))))))))
+</code></pre></div>
+      </div><div class="content" id="slide-3">
+       <div class="container"><p>defmacroで簡単に書ける
+</p><pre><code class="prettyprint lang-clojure">(defmacro for-m [[var val &amp; exprs] expr]
+  (if (empty? exprs)
+    `(fmap ~val (fn [~var] ~expr))
+    `(bind ~val (fn [~var] (for-m ~exprs ~expr)))))
+</code></pre></div>
+      </div><div class="content" id="slide-4">
+       <div class="container"><h1 id="%E5%A4%9A%E7%9B%B8%E6%80%A7">多相性</h1><p>fmap, bindは多相的な関数でなければならない
+</p><p>やりかたはいくつかある
+</p><ul><li>metadata
+</li><li>multimethod
+</li><li>protocol
+</li></ul></div>
+      </div><div class="content" id="slide-5">
+       <div class="container"><h1 id="metadata">metadata</h1><pre><code class="prettyprint lang-clojure">(defn fmap [m f]
+  (vary-meta ((-&gt; m meta :fmap) f m) merge (meta m)))
+
+(defn point-seq [seq] (with-meta seq {:fmap map}))
+(defn point-vec [vec] (with-meta vec {:fmap mapv}))
+
+(for-m [a (point-seq '(1 2 3))] (inc a))
+(for-m [a (point-vec [1 2 3])] (inc a))
+</code></pre></div>
+      </div><div class="content" id="slide-6">
+       <div class="container"><h1 id="%E7%89%B9%E5%BE%B4">特徴</h1><ul><li><p>最初にmetadataを付与しなければならない
+</p><ul><li>1回付与すれば伝搬する
+</li></ul></li><li>IObjでなければならない
+</li><li>metadataを変更するだけで動作を変えられる
+</li><li>metadataを消されると壊れる
+</li></ul></div>
+      </div><div class="content" id="slide-7">
+       <div class="container"><h1 id="multimethod">multimethod</h1><pre><code class="prettyprint lang-clojure">(defmulti fmap (fn [m f] (type m)))
+(defmethod fmap clojure.lang.ISeq [m f] (map f m))
+(defmethod fmap nil [m f] nil)
+
+(for-m [a '(1 2 3)] (inc a))
+(for-m [a nil] (inc a))
+</code></pre></div>
+      </div><div class="content" id="slide-8">
+       <div class="container"><h1 id="%E7%89%B9%E5%BE%B4">特徴</h1><ul><li><p>dispatch関数を自由に設定可能
+</p><ul><li>しかし、広く適用出来るものに限る
+</li></ul></li><li>アドホックな定義が可能
+</li><li>defaultの動作も定義出来る
+</li><li>classやkeywordを使えば階層も考慮される
+</li></ul></div>
+      </div><div class="content" id="slide-9">
+       <div class="container"><h1 id="protocol">protocol</h1><pre><code class="prettyprint lang-clojure">(defprotocol Monad
+  (bind [m f]))
+(defprotocol Functor
+  (fmap [m f]))
+(extend-protocol Functor
+  clojure.lang.ISeq
+  (fmap [m f] (map f m))
+  nil
+  (fmap [m f] nil))
+
+(for-m [a '(1 2 3)] (inc a))
+(for-m [a nil] (inc a))
+</code></pre></div>
+      </div><div class="content" id="slide-10">
+       <div class="container"><h1 id="%E7%89%B9%E5%BE%B4">特徴</h1><ul><li>multimethodの利点の多くを受け継ぐ
+</li><li><p>Java特有の制約がある
+</p><ul><li>可変長引数が使えない
+</li><li>第一引数は固定
+</li></ul></li><li>高速
+</li></ul></div>
+      </div><div class="content" id="slide-11">
+       <div class="container"><h1 id="%E3%81%A9%E3%82%8C%E3%81%8C%E3%82%88%E3%81%84%E3%81%8B">どれがよいか</h1><p>型による振り分けならばprotocolを使うのがよい
+</p><p>multimethodは値によるdispatchに限る
+</p></div>
+      </div><div class="content" id="slide-12">
+       <div class="container"><h1 id="%E3%83%8F%E3%82%A4%E3%83%91%E3%83%BC%E3%83%A2%E3%83%8A%E3%83%89%E3%82%BF%E3%82%A4%E3%83%A0">ハイパーモナドタイム</h1><p>モナドを使った魅力的な関数の紹介
+</p></div>
+      </div><div class="content" id="slide-13">
+       <div class="container"><h1 id="bind">bind</h1><p>データ型によって動作を変えられる汎用的なスレッド
+</p><pre><code class="prettyprint lang-clojure">(extend-type java.lang.Object
+  Functor
+  (fmap [m f] (f m))
+  Monad
+  (bind [m f] (f m)))
+
+(defn &gt;&gt;= [m &amp; fs] (reduce bind m fs))
+
+(&gt;&gt;= 1 inc inc (fn [x] (* x x)))
+</code></pre></div>
+      </div><div class="content" id="slide-14">
+       <div class="container"><h1 id="sequence">sequence</h1><p>モナドのリストをリストをもつモナドにする
+</p><pre><code class="prettyprint lang-clojure">(defn sequence [m &amp; ms]
+  (reduce (fn [m n] (bind m #(fmap n (partial conj %)))) (fmap m vector) ms))
+
+(extend-protocol Monad
+  clojure.lang.ISeq
+  (bind [m f] (mapcat f m))
+  nil
+  (bind [m f] nil))
+
+(sequence '(1 2 3) '(2 4 6))
+(sequence 1 2 nil 3)
+</code></pre></div>
+      </div><div class="content" id="slide-15">
+       <div class="container"><h1 id="lift">lift</h1><p>モナドの持つ値を関数に適用する
+</p><pre><code class="prettyprint lang-clojure">(defn lift [f m &amp; ms]
+  (fmap (apply sequence m ms) (partial apply f)))
+
+(lift + 1 2 3)
+(lift + 1 2 nil 3)
+(lift list '(1 2 3) '(2 4 6))
+(lift + '(1 2 3) '(2 4 6))
+</code></pre></div>
+      </div><div class="content" id="slide-16">
+       <div class="container"><p>これだけ有用な関数がfmapとbindを定義するだけで使える
+</p><p>今日の例は<a  href="https://github.com/halcat0x15a/emerald/">emerald</a>に実装されています
+</p></div>
+      </div><div class="content" id="slide-17">
+       <div class="container"><p>おわり
+</p></div>
+      </div>
+          </div>
+        </div>
+        
+      </body>
+    </html>
