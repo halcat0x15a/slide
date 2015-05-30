@@ -32,9 +32,9 @@ defmacroで簡単に書ける
 
 ```clojure
 (defmacro for-m [[var val & exprs] expr]
-  (if (empty? exprs)
-    `(fmap ~val (fn [~var] ~expr))
-    `(bind ~val (fn [~var] (for-m ~exprs ~expr)))))
+  (if exprs
+    `(bind ~val (fn [~var] (for-m ~exprs ~expr)))
+    `(fmap ~val (fn [~var] ~expr))))
 ```
 
 !SLIDE
